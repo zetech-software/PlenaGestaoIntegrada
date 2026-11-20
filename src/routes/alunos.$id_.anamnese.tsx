@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
+import { useAudit, useAuditView } from "@/hooks/use-audit";
 import { useRecords } from "@/hooks/use-records";
 import { specialties, type AnamnesisDraft, type Specialty } from "@/types/record";
 import { formatDate } from "@/services/student-service";
@@ -70,6 +71,8 @@ function AnamnesisPage() {
 }
 function AnamnesisForm() {
   const { id } = Route.useParams();
+  const { log } = useAudit();
+  useAuditView("anamnese", id);
   const navigate = useNavigate();
   const { students } = useStudents();
   const { anamneses, saveAnamnesis } = useRecords();
@@ -127,6 +130,7 @@ function AnamnesisForm() {
           e.preventDefault();
           try {
             await saveAnamnesis(draft);
+            log("editou", "anamnese", id);
             await navigate({ to: "/alunos/$id", params: { id } });
           } catch (err) {
             setError(err instanceof Error ? err.message : "Não foi possível salvar.");

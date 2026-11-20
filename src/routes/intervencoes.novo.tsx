@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
+import { useAudit } from "@/hooks/use-audit";
 import { usePlans } from "@/hooks/use-plans";
 import { MAX_GOALS } from "@/services/plan-service";
 import { demoDate } from "@/data/demo-students";
@@ -48,6 +49,7 @@ const emptyGoal = (): GoalDraft => ({ description: "", strategy: "", deadline: "
 function NewPlan() {
   const { students } = useStudents();
   const { addPlan } = usePlans();
+  const { log } = useAudit();
   const navigate = useNavigate();
   const [studentId, setStudentId] = useState("");
   const [kind, setKind] = useState<PlanKind>("PTI");
@@ -77,6 +79,7 @@ function NewPlan() {
         summary,
         goals,
       });
+      log("criou", "plano", studentId, title.trim());
       await navigate({
         to: "/intervencoes/$id",
         params: { id: plan.id },

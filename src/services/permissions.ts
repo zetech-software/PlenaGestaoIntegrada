@@ -12,6 +12,7 @@ export type Area =
   | "intervencoes"
   | "relatorios"
   | "usuarios"
+  | "auditoria"
   | "configuracoes";
 
 /** Maior privilégio vence quando a conta tem mais de um perfil. */
@@ -23,7 +24,7 @@ export function primaryRole(roles: AppRole[]): AppRole | null {
 }
 export function canAccess(role: AppRole | null, area: Area) {
   if (!role) return false;
-  if (area === "usuarios") return role === "admin";
+  if (area === "usuarios" || area === "auditoria") return role === "admin";
   if (area === "configuracoes") return role === "admin" || role === "clinica";
   return true;
 }
@@ -33,7 +34,16 @@ export function canSeeStudent(role: AppRole | null, assigned: string[], studentI
   if (role === "terapeuta") return assigned.includes(studentId);
   return false;
 }
+/** Registrar ou revogar consentimento é um ato administrativo. */
+export function canManageConsent(role: AppRole | null) {
+  return role === "admin" || role === "clinica";
+}
+/** Exportar todos os dados de um aluno é restrito a admin e clínica. */
+export function canExportStudent(role: AppRole | null) {
+  return role === "admin" || role === "clinica";
+}
 export function areaForPath(pathname: string): Area {
+  if (pathname.startsWith("/auditoria")) return "auditoria";
   if (pathname.startsWith("/usuarios")) return "usuarios";
   if (pathname.startsWith("/configuracoes")) return "configuracoes";
   if (pathname.startsWith("/prontuarios") || /\/(anamnese|prontuario)$/.test(pathname))

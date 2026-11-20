@@ -17,6 +17,8 @@ import { StudentsProvider } from "@/hooks/use-students";
 import { SessionsProvider } from "@/hooks/use-sessions";
 import { RecordsProvider } from "@/hooks/use-records";
 import { PlansProvider } from "@/hooks/use-plans";
+import { AuditProvider } from "@/hooks/use-audit";
+import { ConsentsProvider } from "@/hooks/use-consents";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
@@ -146,17 +148,21 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
         <AuthGate>
-          <StudentsProvider>
-            <SessionsProvider>
-              <RecordsProvider>
-                <PlansProvider>
-                  <AppLayout>
-                    <Outlet />
-                  </AppLayout>
-                </PlansProvider>
-              </RecordsProvider>
-            </SessionsProvider>
-          </StudentsProvider>
+          <AuditProvider>
+            <StudentsProvider>
+              <ConsentsProvider>
+                <SessionsProvider>
+                  <RecordsProvider>
+                    <PlansProvider>
+                      <AppLayout>
+                        <Outlet />
+                      </AppLayout>
+                    </PlansProvider>
+                  </RecordsProvider>
+                </SessionsProvider>
+              </ConsentsProvider>
+            </StudentsProvider>
+          </AuditProvider>
         </AuthGate>
       </AuthProvider>
     </QueryClientProvider>
