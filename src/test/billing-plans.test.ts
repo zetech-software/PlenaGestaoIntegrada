@@ -52,3 +52,23 @@ describe("faixas de plano", () => {
     expect(tierMonthlyCents(multi, 9, false)).toBe(49000 + 2 * 3500);
   });
 });
+
+import { cycleChargeCents, parseBRL, validateTier } from "@/services/billing-plans";
+describe("cobrança e edição de planos", () => {
+  it("cobrança mensal da Clínica é R$ 349 e anual é 12 × R$ 289", () => {
+    expect(cycleChargeCents(clinica, 6, 30)).toBe(34900);
+    expect(cycleChargeCents(clinica, 6, 365)).toBe(28900 * 12);
+  });
+  it("Multidisciplinar com 9 vagas no mensal cobra R$ 560", () => {
+    expect(cycleChargeCents(multi, 9, 30)).toBe(56000);
+  });
+  it("lê valores em reais", () => {
+    expect(parseBRL("1.234,56")).toBe(123456);
+    expect(parseBRL("349")).toBe(34900);
+    expect(parseBRL("abc")).toBeNaN();
+  });
+  it("recusa máximo de vagas menor que o mínimo", () => {
+    expect(validateTier({ ...clinica, minSeats: 5, maxSeats: 3, includedSeats: 5 })).not.toBe("");
+    expect(validateTier(clinica)).toBe("");
+  });
+});

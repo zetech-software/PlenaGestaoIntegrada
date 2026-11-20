@@ -684,6 +684,73 @@ export type Database = {
         }
         Relationships: []
       }
+      tenant_payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          id: string
+          method: string
+          notes: string
+          paid_on: string
+          period_end: string | null
+          period_start: string | null
+          plan_id: string | null
+          tenant_id: string
+          tier_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          method: string
+          notes?: string
+          paid_on: string
+          period_end?: string | null
+          period_start?: string | null
+          plan_id?: string | null
+          tenant_id: string
+          tier_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          method?: string
+          notes?: string
+          paid_on?: string
+          period_end?: string | null
+          period_start?: string | null
+          plan_id?: string | null
+          tenant_id?: string
+          tier_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_payments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "billing_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_payments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenant_payments_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenants: {
         Row: {
           created_at: string

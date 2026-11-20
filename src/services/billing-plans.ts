@@ -82,3 +82,45 @@ export const formatBRL = (cents: number) =>
 
 /** O ciclo é anual quando dura 1 ano ou mais. */
 export const isAnnualCycle = (days: number) => days >= 365;
+
+/** Valor sugerido de uma cobrança: no mensal, o valor do mês; no anual, 12× o valor mensal do plano anual. */
+export function cycleChargeCents(tier: SubscriptionTier, seats: number, cycleDays: number) {
+  const annual = isAnnualCycle(cycleDays);
+  const monthly = tierMonthlyCents(tier, seats, annual);
+  return annual ? monthly * 12 : monthly;
+}
+
+export function validateTier(t: Omit<SubscriptionTier, "id" | "code">) {
+  if (!t.name.trim()) return "Informe o nome do plano.";
+  const cents = [t.monthlyCents, t.annualMonthlyCents, t.extraSeatCents, t.extraSeatAnnualCents];
+  if (cents.some((c) => !Number.isInteger(c) || c < 0)) return "Valores não podem ser negativos.";
+  if (!Number.isInteger(t.minSeats) || t.minSeats < 1) return "O mínimo de vagas deve ser pelo menos 1.";
+  if (t.maxSeats !== null && (!Number.isInteger(t.maxSeats) || t.maxSeats < t.minSeats))
+    return "O máximo de vagas não pode ser menor que o mínimo.";
+  if (t.includedSeats < t.minSeats || (t.maxSeats !== null && t.includedSeats > t.maxSeats))
+    return "As vagas incluídas devem ficar entre o mínimo e o máximo.";
+  return "";
+}
+
+/** Converte "1.234,56" ou "1234.56" em centavos; NaN se inválido. */
+export function parseBRL(input: string) {
+  const s = input.replace(/[R$\s]/g, "");
+  const normalized = s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : s;
+  if (!/^-?\d+(\.\d{1,2})?$/.test(normalized)) return Number.NaN;
+  return Math.round(Number(normalized) * 100);
+}
+
+export interface TenantPayment {
+  id: string;
+  tenantId: string;
+  amountCents: number;
+  paidOn: string;
+  method: string;
+  planId: string | null;
+  tierId: string | null;
+  periodStart: string | null;
+  periodEnd: string | null;
+  notes: string;
+}
+export const paymentMethods = ["Pix", "Boleto", "Cartão", "Transferência", "Dinheiro", "Estorno"] as const;
+export const paymentsTotal = (list: TenantPayment[]) => list.reduce((s, p) => s + p.amountCents, 0);

@@ -92,6 +92,13 @@
       "when": 1795199424165,
       "tag": "0012_faixas_de_plano_com_travas",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795199765386,
+      "tag": "0013_edicao_faixas_e_pagamentos_clientes",
+      "breakpoints": true
     }
   ]
 }

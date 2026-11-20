@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { Fragment, useState, type FormEvent } from "react";
+import { ClientPayments, ClientPlanEditor } from "@/components/neuro/client-billing";
 import { createFileRoute } from "@tanstack/react-router";
 import { Building2, Search, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,12 @@ import {
 } from "@/types/tenant";
 import { DemoFooter } from "@/components/neuro/student-ui";
 import { useQueryClient } from "@tanstack/react-query";
-import { BillingPlansPanel, TiersPanel, usePlans, useTiers } from "@/components/neuro/billing-plans-panel";
+import {
+  BillingPlansPanel,
+  TiersPanel,
+  usePlans,
+  useTiers,
+} from "@/components/neuro/billing-plans-panel";
 import {
   daysLeft,
   formatBRL,
@@ -30,7 +36,6 @@ import {
   tierMonthlyCents,
   tierSeatsError,
   validityState,
-  type BillingPlan,
 } from "@/services/billing-plans";
 import { assignPlan } from "@/services/billing-plans-supabase";
 
@@ -38,7 +43,12 @@ const todayIso = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
-const validityTone = { "sem-plano": "muted", vigente: "", vencendo: "info", vencido: "muted" } as const;
+const validityTone = {
+  "sem-plano": "muted",
+  vigente: "",
+  vencendo: "info",
+  vencido: "muted",
+} as const;
 function validityText(validUntil: string | null | undefined, today: string) {
   const state = validityState(validUntil, today);
   if (!validUntil || state === "sem-plano") return "Sem plano";
@@ -102,25 +112,11 @@ function PlatformPage() {
   const plans = plansQuery.data ?? [];
   const activePlans = plans.filter((p) => p.active);
   const tiers = useTiers().data ?? [];
+  const [open, setOpen] = useState<{ id: string; view: "plano" | "financeiro" } | null>(null);
   const formTier = tiers.find((t) => t.id === form.tierId);
   const qc = useQueryClient();
   const today = todayIso();
   const planName = (id?: string | null) => plans.find((p) => p.id === id)?.name ?? "";
-
-  async function applyPlan(tenantId: string, plan: BillingPlan, current?: string | null) {
-    await assignPlan(tenantId, plan.id, nextValidUntil(today, plan.durationDays, current));
-    await qc.invalidateQueries({ queryKey: ["tenants"] });
-  }
-  async function renew(tenantId: string, planId: string, current?: string | null) {
-    const plan = plans.find((p) => p.id === planId);
-    if (!plan) return;
-    try {
-      await applyPlan(tenantId, plan, current);
-      setError("");
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Não foi possível renovar o plano.");
-    }
-  }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -430,64 +426,86 @@ function PlatformPage() {
           <p className="text-muted-foreground p-4">Nenhum cliente encontrado.</p>
         ) : null}
         {(isLoading ? [] : rows).map((t) => (
-          <div className="appointment" key={t.id}>
-            <span className="avatar" aria-hidden="true">
-              {t.kind === "clinica" ? <Building2 size={16} /> : <UserRound size={16} />}
-            </span>
-            <div className="appointment-info">
-              <strong>{t.name}</strong>
-              <small>
-                {tenantKindLabels[t.kind]} · {formatDocument(t.kind, t.document)} · {t.ownerName} ·{" "}
-                {t.ownerEmail} · {t.seats} {t.seats === 1 ? "vaga" : "vagas"} · desde{" "}
-                {formatDate(t.createdOn)}
-                {t.registration ? ` · ${t.registration}` : ""}
-              </small>
-              <small>
-                {(() => {
-                  const tier = tiers.find((x) => x.id === t.tierId);
-                  const cycle = plans.find((p) => p.id === t.planId);
-                  if (!tier) return t.planId ? `${planName(t.planId)} · ` : "";
-                  const annual = cycle ? isAnnualCycle(cycle.durationDays) : false;
-                  return `${tier.name} · ${formatBRL(tierMonthlyCents(tier, t.seats, annual))}/mês${cycle ? ` (${cycle.name})` : ""} · `;
-                })()}
-                <span className={`status ${validityTone[validityState(t.validUntil, today)]}`}>
-                  {validityText(t.validUntil, today)}
-                </span>
-              </small>
-            </div>
-            <span className={`status ${statusTone[t.status]}`}>{t.status}</span>
-            <Select
-              value=""
-              onValueChange={(v) => void renew(t.id, v, t.validUntil)}
-            >
-              <SelectTrigger aria-label={`Plano de ${t.name}`} className="filter-select w-auto">
-                <SelectValue placeholder={t.planId ? "Renovar plano" : "Definir plano"} />
-              </SelectTrigger>
-              <SelectContent>
-                {activePlans.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name} · +{p.durationDays} dias
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {t.status === "Suspenso" ? (
-              <Button size="sm" onClick={() => void change(t.id, "Ativo")}>
-                Reativar
+          <Fragment key={t.id}>
+            <div className="appointment">
+              <span className="avatar" aria-hidden="true">
+                {t.kind === "clinica" ? <Building2 size={16} /> : <UserRound size={16} />}
+              </span>
+              <div className="appointment-info">
+                <strong>{t.name}</strong>
+                <small>
+                  {tenantKindLabels[t.kind]} · {formatDocument(t.kind, t.document)} · {t.ownerName}{" "}
+                  · {t.ownerEmail} · {t.seats} {t.seats === 1 ? "vaga" : "vagas"} · desde{" "}
+                  {formatDate(t.createdOn)}
+                  {t.registration ? ` · ${t.registration}` : ""}
+                </small>
+                <small>
+                  {(() => {
+                    const tier = tiers.find((x) => x.id === t.tierId);
+                    const cycle = plans.find((p) => p.id === t.planId);
+                    if (!tier) return t.planId ? `${planName(t.planId)} · ` : "";
+                    const annual = cycle ? isAnnualCycle(cycle.durationDays) : false;
+                    return `${tier.name} · ${formatBRL(tierMonthlyCents(tier, t.seats, annual))}/mês${cycle ? ` (${cycle.name})` : ""} · `;
+                  })()}
+                  <span className={`status ${validityTone[validityState(t.validUntil, today)]}`}>
+                    {validityText(t.validUntil, today)}
+                  </span>
+                </small>
+              </div>
+              <span className={`status ${statusTone[t.status]}`}>{t.status}</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setOpen(
+                    open?.id === t.id && open.view === "plano" ? null : { id: t.id, view: "plano" },
+                  )
+                }
+              >
+                Alterar plano
               </Button>
-            ) : (
-              <>
-                {t.status === "Em implantação" ? (
-                  <Button size="sm" onClick={() => void change(t.id, "Ativo")}>
-                    Ativar
-                  </Button>
-                ) : null}
-                <Button variant="outline" size="sm" onClick={() => void change(t.id, "Suspenso")}>
-                  Suspender
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setOpen(
+                    open?.id === t.id && open.view === "financeiro"
+                      ? null
+                      : { id: t.id, view: "financeiro" },
+                  )
+                }
+              >
+                Financeiro
+              </Button>
+              {t.status === "Suspenso" ? (
+                <Button size="sm" onClick={() => void change(t.id, "Ativo")}>
+                  Reativar
                 </Button>
-              </>
-            )}
-          </div>
+              ) : (
+                <>
+                  {t.status === "Em implantação" ? (
+                    <Button size="sm" onClick={() => void change(t.id, "Ativo")}>
+                      Ativar
+                    </Button>
+                  ) : null}
+                  <Button variant="outline" size="sm" onClick={() => void change(t.id, "Suspenso")}>
+                    Suspender
+                  </Button>
+                </>
+              )}
+            </div>
+            {open?.id === t.id && open.view === "plano" ? (
+              <ClientPlanEditor
+                tenant={t}
+                tiers={tiers}
+                plans={plans}
+                onDone={() => setOpen(null)}
+              />
+            ) : null}
+            {open?.id === t.id && open.view === "financeiro" ? (
+              <ClientPayments tenant={t} tiers={tiers} plans={plans} />
+            ) : null}
+          </Fragment>
         ))}
       </div>
       <DemoFooter />
