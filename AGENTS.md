@@ -36,3 +36,4 @@ use the editor.
 - Give each content page its own file route and metadata; deferred modules are disabled navigation entries rather than placeholder pages.
 - Auth gate lives in the root route around the app shell (inline login screen); Lovable Cloud only stores accounts, while student, agenda and record data stay in in-memory demo services until the REST backend exists.
 - Student sub-pages (anamnese, prontuário) use un-nested `$id_` routes so they render as full pages independent of the profile.
+- Access rules live in pure helpers in src/services/permissions.ts; roles and therapist-student links are stored in Lovable Cloud with RLS, and only a server function using the admin client (after a has_role check) creates accounts.

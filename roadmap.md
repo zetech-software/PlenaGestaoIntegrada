@@ -14,4 +14,7 @@
 - [x] Prontuário com sessões e linha de evolução (demonstração)
 - [x] Tela de login e e-mail de teste
 
+# Quarta fase — Usuários e perfis
+- [x] Tela de Usuários (admin) e perfis admin, terapeuta, clínica com acesso por menu e alunos
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.

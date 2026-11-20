@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { DemoSessionService } from "@/services/session-service";
 import { demoSessions } from "@/data/demo-sessions";
+import { useStudents } from "@/hooks/use-students";
 import type { Session, SessionDraft, SessionStatus } from "@/types/session";
 interface Ctx {
   sessions: Session[];
@@ -11,8 +12,10 @@ const SessionContext = createContext<Ctx | null>(null);
 export function SessionsProvider({ children }: { children: ReactNode }) {
   const [service] = useState(() => new DemoSessionService(demoSessions));
   const [sessions, setSessions] = useState(() => service.list());
+  const { students } = useStudents();
+  const visibleIds = new Set(students.map((x) => x.id));
   const value: Ctx = {
-    sessions,
+    sessions: sessions.filter((x) => visibleIds.has(x.studentId)),
     addSession(draft) {
       const created = service.create(draft);
       setSessions(service.list());

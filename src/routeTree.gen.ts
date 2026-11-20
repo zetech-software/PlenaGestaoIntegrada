@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AlunosRouteImport } from './routes/alunos'
 import { Route as ProntuariosRouteImport } from './routes/prontuarios'
+import { Route as UsuariosRouteImport } from './routes/usuarios'
 import { Route as AlunosIndexRouteImport } from './routes/alunos.index'
 import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
@@ -37,6 +38,11 @@ const AlunosRoute = AlunosRouteImport.update({
 const ProntuariosRoute = ProntuariosRouteImport.update({
   id: '/prontuarios',
   path: '/prontuarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsuariosRoute = UsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlunosIndexRoute = AlunosIndexRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos/': typeof AlunosIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
   '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos': typeof AlunosIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos/': typeof AlunosIndexRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/alunos'
     | '/prontuarios'
+    | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
     | '/alunos/'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agenda'
     | '/prontuarios'
+    | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
     | '/alunos'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/alunos'
     | '/prontuarios'
+    | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
     | '/alunos/'
@@ -138,6 +150,7 @@ export interface RootRouteChildren {
   AgendaRoute: typeof AgendaRoute
   AlunosRoute: typeof AlunosRouteWithChildren
   ProntuariosRoute: typeof ProntuariosRoute
+  UsuariosRoute: typeof UsuariosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/prontuarios'
       fullPath: '/prontuarios'
       preLoaderRoute: typeof ProntuariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usuarios': {
+      id: '/usuarios'
+      path: '/usuarios'
+      fullPath: '/usuarios'
+      preLoaderRoute: typeof UsuariosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alunos/': {
@@ -232,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgendaRoute: AgendaRoute,
   AlunosRoute: AlunosRouteWithChildren,
   ProntuariosRoute: ProntuariosRoute,
+  UsuariosRoute: UsuariosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

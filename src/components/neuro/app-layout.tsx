@@ -15,7 +15,9 @@ import {
   Search,
   X,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
+import { areaForPath, canAccess, roleLabels } from "@/services/permissions";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 const futureItems = [
@@ -33,7 +35,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isStudents = pathname.startsWith("/alunos") && !/\/(anamnese|prontuario)$/.test(pathname);
   const isAgenda = pathname.startsWith("/agenda");
   const isRecords = pathname.startsWith("/prontuarios") || /\/alunos\/[^/]+\/(anamnese|prontuario)/.test(pathname);
-  const { session, signOut } = useAuth();
+  const { session, signOut, role } = useAuth();
+  const isUsers = pathname.startsWith("/usuarios");
+  const allowed = canAccess(role, areaForPath(pathname));
   return (
     <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
@@ -56,8 +60,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <div className="nav-label">Seu espaço</div>
             <Link
               to="/"
-              className={`nav-item ${!isStudents && !isAgenda && !isRecords ? "active" : ""}`}
-              aria-current={!isStudents && !isAgenda && !isRecords ? "page" : undefined}
+              className={`nav-item ${!isStudents && !isAgenda && !isRecords && !isUsers ? "active" : ""}`}
+              aria-current={!isStudents && !isAgenda && !isRecords && !isUsers ? "page" : undefined}
               title="Dashboard"
               onClick={() => setMobileOpen(false)}
             >
@@ -94,6 +98,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <ClipboardList />
               <span className="nav-text">Prontuários</span>
             </Link>
+            {canAccess(role, "usuarios") ? (
+              <Link
+                to="/usuarios"
+                className={`nav-item ${isUsers ? "active" : ""}`}
+                title="Usuários"
+                aria-current={isUsers ? "page" : undefined}
+                onClick={() => setMobileOpen(false)}
+              >
+                <ShieldCheck />
+                <span className="nav-text">Usuários</span>
+              </Link>
+            ) : null}
           </div>
           <div className="nav-section">
             <div className="nav-label">Próximas etapas</div>
@@ -131,7 +147,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             >
               <PanelLeft size={18} />
             </Button>
-            <span className="topbar-label">{isStudents ? "Alunos" : isAgenda ? "Agenda" : isRecords ? "Prontuários" : "Visão geral"}</span>
+            <span className="topbar-label">{isStudents ? "Alunos" : isAgenda ? "Agenda" : isRecords ? "Prontuários" : isUsers ? "Usuários" : "Visão geral"}</span>
           </div>
           <div className="topbar-right">
             <form
@@ -150,9 +166,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
               />
             </form>
             <div className="professional">
-              <span className="avatar">NP</span>
+              <span className="avatar">{(session?.user.email ?? "NP").slice(0, 2).toUpperCase()}</span>
               <span className="professional-copy">
-                <strong>Neuropsicopedagoga</strong>
+                <strong>{role ? roleLabels[role] : "Sem perfil"}</strong>
                 <small>{session?.user.email ?? "Perfil demonstrativo"}</small>
               </span>
             </div>
@@ -161,7 +177,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
             </Button>
           </div>
         </header>
-        {children}
+        {allowed ? (
+          children
+        ) : (
+          <main className="page no-access">
+            <h1>Sem acesso a esta área</h1>
+            <p className="text-muted-foreground mt-2">
+              {role ? "Seu perfil não permite abrir esta página." : "Sua conta ainda não tem um perfil. Peça a um administrador."}
+            </p>
+          </main>
+        )}
       </div>
     </div>
   );
