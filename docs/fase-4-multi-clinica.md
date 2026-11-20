@@ -2,6 +2,13 @@
 
 ## Estado
 
+> **Atualização:** o isolamento por clínica foi aplicado (migrações `0005` a `0008`) e o painel de clientes
+> agora usa o banco: o cadastro passa pela função de servidor `provisionTenant`, que convida o responsável por
+> e-mail. As regras de acesso foram testadas em um Postgres local (`docs/rls/casos.sh`, 55 casos, inclusive 13
+> tentativas de furar o isolamento). **Ainda não foi exercitado com um Supabase real:** o envio do convite e o
+> aceite do convite precisam de um teste de ponta a ponta. A função de servidor também passou a conferir os dígitos
+> do CPF/CNPJ, não só o tamanho. O texto abaixo é o plano original.
+
 - **Feito no código (demonstração, em memória):** o painel `/plataforma` ("Clientes"), exclusivo de um novo perfil,
   o **operador da plataforma**. Cadastra **clínica** (CNPJ, vagas de profissionais) ou **profissional autônomo**
   (CPF, registro profissional, uma vaga), com validação dos dígitos do CPF e do CNPJ, bloqueio de documento e

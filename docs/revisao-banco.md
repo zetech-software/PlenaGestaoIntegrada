@@ -1,5 +1,9 @@
 # Revisão do banco (migrações 0001 a 0003)
 
+> **Atualização:** os 5 problemas abaixo foram corrigidos na migração `0004`. Rodando as migrações 0000 a 0008 em
+> um Postgres local, `docs/rls/casos.sh` passa em todos os casos (55). Isso **não substitui** rodar o script no
+> banco do Lovable. O restante deste documento descreve o estado antes da correção.
+
 Revisão feita rodando as quatro migrações em um Postgres 16 local, com os papéis e o `auth.uid()` do
 Supabase simulados (`docs/rls/stubs.sql`), e testando as regras de acesso como administrador, clínica e dois
 terapeutas. **Não foi testado contra o banco real do Lovable**: confirme rodando o mesmo script lá (abaixo).
