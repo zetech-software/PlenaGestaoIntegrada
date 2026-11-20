@@ -9,9 +9,15 @@ import { studentAge } from "@/services/student-service";
 import type { Student } from "@/types/student";
 
 function renderInline(text: string): ReactNode[] {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-    part.startsWith("**") && part.endsWith("**") ? <strong key={i}>{part.slice(2, -2)}</strong> : part,
-  );
+  return text
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part, i) =>
+      part.startsWith("**") && part.endsWith("**") ? (
+        <strong key={i}>{part.slice(2, -2)}</strong>
+      ) : (
+        part
+      ),
+    );
 }
 
 function SuggestionText({ text }: { text: string }) {
@@ -21,7 +27,12 @@ function SuggestionText({ text }: { text: string }) {
         const t = line.trim();
         if (!t) return null;
         if (t.startsWith("#")) return <h3 key={i}>{t.replace(/^#+\s*/, "")}</h3>;
-        if (/^[-*]\s/.test(t)) return <p key={i} className="ai-bullet">{renderInline(t.slice(2))}</p>;
+        if (/^[-*]\s/.test(t))
+          return (
+            <p key={i} className="ai-bullet">
+              {renderInline(t.slice(2))}
+            </p>
+          );
         return <p key={i}>{renderInline(t)}</p>;
       })}
     </div>
@@ -92,11 +103,19 @@ export function ActivitySuggestions({ student }: { student: Student }) {
             placeholder="Ex.: ampliar o tempo de atenção e ganhar confiança na leitura."
           />
         </div>
-        {error && <p className="ai-error" role="alert">{error}</p>}
+        {error && (
+          <p className="ai-error" role="alert">
+            {error}
+          </p>
+        )}
         <div>
           <Button type="submit" disabled={loading}>
             {loading ? <Loader2 className="animate-spin" /> : <Lightbulb />}
-            {loading ? "Gerando sugestões..." : result ? "Gerar novas sugestões" : "Sugerir atividades"}
+            {loading
+              ? "Gerando sugestões..."
+              : result
+                ? "Gerar novas sugestões"
+                : "Sugerir atividades"}
           </Button>
         </div>
       </form>

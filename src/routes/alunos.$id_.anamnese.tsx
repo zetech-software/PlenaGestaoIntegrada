@@ -2,7 +2,13 @@ import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ClipboardList, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
 import { useRecords } from "@/hooks/use-records";
 import { specialties, type AnamnesisDraft, type Specialty } from "@/types/record";
@@ -14,9 +20,15 @@ export const Route = createFileRoute("/alunos/$id_/anamnese")({
   head: () => ({
     meta: [
       { title: "Anamnese multidisciplinar | Plena Gestão Integrada" },
-      { name: "description", content: "Registro de histórico, queixa principal e contexto familiar e escolar do aluno." },
+      {
+        name: "description",
+        content: "Registro de histórico, queixa principal e contexto familiar e escolar do aluno.",
+      },
       { property: "og:title", content: "Anamnese multidisciplinar | Plena Gestão Integrada" },
-      { property: "og:description", content: "Histórico e queixas organizados para todas as especialidades." },
+      {
+        property: "og:description",
+        content: "Histórico e queixas organizados para todas as especialidades.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -25,8 +37,17 @@ export const Route = createFileRoute("/alunos/$id_/anamnese")({
 });
 
 const sections: { key: keyof AnamnesisDraft; label: string; hint: string; required?: boolean }[] = [
-  { key: "mainComplaint", label: "Queixa principal", hint: "O que motivou a procura, nas palavras da família ou escola", required: true },
-  { key: "referral", label: "Encaminhamento", hint: "Quem encaminhou: escola, família, outro profissional" },
+  {
+    key: "mainComplaint",
+    label: "Queixa principal",
+    hint: "O que motivou a procura, nas palavras da família ou escola",
+    required: true,
+  },
+  {
+    key: "referral",
+    label: "Encaminhamento",
+    hint: "Quem encaminhou: escola, família, outro profissional",
+  },
   { key: "gestation", label: "Gestação e nascimento", hint: "Informações relatadas pela família" },
   { key: "development", label: "Desenvolvimento", hint: "Marcos motores, fala, sono, alimentação" },
   { key: "health", label: "Saúde", hint: "Acompanhamentos, medicações relatadas" },
@@ -43,23 +64,51 @@ function AnamnesisPage() {
   const student = students.find((s) => s.id === id);
   const existing = anamneses.find((a) => a.studentId === id);
   const [draft, setDraft] = useState<AnamnesisDraft>(() => {
-    if (existing) { const { updatedAt: _u, ...rest } = existing; return rest; }
-    return { studentId: id, specialty: "Neuropsicopedagogia", mainComplaint: "", referral: "", gestation: "", development: "", health: "", family: "", school: "", expectations: "" };
+    if (existing) {
+      const { updatedAt: _u, ...rest } = existing;
+      return rest;
+    }
+    return {
+      studentId: id,
+      specialty: "Neuropsicopedagogia",
+      mainComplaint: "",
+      referral: "",
+      gestation: "",
+      development: "",
+      health: "",
+      family: "",
+      school: "",
+      expectations: "",
+    };
   });
   const [error, setError] = useState("");
-  if (!student) return <main className="page"><p>Aluno não encontrado.</p></main>;
+  if (!student)
+    return (
+      <main className="page">
+        <p>Aluno não encontrado.</p>
+      </main>
+    );
 
   return (
     <main className="page">
       <BackToProfile id={id} />
       <div className="page-heading">
         <div>
-          <div className="eyebrow"><ClipboardList size={15} /> ANAMNESE MULTIDISCIPLINAR</div>
+          <div className="eyebrow">
+            <ClipboardList size={15} /> ANAMNESE MULTIDISCIPLINAR
+          </div>
           <h1>{student.name}</h1>
-          <p>{existing ? `Última atualização em ${formatDate(existing.updatedAt)}` : "Nenhuma anamnese registrada ainda."}</p>
+          <p>
+            {existing
+              ? `Última atualização em ${formatDate(existing.updatedAt)}`
+              : "Nenhuma anamnese registrada ainda."}
+          </p>
         </div>
       </div>
-      <div className="demo-note"><Info /> Registro de histórico relatado. Não gera diagnósticos e não é guardado permanentemente.</div>
+      <div className="demo-note">
+        <Info /> Registro de histórico relatado. Não gera diagnósticos e não é guardado
+        permanentemente.
+      </div>
       <form
         className="form-section"
         onSubmit={(e) => {
@@ -74,16 +123,39 @@ function AnamnesisPage() {
       >
         <div className="form-grid">
           <Field label="Especialidade responsável">
-            <Select value={draft.specialty} onValueChange={(v) => setDraft({ ...draft, specialty: v as Specialty })}>
-              <SelectTrigger className="bg-card" aria-label="Especialidade"><SelectValue /></SelectTrigger>
-              <SelectContent>{specialties.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+            <Select
+              value={draft.specialty}
+              onValueChange={(v) => setDraft({ ...draft, specialty: v as Specialty })}
+            >
+              <SelectTrigger className="bg-card" aria-label="Especialidade">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {specialties.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
             </Select>
           </Field>
           {sections.map((s) => (
-            <TextField key={s.key} id={`an-${s.key}`} label={s.label} hint={s.hint} required={s.required} value={String(draft[s.key])} onChange={(v) => setDraft({ ...draft, [s.key]: v })} />
+            <TextField
+              key={s.key}
+              id={`an-${s.key}`}
+              label={s.label}
+              hint={s.hint}
+              required={s.required}
+              value={String(draft[s.key])}
+              onChange={(v) => setDraft({ ...draft, [s.key]: v })}
+            />
           ))}
         </div>
-        {error ? <p className="ai-error" role="alert">{error}</p> : null}
+        {error ? (
+          <p className="ai-error" role="alert">
+            {error}
+          </p>
+        ) : null}
         <div className="form-actions">
           <Button type="submit">Salvar anamnese</Button>
         </div>

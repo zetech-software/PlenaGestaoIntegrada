@@ -1,5 +1,12 @@
 import type { Session } from "@/types/session";
-const s = (id: string, studentId: string, date: string, start: string, type: string, status: Session["status"]): Session => ({ id, studentId, date, start, duration: 50, type, status });
+const s = (
+  id: string,
+  studentId: string,
+  date: string,
+  start: string,
+  type: string,
+  status: Session["status"],
+): Session => ({ id, studentId, date, start, duration: 50, type, status });
 export const demoSessions: Session[] = [
   s("s1", "1", "2026-11-16", "08:30", "Atendimento individual", "Realizado"),
   s("s2", "5", "2026-11-16", "14:00", "Atendimento individual", "Realizado"),

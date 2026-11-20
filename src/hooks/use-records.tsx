@@ -17,8 +17,16 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
   const value: Ctx = {
     anamneses,
     records,
-    saveAnamnesis(d) { const r = service.saveAnamnesis(d); setAnamneses(service.listAnamneses()); return r; },
-    addRecord(d) { const r = service.addRecord(d); setRecords(service.listRecords()); return r; },
+    saveAnamnesis(d) {
+      const r = service.saveAnamnesis(d);
+      setAnamneses(service.listAnamneses());
+      return r;
+    },
+    addRecord(d) {
+      const r = service.addRecord(d);
+      setRecords(service.listRecords());
+      return r;
+    },
   };
   return <RecordContext.Provider value={value}>{children}</RecordContext.Provider>;
 }

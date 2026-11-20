@@ -9,7 +9,9 @@ export function endTime(session: Pick<Session, "start" | "duration">) {
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 export function sessionsOn(sessions: Session[], date: string) {
-  return sessions.filter((x) => x.date === date).sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+  return sessions
+    .filter((x) => x.date === date)
+    .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
 }
 /** Segunda a sábado da semana que contém a data. */
 export function weekDays(date: string) {

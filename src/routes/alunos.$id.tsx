@@ -167,7 +167,8 @@ function StudentProfile() {
       </p>
       <div className="demo-note mt-6 no-print">
         <Info />
-        Perfil cadastral demonstrativo. Anamnese e prontuário ficam nos botões acima. Os registros são demonstrativos e não ficam guardados.
+        Perfil cadastral demonstrativo. Anamnese e prontuário ficam nos botões acima. Os registros
+        são demonstrativos e não ficam guardados.
       </div>
       <DemoFooter />
     </main>

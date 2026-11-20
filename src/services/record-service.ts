@@ -12,13 +12,17 @@ export function validateAnamnesis(draft: AnamnesisDraft) {
 export function validateRecord(draft: RecordDraft) {
   if (!draft.date) return "Informe a data da sessão.";
   if (draft.date > demoDate) return "Não é possível registrar uma sessão futura.";
-  if (draft.objectives.trim().length < MIN_TEXT) return `Descreva os objetivos com pelo menos ${MIN_TEXT} caracteres.`;
-  if (draft.observations.trim().length < MIN_TEXT) return `Descreva as observações com pelo menos ${MIN_TEXT} caracteres.`;
+  if (draft.objectives.trim().length < MIN_TEXT)
+    return `Descreva os objetivos com pelo menos ${MIN_TEXT} caracteres.`;
+  if (draft.observations.trim().length < MIN_TEXT)
+    return `Descreva as observações com pelo menos ${MIN_TEXT} caracteres.`;
   return null;
 }
 /** Mais recente primeiro. */
 export function recordsFor(records: RecordEntry[], studentId: string) {
-  return records.filter((r) => r.studentId === studentId).sort((a, b) => b.date.localeCompare(a.date));
+  return records
+    .filter((r) => r.studentId === studentId)
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 export function evolutionSummary(records: RecordEntry[]) {
   return {
@@ -35,8 +39,12 @@ export class DemoRecordService {
     this.anamneses = anamneses.map((a) => ({ ...a }));
     this.records = records.map((r) => ({ ...r }));
   }
-  listAnamneses() { return this.anamneses.map((a) => ({ ...a })); }
-  listRecords() { return this.records.map((r) => ({ ...r })); }
+  listAnamneses() {
+    return this.anamneses.map((a) => ({ ...a }));
+  }
+  listRecords() {
+    return this.records.map((r) => ({ ...r }));
+  }
   saveAnamnesis(draft: AnamnesisDraft) {
     const error = validateAnamnesis(draft);
     if (error) throw new Error(error);

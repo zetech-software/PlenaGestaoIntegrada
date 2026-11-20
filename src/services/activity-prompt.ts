@@ -14,7 +14,8 @@ export function validateActivityRequest(input: ActivityRequest): string | null {
   const goals = input.goals.trim();
   if (observations.length < ACTIVITY_LIMITS.min)
     return "Descreva as observações com pelo menos 10 caracteres.";
-  if (goals.length < ACTIVITY_LIMITS.min) return "Descreva os objetivos com pelo menos 10 caracteres.";
+  if (goals.length < ACTIVITY_LIMITS.min)
+    return "Descreva os objetivos com pelo menos 10 caracteres.";
   if (observations.length > ACTIVITY_LIMITS.max || goals.length > ACTIVITY_LIMITS.max)
     return "Cada campo pode ter no máximo 2000 caracteres.";
   return null;

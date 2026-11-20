@@ -11,18 +11,43 @@ export function BackToProfile({ id }: { id: string }) {
     </Link>
   );
 }
-export function TextField({ id, label, value, onChange, required, hint }: { id: string; label: string; value: string; onChange: (v: string) => void; required?: boolean | undefined; hint?: string | undefined }) {
+export function TextField({
+  id,
+  label,
+  value,
+  onChange,
+  required,
+  hint,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean | undefined;
+  hint?: string | undefined;
+}) {
   return (
     <div className="form-field full">
       <label htmlFor={id}>
         {label}
         {required ? <span className="text-primary"> *</span> : null}
       </label>
-      <Textarea id={id} className="bg-card" rows={3} value={value} placeholder={hint} onChange={(e) => onChange(e.target.value)} />
+      <Textarea
+        id={id}
+        className="bg-card"
+        rows={3}
+        value={value}
+        placeholder={hint}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 }
-const tone: Record<Evolution, string> = { "Avançou": "", "Estável": "info", "Precisa de atenção": "warm" };
+const tone: Record<Evolution, string> = {
+  Avançou: "",
+  Estável: "info",
+  "Precisa de atenção": "warm",
+};
 export function EvolutionBadge({ value }: { value: Evolution }) {
   return <span className={`status ${tone[value]}`}>{value}</span>;
 }
