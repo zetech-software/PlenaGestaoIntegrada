@@ -57,6 +57,7 @@
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.
 
 ## Plataforma (nov/2026)
-- [ ] Relatório receita/custo/margem por plano no Dashboard
-- [ ] Cobrança integrada (teste) com vencimento automático e lembretes
+- [x] Relatório receita/custo/margem por plano no Dashboard
+- [x] Cobrança integrada (teste) com renovação automática
+- [ ] Lembretes de vencimento por e-mail (aguarda domínio de e-mail)
 - [ ] Cadastrar clínica nova com convite real (aguarda nome/e-mail)

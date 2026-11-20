@@ -113,12 +113,12 @@ describe("cabeçalhos de segurança", () => {
     expect(script).not.toContain("unsafe-eval");
     expect(script).not.toContain("*");
   });
-  it("conexões do navegador só para o próprio site e o Supabase", () => {
+  it("conexões do navegador só para o próprio site, o Supabase e a cobrança", () => {
     const full = securityHeaders(base)["Content-Security-Policy-Report-Only"] ?? "";
     expect(full).toContain("connect-src 'self' https://proj.supabase.co wss://proj.supabase.co");
     expect(
       securityHeaders({ ...base, supabaseUrl: undefined })["Content-Security-Policy-Report-Only"],
-    ).toContain("connect-src 'self';");
+    ).toContain("connect-src 'self' https://*.paddle.com;");
   });
   it("HSTS e upgrade-insecure-requests só em produção", () => {
     const prod = securityHeaders(base);

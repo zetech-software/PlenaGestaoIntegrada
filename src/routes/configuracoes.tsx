@@ -7,6 +7,7 @@ export const Route = createFileRoute("/configuracoes")({
 const tabs = [
   { to: "/configuracoes", label: "Cadastro da clínica", exact: true },
   { to: "/configuracoes/logo", label: "Logo", exact: false },
+  { to: "/configuracoes/assinatura", label: "Assinatura", exact: false },
 ] as const;
 
 function SettingsLayout() {

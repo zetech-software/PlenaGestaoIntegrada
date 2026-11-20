@@ -24,12 +24,14 @@ import { Route as AlunosIndexRouteImport } from './routes/alunos.index'
 import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
+import { Route as ConfiguracoesAssinaturaRouteImport } from './routes/configuracoes.assinatura'
 import { Route as ConfiguracoesLogoRouteImport } from './routes/configuracoes.logo'
 import { Route as IntervencoesIndexRouteImport } from './routes/intervencoes.index'
 import { Route as IntervencoesIdRouteImport } from './routes/intervencoes.$id'
 import { Route as IntervencoesNovoRouteImport } from './routes/intervencoes.novo'
 import { Route as AlunosIdAnamneseRouteImport } from './routes/alunos.$id_.anamnese'
 import { Route as AlunosIdProntuarioRouteImport } from './routes/alunos.$id_.prontuario'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,6 +108,11 @@ const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ConfiguracoesRoute,
 } as any)
+const ConfiguracoesAssinaturaRoute = ConfiguracoesAssinaturaRouteImport.update({
+  id: '/assinatura',
+  path: '/assinatura',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
 const ConfiguracoesLogoRoute = ConfiguracoesLogoRouteImport.update({
   id: '/logo',
   path: '/logo',
@@ -136,6 +143,12 @@ const AlunosIdProntuarioRoute = AlunosIdProntuarioRouteImport.update({
   path: '/$id/prontuario',
   getParentRoute: () => AlunosRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
@@ -159,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/intervencoes/': typeof IntervencoesIndexRoute
   '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -171,6 +186,7 @@ export interface FileRoutesByTo {
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
@@ -179,6 +195,7 @@ export interface FileRoutesByTo {
   '/intervencoes': typeof IntervencoesIndexRoute
   '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -195,6 +212,7 @@ export interface FileRoutesById {
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
@@ -203,6 +221,7 @@ export interface FileRoutesById {
   '/intervencoes/': typeof IntervencoesIndexRoute
   '/alunos/$id_/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id_/prontuario': typeof AlunosIdProntuarioRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,6 +239,7 @@ export interface FileRouteTypes {
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/configuracoes/assinatura'
     | '/configuracoes/logo'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
@@ -228,6 +248,7 @@ export interface FileRouteTypes {
     | '/intervencoes/'
     | '/alunos/$id/anamnese'
     | '/alunos/$id/prontuario'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -240,6 +261,7 @@ export interface FileRouteTypes {
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/configuracoes/assinatura'
     | '/configuracoes/logo'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
@@ -248,6 +270,7 @@ export interface FileRouteTypes {
     | '/intervencoes'
     | '/alunos/$id/anamnese'
     | '/alunos/$id/prontuario'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -263,6 +286,7 @@ export interface FileRouteTypes {
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/configuracoes/assinatura'
     | '/configuracoes/logo'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
@@ -271,6 +295,7 @@ export interface FileRouteTypes {
     | '/intervencoes/'
     | '/alunos/$id_/anamnese'
     | '/alunos/$id_/prontuario'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -285,6 +310,7 @@ export interface RootRouteChildren {
   ProntuariosRoute: typeof ProntuariosRoute
   RelatoriosRoute: typeof RelatoriosRoute
   UsuariosRoute: typeof UsuariosRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,6 +420,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesIndexRouteImport
       parentRoute: typeof ConfiguracoesRoute
     }
+    '/configuracoes/assinatura': {
+      id: '/configuracoes/assinatura'
+      path: '/assinatura'
+      fullPath: '/configuracoes/assinatura'
+      preLoaderRoute: typeof ConfiguracoesAssinaturaRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
     '/configuracoes/logo': {
       id: '/configuracoes/logo'
       path: '/logo'
@@ -436,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunosIdProntuarioRouteImport
       parentRoute: typeof AlunosRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -459,11 +499,13 @@ const AlunosRouteWithChildren =
   AlunosRoute._addFileChildren(AlunosRouteChildren)
 
 interface ConfiguracoesRouteChildren {
+  ConfiguracoesAssinaturaRoute: typeof ConfiguracoesAssinaturaRoute
   ConfiguracoesLogoRoute: typeof ConfiguracoesLogoRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
 }
 
 const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
+  ConfiguracoesAssinaturaRoute: ConfiguracoesAssinaturaRoute,
   ConfiguracoesLogoRoute: ConfiguracoesLogoRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
 }
@@ -500,6 +542,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProntuariosRoute: ProntuariosRoute,
   RelatoriosRoute: RelatoriosRoute,
   UsuariosRoute: UsuariosRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

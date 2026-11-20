@@ -70,10 +70,11 @@ export function baselineCsp(frameAncestors: string): string {
 export function fullCsp(
   o: Pick<HeaderOptions, "nonce" | "supabaseUrl" | "production"> & { frameAncestors: string },
 ): string {
-  const connect = ["'self'", ...supabaseOrigins(o.supabaseUrl)].join(" ");
+  const connect = ["'self'", ...supabaseOrigins(o.supabaseUrl), "https://*.paddle.com"].join(" ");
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${o.nonce}'`,
+    `script-src 'self' 'nonce-${o.nonce}' https://cdn.paddle.com`,
+    "frame-src https://*.paddle.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: blob:",

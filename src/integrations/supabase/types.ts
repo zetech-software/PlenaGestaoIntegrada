@@ -692,6 +692,7 @@ export type Database = {
           amount_cents: number
           created_at: string
           created_by: string | null
+          external_id: string | null
           id: string
           method: string
           notes: string
@@ -706,6 +707,7 @@ export type Database = {
           amount_cents: number
           created_at?: string
           created_by?: string | null
+          external_id?: string | null
           id?: string
           method: string
           notes?: string
@@ -720,6 +722,7 @@ export type Database = {
           amount_cents?: number
           created_at?: string
           created_by?: string | null
+          external_id?: string | null
           id?: string
           method?: string
           notes?: string
@@ -769,6 +772,9 @@ export type Database = {
           registration: string
           seats: number
           status: string
+          subscription_env: string | null
+          subscription_id: string | null
+          subscription_status: string | null
           tier_id: string | null
           updated_at: string
           valid_until: string | null
@@ -787,6 +793,9 @@ export type Database = {
           registration?: string
           seats?: number
           status?: string
+          subscription_env?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
           tier_id?: string | null
           updated_at?: string
           valid_until?: string | null
@@ -805,6 +814,9 @@ export type Database = {
           registration?: string
           seats?: number
           status?: string
+          subscription_env?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
           tier_id?: string | null
           updated_at?: string
           valid_until?: string | null
