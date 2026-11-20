@@ -43,6 +43,19 @@ A integração contínua (`.github/workflows/ci.yml`) roda esses quatro comandos
 - `AI_ALLOW_DEMO_STUDENTS`: `true` libera a IA para alunos de demonstração em memória (sem consentimento
   verificável no servidor). Deixe desligada em produção. Veja `AGENTS.md`.
 
+## Cabeçalhos de segurança
+
+O servidor (`src/server.ts`) acrescenta cabeçalhos a toda resposta: `X-Content-Type-Options`, `Referrer-Policy`,
+`Permissions-Policy`, HSTS (só em produção) e uma política de conteúdo (CSP) com um nonce novo por requisição.
+Sempre valem `object-src 'none'`, `base-uri`, `form-action` e `frame-ancestors` (só o próprio site e os editores
+do Lovable podem embutir a página). A política completa (scripts só com nonce, conexões só ao próprio site e ao
+Supabase) começa **só relatando** no console do navegador.
+
+- `CSP_ENFORCE=true`: a política completa passa a **valer**. Ligue depois de abrir o app publicado, percorrer as
+  telas com o console aberto e não ver nenhum aviso de "Content Security Policy".
+- `CSP_FRAME_ANCESTORS`: lista (separada por espaço) de quem pode embutir a página. Só aceita `'self'`, `'none'`
+  e endereços `https://...`; o resto é ignorado.
+
 ## Arquitetura
 
 As regras de arquitetura do projeto estão em [`AGENTS.md`](./AGENTS.md). Planejamento por fases em
