@@ -44,8 +44,9 @@ const monthData = {
 };
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 export function Dashboard() {
-  const { students, isLoading } = useStudents();
-  const { sessions } = useSessions();
+  const { students, isLoading: studentsLoading } = useStudents();
+  const { sessions, isLoading: sessionsLoading } = useSessions();
+  const isLoading = studentsLoading || sessionsLoading;
   const appointments = sessionsOn(sessions, demoDate).filter((x) => x.status !== "Cancelado");
   const confirmed = appointments.filter(
     (x) => x.status === "Confirmado" || x.status === "Realizado",

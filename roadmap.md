@@ -22,4 +22,9 @@
 - [x] Relatórios (frequência por terapeuta, alunos e planos) com exportação em PDF com a marca Plena
 - [x] Painel inicial com total de alunos, sessões pendentes e frequência por terapeuta
 
+# Sexta fase — Dados persistentes (em andamento)
+- [x] Serviços de alunos, sessões, registros e planos assíncronos, com carregamento e erro nas telas
+- [ ] Tabelas e regras de acesso (RLS) no Lovable — ver `docs/fase-1-banco.md`
+- [ ] Adaptadores Supabase para cada serviço
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.

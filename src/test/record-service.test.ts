@@ -13,24 +13,29 @@ const draft: RecordDraft = {
   nextSteps: "",
 };
 describe("anamnese e prontuário", () => {
-  it("anamnese exige queixa principal", () => {
+  it("anamnese exige queixa principal", async () => {
     const s = new DemoRecordService([], []);
-    expect(() => s.saveAnamnesis({ ...demoAnamneses[0]!, mainComplaint: "curta" })).toThrow();
+    await expect(
+      s.saveAnamnesis({ ...demoAnamneses[0]!, mainComplaint: "curta" }),
+    ).rejects.toThrow();
   });
-  it("salvar anamnese substitui a anterior do mesmo aluno", () => {
+  it("salvar anamnese substitui a anterior do mesmo aluno", async () => {
     const s = new DemoRecordService(demoAnamneses, []);
-    s.saveAnamnesis({ ...demoAnamneses[0]!, mainComplaint: "Nova queixa principal registrada" });
-    expect(s.listAnamneses().filter((a) => a.studentId === "1")).toHaveLength(1);
+    await s.saveAnamnesis({
+      ...demoAnamneses[0]!,
+      mainComplaint: "Nova queixa principal registrada",
+    });
+    expect((await s.listAnamneses()).filter((a) => a.studentId === "1")).toHaveLength(1);
   });
   it("não aceita sessão com data futura", () => {
     expect(validateRecord({ ...draft, date: "2026-11-21" })).not.toBeNull();
     expect(validateRecord(draft)).toBeNull();
   });
-  it("prontuário lista o registro mais recente primeiro e não persiste", () => {
+  it("prontuário lista o registro mais recente primeiro e não persiste", async () => {
     expect(recordsFor(demoRecords, "1")[0]?.id).toBe("r2");
     const s = new DemoRecordService(demoAnamneses, demoRecords);
-    s.addRecord(draft);
-    expect(new DemoRecordService(demoAnamneses, demoRecords).listRecords()).toHaveLength(
+    await s.addRecord(draft);
+    expect(await new DemoRecordService(demoAnamneses, demoRecords).listRecords()).toHaveLength(
       demoRecords.length,
     );
   });

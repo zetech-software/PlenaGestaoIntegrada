@@ -54,10 +54,11 @@ const kindLabels: Record<Kind, string> = {
 const pct = (value: number | null) => (value === null ? "—" : `${value}%`);
 
 function ReportsPage() {
-  const { students } = useStudents();
-  const { sessions } = useSessions();
-  const { records } = useRecords();
-  const { plans } = usePlans();
+  const { students, isLoading: studentsLoading } = useStudents();
+  const { sessions, isLoading: sessionsLoading } = useSessions();
+  const { records, isLoading: recordsLoading } = useRecords();
+  const { plans, isLoading: plansLoading } = usePlans();
+  const isLoading = studentsLoading || sessionsLoading || recordsLoading || plansLoading;
   const [kind, setKind] = useState<Kind>("frequencia");
   const [period, setPeriod] = useState<Period>({ from: "2026-11-01", to: "2026-11-30" });
   const invalid = Boolean(period.from && period.to && period.to < period.from);
@@ -75,7 +76,7 @@ function ReportsPage() {
           <p>Números para acompanhar a equipe e cada jornada.</p>
         </div>
         <div className="heading-actions no-print">
-          <Button variant="outline" disabled={invalid} onClick={() => window.print()}>
+          <Button variant="outline" disabled={invalid || isLoading} onClick={() => window.print()}>
             <Printer /> Exportar PDF
           </Button>
         </div>
@@ -119,13 +120,21 @@ function ReportsPage() {
         <h2 className="report-title">
           {kindLabels[kind]} <small>· {detail}</small>
         </h2>
-        {kind === "frequencia" ? (
-          <TherapistTable rows={attendanceByTherapist(sessions, students, period)} />
-        ) : null}
-        {kind === "alunos" ? (
-          <StudentsTable rows={studentReport(students, sessions, records, plans, period)} />
-        ) : null}
-        {kind === "planos" ? <PlansTable rows={planReport(plans, students, period)} /> : null}
+        {isLoading ? (
+          <p role="status" aria-busy="true">
+            Carregando relatório...
+          </p>
+        ) : (
+          <>
+            {kind === "frequencia" ? (
+              <TherapistTable rows={attendanceByTherapist(sessions, students, period)} />
+            ) : null}
+            {kind === "alunos" ? (
+              <StudentsTable rows={studentReport(students, sessions, records, plans, period)} />
+            ) : null}
+            {kind === "planos" ? <PlansTable rows={planReport(plans, students, period)} /> : null}
+          </>
+        )}
         <p className="report-note">
           Frequência = realizadas ÷ (realizadas + faltas). Sessões canceladas e pendentes não entram
           no cálculo.

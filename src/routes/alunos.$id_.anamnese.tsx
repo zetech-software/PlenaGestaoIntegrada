@@ -57,6 +57,18 @@ const sections: { key: keyof AnamnesisDraft; label: string; hint: string; requir
 ];
 
 function AnamnesisPage() {
+  const { isLoading: studentsLoading } = useStudents();
+  const { isLoading: recordsLoading } = useRecords();
+  // O formulário parte da anamnese já salva, então só abre depois que os dados chegam.
+  if (studentsLoading || recordsLoading)
+    return (
+      <main className="page" aria-busy="true">
+        <p role="status">Carregando anamnese...</p>
+      </main>
+    );
+  return <AnamnesisForm />;
+}
+function AnamnesisForm() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { students } = useStudents();
@@ -111,11 +123,11 @@ function AnamnesisPage() {
       </div>
       <form
         className="form-section"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           try {
-            saveAnamnesis(draft);
-            void navigate({ to: "/alunos/$id", params: { id } });
+            await saveAnamnesis(draft);
+            await navigate({ to: "/alunos/$id", params: { id } });
           } catch (err) {
             setError(err instanceof Error ? err.message : "Não foi possível salvar.");
           }

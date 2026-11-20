@@ -34,3 +34,9 @@ export type PlanDraft = Omit<InterventionPlan, "id" | "status" | "goals"> & {
   status: PlanStatus;
   goals: GoalDraft[];
 };
+export interface PlanService {
+  list(): Promise<InterventionPlan[]>;
+  create(draft: PlanDraft): Promise<InterventionPlan>;
+  setStatus(id: string, status: PlanStatus): Promise<void>;
+  setGoalProgress(planId: string, goalId: string, progress: number): Promise<void>;
+}

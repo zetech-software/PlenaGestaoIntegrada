@@ -37,3 +37,9 @@ export interface RecordEntry {
   nextSteps: string;
 }
 export type RecordDraft = Omit<RecordEntry, "id">;
+export interface RecordService {
+  listAnamneses(): Promise<Anamnesis[]>;
+  listRecords(): Promise<RecordEntry[]>;
+  saveAnamnesis(draft: AnamnesisDraft): Promise<Anamnesis>;
+  addRecord(draft: RecordDraft): Promise<RecordEntry>;
+}

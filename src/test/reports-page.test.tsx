@@ -36,6 +36,18 @@ describe("página de relatórios", () => {
     expect(screen.getAllByText("Plena Gestão Integrada").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: /Exportar PDF/ })).toBeTruthy();
   });
+  it("mostra carregamento e bloqueia a exportação até os dados chegarem", async () => {
+    renderReports();
+    expect(screen.getByRole("status").textContent).toMatch(/Carregando/);
+    expect(
+      (screen.getByRole("button", { name: /Exportar PDF/ }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    await waitFor(() => expect(screen.getAllByText("Marina Duarte").length).toBeGreaterThan(0));
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(
+      (screen.getByRole("button", { name: /Exportar PDF/ }) as HTMLButtonElement).disabled,
+    ).toBe(false);
+  });
   it("bloqueia a exportação com período inválido", async () => {
     renderReports();
     await waitFor(() => expect(screen.getAllByText("Marina Duarte").length).toBeGreaterThan(0));

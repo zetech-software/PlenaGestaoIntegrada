@@ -9,9 +9,9 @@ import {
 import { demoSessions } from "@/data/demo-sessions";
 
 describe("agenda demonstrativa", () => {
-  it("bloqueia horário sobreposto no mesmo dia", () => {
+  it("bloqueia horário sobreposto no mesmo dia", async () => {
     const service = new DemoSessionService(demoSessions);
-    expect(() =>
+    await expect(
       service.create({
         studentId: "5",
         therapistId: "t3",
@@ -20,7 +20,7 @@ describe("agenda demonstrativa", () => {
         duration: 50,
         type: "x",
       }),
-    ).toThrow();
+    ).rejects.toThrow();
   });
   it("permite reutilizar horário de sessão cancelada", () => {
     expect(
@@ -34,19 +34,21 @@ describe("agenda demonstrativa", () => {
       }),
     ).toBeUndefined();
   });
-  it("novos agendamentos começam pendentes e não persistem", () => {
+  it("novos agendamentos começam pendentes e não persistem", async () => {
     const service = new DemoSessionService(demoSessions);
     expect(
-      service.create({
-        studentId: "5",
-        therapistId: "t3",
-        date: "2026-11-20",
-        start: "17:00",
-        duration: 50,
-        type: "x",
-      }).status,
+      (
+        await service.create({
+          studentId: "5",
+          therapistId: "t3",
+          date: "2026-11-20",
+          start: "17:00",
+          duration: 50,
+          type: "x",
+        })
+      ).status,
     ).toBe("Pendente");
-    expect(new DemoSessionService(demoSessions).list()).toHaveLength(demoSessions.length);
+    expect(await new DemoSessionService(demoSessions).list()).toHaveLength(demoSessions.length);
   });
   it("frequência considera realizados e faltas", () => {
     expect(

@@ -41,8 +41,9 @@ export const Route = createFileRoute("/intervencoes/")({
 const statusTone: Record<PlanStatus, string> = { Rascunho: "muted", Ativo: "", Concluído: "info" };
 
 function PlansPage() {
-  const { students } = useStudents();
-  const { plans } = usePlans();
+  const { students, isLoading: studentsLoading } = useStudents();
+  const { plans, isLoading: plansLoading } = usePlans();
+  const isLoading = studentsLoading || plansLoading;
   const [kind, setKind] = useState<PlanKind | "Todos">("Todos");
   const [status, setStatus] = useState<PlanStatus | "Todos">("Todos");
   const filtered = filterPlans(plans, kind, status);
@@ -90,7 +91,11 @@ function PlansPage() {
           </SelectContent>
         </Select>
       </div>
-      {filtered.length === 0 ? (
+      {isLoading ? (
+        <p role="status" aria-busy="true">
+          Carregando planos...
+        </p>
+      ) : filtered.length === 0 ? (
         <div className="table-wrap empty-state">
           <Target size={30} />
           <h2>Nenhum plano encontrado</h2>

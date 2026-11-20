@@ -1,4 +1,4 @@
-import type { Session, SessionDraft, SessionStatus } from "@/types/session";
+import type { Session, SessionDraft, SessionService, SessionStatus } from "@/types/session";
 
 export function toMinutes(time: string) {
   const [h = "0", m = "0"] = time.split(":");
@@ -45,23 +45,24 @@ export function attendanceRate(sessions: Session[]) {
   const missed = sessions.filter((x) => x.status === "Faltou").length;
   return done + missed === 0 ? null : Math.round((done / (done + missed)) * 100);
 }
-export class DemoSessionService {
+// Troque por um adaptador Supabase/REST que implemente SessionService quando o banco existir.
+export class DemoSessionService implements SessionService {
   private items: Session[];
   private seq = 0;
   constructor(seed: Session[]) {
     this.items = seed.map((x) => ({ ...x }));
   }
-  list() {
+  async list() {
     return this.items.map((x) => ({ ...x }));
   }
-  create(draft: SessionDraft): Session {
+  async create(draft: SessionDraft): Promise<Session> {
     const conflict = findConflict(this.items, draft);
     if (conflict) throw new Error(`Já existe um atendimento às ${conflict.start} neste dia.`);
     const session: Session = { ...draft, id: `novo-${++this.seq}`, status: "Pendente" };
     this.items.push(session);
     return { ...session };
   }
-  setStatus(id: string, status: SessionStatus) {
+  async setStatus(id: string, status: SessionStatus) {
     this.items = this.items.map((x) => (x.id === id ? { ...x, status } : x));
   }
 }
