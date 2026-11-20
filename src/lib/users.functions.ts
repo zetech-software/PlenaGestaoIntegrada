@@ -1,13 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { AppRole } from "@/services/permissions";
+import type { ClinicRole } from "@/services/permissions";
 
-const roles: AppRole[] = ["admin", "terapeuta", "clinica"];
+const roles: ClinicRole[] = ["admin", "terapeuta", "clinica"];
 interface NewUser {
   email: string;
   fullName: string;
   password: string;
-  role: AppRole;
+  role: ClinicRole;
 }
 
 export const createAppUser = createServerFn({ method: "POST" })

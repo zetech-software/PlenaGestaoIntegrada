@@ -40,4 +40,9 @@
 - [ ] Tabelas e regras de acesso no Lovable — ver `docs/fase-3-rotina.md`
 - [ ] Portal da família e salas (dependem do banco)
 
+# Nona fase — Painel da plataforma e multi-clínica (em andamento)
+- [x] Painel de clientes (clínica ou profissional autônomo) para o operador da plataforma, com separação de funções
+- [ ] Isolamento por clínica no banco (tenant) e criação do cliente com convite — ver `docs/fase-4-multi-clinica.md`
+- [ ] Contrato, termos de uso e regra de suporte (LGPD)
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.
