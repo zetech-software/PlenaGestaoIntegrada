@@ -641,6 +641,7 @@ export type Database = {
           annual_monthly_cents: number
           audience: string
           code: string
+          cost_cents: number
           created_at: string
           extra_seat_annual_cents: number
           extra_seat_cents: number
@@ -656,6 +657,7 @@ export type Database = {
           annual_monthly_cents: number
           audience: string
           code: string
+          cost_cents?: number
           created_at?: string
           extra_seat_annual_cents?: number
           extra_seat_cents?: number
@@ -671,6 +673,7 @@ export type Database = {
           annual_monthly_cents?: number
           audience?: string
           code?: string
+          cost_cents?: number
           created_at?: string
           extra_seat_annual_cents?: number
           extra_seat_cents?: number

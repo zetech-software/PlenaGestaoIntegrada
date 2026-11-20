@@ -29,6 +29,7 @@ export async function listTiers(): Promise<SubscriptionTier[]> {
     annualMonthlyCents: r.annual_monthly_cents,
     extraSeatCents: r.extra_seat_cents,
     extraSeatAnnualCents: r.extra_seat_annual_cents,
+    costCents: r.cost_cents,
   }));
 }
 export async function assignPlan(
@@ -61,6 +62,7 @@ export async function updateTier(t: SubscriptionTier) {
       annual_monthly_cents: t.annualMonthlyCents,
       extra_seat_cents: t.extraSeatCents,
       extra_seat_annual_cents: t.extraSeatAnnualCents,
+      cost_cents: t.costCents ?? 0,
     })
     .eq("id", t.id);
   if (error) throw new Error("Não foi possível salvar o plano.");

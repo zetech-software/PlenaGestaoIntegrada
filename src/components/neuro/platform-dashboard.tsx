@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tenant } from "@/types/tenant";
-import { daysLeft, validityState } from "@/services/billing-plans";
+import { daysLeft, formatBRL, revenueByTier, validityState, type BillingPlan, type SubscriptionTier } from "@/services/billing-plans";
 import { formatDate } from "@/services/student-service";
 
-export function PlatformDashboard({ tenants, today }: { tenants: Tenant[]; today: string }) {
+export function PlatformDashboard({ tenants, today, tiers = [], plans = [] }: { tenants: Tenant[]; today: string; tiers?: SubscriptionTier[]; plans?: BillingPlan[] }) {
+  const report = revenueByTier(tiers, tenants.map((t) => ({ ...t, planDays: plans.find((p) => p.id === t.planId)?.durationDays })));
+  const sum = report.reduce((a, r) => ({ revenue: a.revenue + r.revenue, cost: a.cost + r.cost, margin: a.margin + r.margin }), { revenue: 0, cost: 0, margin: 0 });
   const usage = useQuery({
     queryKey: ["tenant-seat-usage"],
     queryFn: async () => {
@@ -81,6 +83,27 @@ export function PlatformDashboard({ tenants, today }: { tenants: Tenant[]; today
             })}
           </ul>
         </div>
+      </div>
+      <div className="rounded-xl border bg-card p-4">
+        <h3 className="mb-3 font-medium text-foreground">Receita, custo e margem por plano (mensal)</h3>
+        <table className="w-full text-sm">
+          <thead className="text-left text-muted-foreground">
+            <tr><th className="py-1">Plano</th><th>Clientes</th><th>Receita</th><th>Custo</th><th>Margem</th></tr>
+          </thead>
+          <tbody className="divide-y">
+            {report.map((r) => (
+              <tr key={r.tier.id}>
+                <td className="py-2 text-foreground">{r.tier.name}</td><td>{r.clients}</td>
+                <td>{formatBRL(r.revenue)}</td><td>{formatBRL(r.cost)}</td>
+                <td className={r.margin < 0 ? "text-destructive" : "text-foreground"}>{formatBRL(r.margin)} ({r.marginPct}%)</td>
+              </tr>
+            ))}
+            <tr className="font-semibold">
+              <td className="py-2">Total</td><td></td><td>{formatBRL(sum.revenue)}</td><td>{formatBRL(sum.cost)}</td><td>{formatBRL(sum.margin)}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p className="mt-2 text-xs text-muted-foreground">Custo editável em cada plano (botão Editar em Planos e valores). Clientes suspensos não entram.</p>
       </div>
     </section>
   );

@@ -1,0 +1,1 @@
+alter table public.subscription_tiers add column cost_cents integer not null default 0 check (cost_cents >= 0);

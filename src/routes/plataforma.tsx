@@ -187,7 +187,7 @@ function PlatformPage() {
         Este painel não mostra dados de alunos nem de pacientes: o operador da plataforma só
         administra os clientes.
       </div>
-      {!isLoading && <PlatformDashboard tenants={tenants} today={today} />}
+      {!isLoading && <PlatformDashboard tenants={tenants} today={today} tiers={tiers} plans={plans} />}
       <div className="stats-grid" aria-busy={isLoading}>
         <article className="stat-card">
           <div className="stat-top">

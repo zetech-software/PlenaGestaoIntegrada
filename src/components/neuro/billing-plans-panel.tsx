@@ -38,6 +38,7 @@ function TierCard({ tier }: { tier: SubscriptionTier }) {
     annual: reais(tier.annualMonthlyCents),
     extra: reais(tier.extraSeatCents),
     extraAnnual: reais(tier.extraSeatAnnualCents),
+    cost: reais(tier.costCents ?? 0),
     min: String(tier.minSeats),
     max: tier.maxSeats === null ? "" : String(tier.maxSeats),
     included: String(tier.includedSeats),
@@ -51,6 +52,7 @@ function TierCard({ tier }: { tier: SubscriptionTier }) {
       annualMonthlyCents: parseBRL(f.annual),
       extraSeatCents: parseBRL(f.extra),
       extraSeatAnnualCents: parseBRL(f.extraAnnual),
+      costCents: parseBRL(f.cost),
       minSeats: Number(f.min),
       maxSeats: f.max.trim() === "" ? null : Number(f.max),
       includedSeats: Number(f.included),
@@ -60,6 +62,7 @@ function TierCard({ tier }: { tier: SubscriptionTier }) {
       next.annualMonthlyCents,
       next.extraSeatCents,
       next.extraSeatAnnualCents,
+      next.costCents ?? 0,
     ].some(Number.isNaN)
       ? "Valor inválido."
       : validateTier(next);
@@ -119,6 +122,7 @@ function TierCard({ tier }: { tier: SubscriptionTier }) {
           {field("min", "Mínimo de vagas")}
           {field("max", "Máximo de vagas", "vazio = sem limite")}
           {field("included", "Vagas incluídas no valor")}
+          {field("cost", "Custo mensal por cliente (R$)")}
           {error ? (
             <p role="alert" className="text-sm text-destructive">
               {error}

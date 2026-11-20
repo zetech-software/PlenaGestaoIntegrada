@@ -72,3 +72,16 @@ describe("cobrança e edição de planos", () => {
     expect(validateTier(clinica)).toBe("");
   });
 });
+
+import { revenueByTier } from "@/services/billing-plans";
+describe("revenueByTier", () => {
+  it("Multidisciplinar 20 vagas mensal com custo 100 dá margem 845", () => {
+    const [r] = revenueByTier([{ ...multi, costCents: 10000 }], [{ tierId: multi.id, seats: 20, status: "Ativo", planDays: 30 }]);
+    expect(r?.revenue).toBe(94500);
+    expect(r?.margin).toBe(84500);
+  });
+  it("cliente suspenso não entra na receita", () => {
+    const [r] = revenueByTier([multi], [{ tierId: multi.id, seats: 20, status: "Suspenso" }]);
+    expect(r?.revenue).toBe(0);
+  });
+});

@@ -55,3 +55,8 @@
 - [ ] Contrato, termos de uso e regra de suporte (LGPD)
 
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.
+
+## Plataforma (nov/2026)
+- [ ] Relatório receita/custo/margem por plano no Dashboard
+- [ ] Cobrança integrada (teste) com vencimento automático e lembretes
+- [ ] Cadastrar clínica nova com convite real (aguarda nome/e-mail)

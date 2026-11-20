@@ -58,6 +58,8 @@ export interface SubscriptionTier {
   annualMonthlyCents: number;
   extraSeatCents: number;
   extraSeatAnnualCents: number;
+  /** Custo mensal estimado por cliente (para margem). */
+  costCents?: number;
 }
 
 /** Mensagem de erro quando as vagas não cabem na faixa; "" quando estão dentro. */
@@ -124,3 +126,17 @@ export interface TenantPayment {
 }
 export const paymentMethods = ["Pix", "Boleto", "Cartão", "Transferência", "Dinheiro", "Estorno"] as const;
 export const paymentsTotal = (list: TenantPayment[]) => list.reduce((s, p) => s + p.amountCents, 0);
+
+/** Receita mensal, custo e margem por plano a partir dos clientes não suspensos. */
+export function revenueByTier(
+  tiers: SubscriptionTier[],
+  tenants: { tierId?: string | null; seats: number; status: string; planDays?: number }[],
+) {
+  return tiers.map((tier) => {
+    const list = tenants.filter((t) => t.tierId === tier.id && t.status !== "Suspenso");
+    const revenue = list.reduce((s, t) => s + tierMonthlyCents(tier, t.seats, isAnnualCycle(t.planDays ?? 30)), 0);
+    const cost = list.length * (tier.costCents ?? 0);
+    const margin = revenue - cost;
+    return { tier, clients: list.length, revenue, cost, margin, marginPct: revenue ? Math.round((margin / revenue) * 100) : 0 };
+  });
+}
