@@ -1,4 +1,5 @@
 <!-- LOVABLE:BEGIN -->
+
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
 > published git history — force pushing, or rebasing/amending/squashing commits
@@ -27,9 +28,11 @@ use the editor.
   `LOVABLE_API_KEY`. When Lovable does not provide one, users can bring their
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
+
 <!-- LOVABLE:END -->
 
 ## Application architecture
+
 - Keep the shared application shell and in-memory student provider around the root Outlet so navigation preserves a demo session without persistent storage.
 - Keep student types, fixture data, service adapters, hooks and visual components in separate modules; future REST adapters implement StudentService without changing the presentation layer.
 - Put demo filtering and date calculations in browser-safe service utilities and test them independently; do not add server logic for a demonstration-only delivery.
@@ -39,3 +42,4 @@ use the editor.
 - Access rules live in pure helpers in src/services/permissions.ts; roles and therapist-student links are stored in Lovable Cloud with RLS, and only a server function using the admin client (after a has_role check) creates accounts.
 - Planos de intervenção (PEI/PTI) e relatórios seguem o mesmo padrão em memória: tipos, dados fictícios, serviço puro testável e provider; o vínculo terapeuta–aluno dos relatórios e do painel vem de `src/data/demo-therapists.ts` até existir um serviço real. A exportação em PDF usa a impressão do navegador com `PrintHeader`/`PrintFooter` (marca Plena).
 - O operador da plataforma (perfil `plataforma`) só abre `/plataforma` e nunca recebe perfil clínico; o perfil não é atribuível pela tela de Usuários nem pela função que cria usuários (use `ClinicRole`, não `AppRole`, nesses pontos). Isolamento por clínica é regra de banco: toda tabela clínica tem `tenant_id` (default `current_tenant_id()`) e uma política restritiva por clínica ativa; clientes são criados só pela função `provisionTenant`, e `docs/rls/casos.sh` cobre esses casos.
+- A função de IA (`suggestActivities`) exige usuário de uma clínica ativa, confere o consentimento de IA no servidor (`has_active_consent`) e limita o uso por usuário e por clínica (`src/services/ai-access.ts`). Aluno com id que não é UUID (demonstração em memória) é recusado, porque o servidor não consegue conferir o consentimento dele. Para manter a demonstração, defina `AI_ALLOW_DEMO_STUDENTS=true` no ambiente do servidor; remova a chave quando os alunos vierem do banco.
