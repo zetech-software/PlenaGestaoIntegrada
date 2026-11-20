@@ -781,6 +781,7 @@ export type Database = {
           id: string
         }[]
       }
+      staff_sees_member: { Args: { _user_id: string }; Returns: boolean }
       tenant_is_active: { Args: never; Returns: boolean }
     }
     Enums: {

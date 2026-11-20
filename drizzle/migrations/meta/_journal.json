@@ -71,6 +71,13 @@
       "when": 1795195718592,
       "tag": "0009_endurecimento_funcoes_limites",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795195824214,
+      "tag": "0010_membro_clinica_para_equipe",
+      "breakpoints": true
     }
   ]
 }
