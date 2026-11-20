@@ -8,6 +8,13 @@
       "when": 1795183663355,
       "tag": "0000_user_roles_profiles_assignments",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795189752153,
+      "tag": "0001_fase1_dados_persistentes",
+      "breakpoints": true
     }
   ]
 }

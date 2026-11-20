@@ -14,6 +14,156 @@ export type Database = {
   }
   public: {
     Tables: {
+      anamneses: {
+        Row: {
+          created_at: string
+          development: string
+          expectations: string
+          family: string
+          gestation: string
+          health: string
+          id: string
+          main_complaint: string
+          referral: string
+          school: string
+          specialty: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          development?: string
+          expectations?: string
+          family?: string
+          gestation?: string
+          health?: string
+          id?: string
+          main_complaint: string
+          referral?: string
+          school?: string
+          specialty: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          development?: string
+          expectations?: string
+          family?: string
+          gestation?: string
+          health?: string
+          id?: string
+          main_complaint?: string
+          referral?: string
+          school?: string
+          specialty?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anamneses_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intervention_plans: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          review_date: string
+          specialty: string
+          start_date: string
+          status: string
+          student_id: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          review_date: string
+          specialty: string
+          start_date: string
+          status?: string
+          student_id: string
+          summary?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          review_date?: string
+          specialty?: string
+          start_date?: string
+          status?: string
+          student_id?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intervention_plans_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plan_goals: {
+        Row: {
+          created_at: string
+          deadline: string
+          description: string
+          id: string
+          plan_id: string
+          position: number
+          progress: number
+          strategy: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deadline: string
+          description: string
+          id?: string
+          plan_id: string
+          position?: number
+          progress?: number
+          strategy?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deadline?: string
+          description?: string
+          id?: string
+          plan_id?: string
+          position?: number
+          progress?: number
+          strategy?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_goals_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "intervention_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -35,23 +185,137 @@ export type Database = {
         }
         Relationships: []
       }
+      record_entries: {
+        Row: {
+          activities: string
+          created_at: string
+          date: string
+          evolution: string
+          id: string
+          next_steps: string
+          objectives: string
+          observations: string
+          specialty: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          activities?: string
+          created_at?: string
+          date: string
+          evolution: string
+          id?: string
+          next_steps?: string
+          objectives: string
+          observations: string
+          specialty: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          activities?: string
+          created_at?: string
+          date?: string
+          evolution?: string
+          id?: string
+          next_steps?: string
+          objectives?: string
+          observations?: string
+          specialty?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "record_entries_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions: {
+        Row: {
+          created_at: string
+          date: string
+          duration: number
+          id: string
+          start: string
+          status: string
+          student_id: string
+          therapist_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          duration: number
+          id?: string
+          start: string
+          status?: string
+          student_id: string
+          therapist_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration?: number
+          id?: string
+          start?: string
+          status?: string
+          student_id?: string
+          therapist_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_therapist_id_fkey"
+            columns: ["therapist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_assignments: {
         Row: {
           created_at: string
           student_id: string
+          student_ref: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
-          student_id: string
+          student_id?: string
+          student_ref?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           student_id?: string
+          student_ref?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "student_assignments_student_ref_fkey"
+            columns: ["student_ref"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "student_assignments_user_id_fkey"
             columns: ["user_id"]
@@ -60,6 +324,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      students: {
+        Row: {
+          birth_date: string
+          created_at: string
+          email: string
+          grade: string
+          guardian: string
+          id: string
+          name: string
+          notes: string
+          phone: string
+          relationship: string
+          school: string
+          start_date: string
+          status: string
+          tone: string
+          updated_at: string
+        }
+        Insert: {
+          birth_date: string
+          created_at?: string
+          email?: string
+          grade?: string
+          guardian?: string
+          id?: string
+          name: string
+          notes?: string
+          phone?: string
+          relationship?: string
+          school?: string
+          start_date?: string
+          status?: string
+          tone?: string
+          updated_at?: string
+        }
+        Update: {
+          birth_date?: string
+          created_at?: string
+          email?: string
+          grade?: string
+          guardian?: string
+          id?: string
+          name?: string
+          notes?: string
+          phone?: string
+          relationship?: string
+          school?: string
+          start_date?: string
+          status?: string
+          tone?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -84,6 +402,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_see_student: { Args: { _student_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -91,6 +410,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_staff: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "terapeuta" | "clinica"
