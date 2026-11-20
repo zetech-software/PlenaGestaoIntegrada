@@ -7,7 +7,6 @@ import {
   ClipboardList,
   CalendarDays,
   FileText,
-  ChartNoAxesCombined,
   Target,
   Settings,
   BookOpen,
@@ -15,13 +14,12 @@ import {
   PanelLeft,
   Search,
   X,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 const futureItems = [
-  { label: "Anamnese", icon: ClipboardList },
-  { label: "Prontuários", icon: FileText },
   { label: "Intervenções", icon: Target },
-  { label: "Evolução", icon: ChartNoAxesCombined },
   { label: "Calendário de provas", icon: BookOpen },
   { label: "Relatórios", icon: FileText },
   { label: "Configurações", icon: Settings },
@@ -32,8 +30,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [search, setSearch] = useState("");
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const navigate = useNavigate();
-  const isStudents = pathname.startsWith("/alunos");
+  const isStudents = pathname.startsWith("/alunos") && !/\/(anamnese|prontuario)$/.test(pathname);
   const isAgenda = pathname.startsWith("/agenda");
+  const isRecords = pathname.startsWith("/prontuarios") || /\/alunos\/[^/]+\/(anamnese|prontuario)/.test(pathname);
+  const { session, signOut } = useAuth();
   return (
     <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
@@ -56,8 +56,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <div className="nav-label">Seu espaço</div>
             <Link
               to="/"
-              className={`nav-item ${!isStudents && !isAgenda ? "active" : ""}`}
-              aria-current={!isStudents && !isAgenda ? "page" : undefined}
+              className={`nav-item ${!isStudents && !isAgenda && !isRecords ? "active" : ""}`}
+              aria-current={!isStudents && !isAgenda && !isRecords ? "page" : undefined}
               title="Dashboard"
               onClick={() => setMobileOpen(false)}
             >
@@ -83,6 +83,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
             >
               <CalendarDays />
               <span className="nav-text">Agenda</span>
+            </Link>
+            <Link
+              to="/prontuarios"
+              className={`nav-item ${isRecords ? "active" : ""}`}
+              title="Prontuários"
+              aria-current={isRecords ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
+            >
+              <ClipboardList />
+              <span className="nav-text">Prontuários</span>
             </Link>
           </div>
           <div className="nav-section">
@@ -121,7 +131,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             >
               <PanelLeft size={18} />
             </Button>
-            <span className="topbar-label">{isStudents ? "Alunos" : isAgenda ? "Agenda" : "Visão geral"}</span>
+            <span className="topbar-label">{isStudents ? "Alunos" : isAgenda ? "Agenda" : isRecords ? "Prontuários" : "Visão geral"}</span>
           </div>
           <div className="topbar-right">
             <form
@@ -143,9 +153,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <span className="avatar">NP</span>
               <span className="professional-copy">
                 <strong>Neuropsicopedagoga</strong>
-                <small>Perfil demonstrativo</small>
+                <small>{session?.user.email ?? "Perfil demonstrativo"}</small>
               </span>
             </div>
+            <Button variant="ghost" size="icon" aria-label="Sair" title="Sair" onClick={() => void signOut()}>
+              <LogOut size={17} />
+            </Button>
           </div>
         </header>
         {children}

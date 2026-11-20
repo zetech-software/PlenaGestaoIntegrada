@@ -9,4 +9,9 @@
 - [x] Agenda semanal, novo atendimento com bloqueio de conflito, status e frequência
 - [x] Painel lê os atendimentos do dia da agenda
 
+# Terceira fase — Registros e acesso
+- [x] Anamnese multidisciplinar (demonstração)
+- [x] Prontuário com sessões e linha de evolução (demonstração)
+- [x] Tela de login e e-mail de teste
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.

@@ -9,6 +9,7 @@ import {
   ClipboardList,
   Printer,
   Sprout,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudents } from "@/hooks/use-students";
@@ -98,6 +99,16 @@ function StudentProfile() {
           </div>
         </div>
         <div className="heading-actions no-print">
+          <Button variant="outline" asChild>
+            <Link to="/alunos/$id/anamnese" params={{ id: student.id }}>
+              <ClipboardList /> Anamnese
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/alunos/$id/prontuario" params={{ id: student.id }}>
+              <FileText /> Prontuário
+            </Link>
+          </Button>
           <Button variant="outline" onClick={() => window.print()}>
             <Printer /> Baixar ficha em PDF
           </Button>
@@ -148,8 +159,7 @@ function StudentProfile() {
       </p>
       <div className="demo-note mt-6 no-print">
         <Info />
-        Perfil cadastral demonstrativo. Anamnese, prontuários e demais módulos aguardam a validação
-        desta primeira entrega.
+        Perfil cadastral demonstrativo. Anamnese e prontuário ficam nos botões acima. Os registros são demonstrativos e não ficam guardados.
       </div>
       <DemoFooter />
     </main>

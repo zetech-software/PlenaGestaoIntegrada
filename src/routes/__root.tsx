@@ -15,6 +15,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppLayout } from "@/components/neuro/app-layout";
 import { StudentsProvider } from "@/hooks/use-students";
 import { SessionsProvider } from "@/hooks/use-sessions";
+import { RecordsProvider } from "@/hooks/use-records";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
 
 function NotFoundComponent() {
@@ -138,13 +141,26 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <StudentsProvider>
-        <SessionsProvider>
-          <AppLayout>
-            <Outlet />
-          </AppLayout>
-        </SessionsProvider>
-      </StudentsProvider>
+      <AuthProvider>
+        <AuthGate>
+          <StudentsProvider>
+            <SessionsProvider>
+              <RecordsProvider>
+                <AppLayout>
+                  <Outlet />
+                </AppLayout>
+              </RecordsProvider>
+            </SessionsProvider>
+          </StudentsProvider>
+        </AuthGate>
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthGate({ children }: { children: ReactNode }) {
+  const { session, ready } = useAuth();
+  if (!ready) return <div className="login-shell" aria-busy="true" />;
+  if (!session) return <LoginScreen />;
+  return <>{children}</>;
 }

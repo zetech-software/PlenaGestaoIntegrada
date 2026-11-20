@@ -1298,3 +1298,16 @@ input {
 .week-day.active { background: var(--brand); border-color: var(--brand); color: var(--brand-foreground, var(--primary-foreground)); }
 .week-day.active small, .week-day.active span { color: inherit; opacity: 0.8; }
 .agenda-form { margin-bottom: 1.5rem; }
+
+/* Prontuário */
+.timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; border-left: 2px solid var(--mint, var(--secondary)); padding-left: 1.25rem; }
+.timeline-item { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 0.9rem; padding: 1rem 1.25rem; }
+.timeline-item::before { content: ""; position: absolute; left: -1.75rem; top: 1.25rem; width: 0.75rem; height: 0.75rem; border-radius: 999px; background: var(--primary); box-shadow: 0 0 0 3px var(--background); }
+.timeline-head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.timeline-head .status { margin-left: auto; }
+/* Login */
+.login-shell { min-height: 100vh; display: grid; place-items: center; background: var(--background); padding: 1.5rem; }
+.login-card { width: 100%; max-width: 24rem; background: var(--card); border: 1px solid var(--border); border-radius: 1.1rem; padding: 2rem; box-shadow: 0 20px 40px -24px color-mix(in oklab, var(--brand) 40%, transparent); }
+.login-card .brand { margin-bottom: 1.5rem; }
+.login-card h1 { font-family: Manrope, sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.25rem; }
+.login-card form { display: grid; gap: 0.9rem; margin-top: 1.25rem; }
