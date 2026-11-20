@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useStudents } from "@/hooks/use-students";
 import { StudentAvatar, StudentTable, DemoFooter } from "./student-ui";
 
@@ -44,7 +45,7 @@ const appointments = [
   { studentId: "4", time: "15:30", end: "16:20", type: "Atendimento individual", confirmed: false },
 ];
 export function Dashboard() {
-  const { students } = useStudents();
+  const { students, isLoading } = useStudents();
   const [month, setMonth] = useState<"Novembro" | "Outubro">("Novembro");
   const active = students.filter((student) => student.status === "Ativo").length;
   const evaluation = students.filter((student) => student.status === "Em avaliação").length;
@@ -52,6 +53,7 @@ export function Dashboard() {
     {
       title: "Alunos cadastrados",
       value: students.length,
+      loading: isLoading,
       icon: Users,
       tone: "",
       foot: `${active} alunos ativos`,
@@ -104,7 +106,7 @@ export function Dashboard() {
           </Button>
         </div>
       </div>
-      <div className="stats-grid">
+      <div className="stats-grid" aria-busy={isLoading}>
         {stats.map((stat) => (
           <article className="stat-card" key={stat.title}>
             <div className="stat-top">
@@ -113,11 +115,20 @@ export function Dashboard() {
                 <stat.icon size={18} strokeWidth={1.7} />
               </span>
             </div>
-            <div className="stat-value">{stat.value.toString().padStart(2, "0")}</div>
-            <div className="stat-foot">
-              {stat.trend ? <ArrowUpRight className="positive" size={13} /> : null}
-              <span className={stat.trend ? "positive" : ""}>{stat.foot}</span>
-            </div>
+            {"loading" in stat && stat.loading ? (
+              <>
+                <Skeleton className="my-1 h-9 w-16" role="status" aria-label="Carregando" />
+                <Skeleton className="h-4 w-28" />
+              </>
+            ) : (
+              <>
+                <div className="stat-value">{stat.value.toString().padStart(2, "0")}</div>
+                <div className="stat-foot">
+                  {stat.trend ? <ArrowUpRight className="positive" size={13} /> : null}
+                  <span className={stat.trend ? "positive" : ""}>{stat.foot}</span>
+                </div>
+              </>
+            )}
           </article>
         ))}
       </div>
@@ -132,8 +143,9 @@ export function Dashboard() {
             </div>
             <Clock3 className="text-muted-foreground" size={17} />
           </div>
-          <div className="schedule">
-            {appointments.map((appointment) => {
+          <div className="schedule" aria-busy={isLoading}>
+            {isLoading ? <p role="status">Carregando atendimentos...</p> : null}
+            {(isLoading ? [] : appointments).map((appointment) => {
               const student = students.find((item) => item.id === appointment.studentId);
               if (!student) return null;
               return (
@@ -246,7 +258,13 @@ export function Dashboard() {
             </Link>
           </Button>
         </div>
-        <StudentTable students={students.slice(0, 4)} />
+        {isLoading ? (
+          <p role="status" aria-busy="true">
+            Carregando alunos...
+          </p>
+        ) : (
+          <StudentTable students={students.slice(0, 4)} />
+        )}
       </section>
       <DemoFooter />
     </main>
