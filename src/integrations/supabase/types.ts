@@ -106,6 +106,53 @@ export type Database = {
         }
         Relationships: []
       }
+      charges: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          description: string
+          due_date: string
+          id: string
+          method: string | null
+          paid_on: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          description: string
+          due_date: string
+          id?: string
+          method?: string | null
+          paid_on?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          description?: string
+          due_date?: string
+          id?: string
+          method?: string | null
+          paid_on?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charges_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consents: {
         Row: {
           created_at: string
@@ -477,12 +524,77 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist_entries: {
+        Row: {
+          created_at: string
+          created_on: string
+          id: string
+          notes: string
+          period: string
+          specialty: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_on?: string
+          id?: string
+          notes?: string
+          period?: string
+          specialty: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_on?: string
+          id?: string
+          notes?: string
+          period?: string
+          specialty?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_entries_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       can_see_student: { Args: { _student_id: string }; Returns: boolean }
+      create_session_series: {
+        Args: { _sessions: Json }
+        Returns: {
+          created_at: string
+          date: string
+          duration: number
+          id: string
+          start: string
+          status: string
+          student_id: string
+          therapist_id: string
+          type: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_active_consent: {
         Args: { _purpose: string; _student_id: string }
         Returns: boolean
