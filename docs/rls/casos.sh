@@ -11,6 +11,12 @@ T1=b0000000-0000-0000-0000-000000000001  # terapeuta 1 (vinculado ao aluno 1)
 T2=b0000000-0000-0000-0000-000000000002  # terapeuta 2 (vinculado ao aluno 2)
 S1=51000000-0000-0000-0000-000000000001
 S2=52000000-0000-0000-0000-000000000002
+AB=ab000000-0000-0000-0000-000000000001  # admin da clínica B
+TB=ab000000-0000-0000-0000-000000000002  # terapeuta da clínica B
+AS=a5000000-0000-0000-0000-000000000001  # admin da clínica suspensa
+OP=0e000000-0000-0000-0000-000000000001  # operador da plataforma
+TA=00000000-0000-4000-8000-00000000a001  # clínica A (piloto)
+TBID=0b000000-0000-4000-8000-00000000000b
 fails=0
 # Verificação prévia: o ambiente precisa ter as migrações e o seed aplicados, senão os casos
 # "não deve acontecer" passariam sem provar nada.
@@ -25,6 +31,18 @@ begin; set local role authenticated; select set_config('request.jwt.claim.sub','
 $2
 rollback;
 SQL
+}
+# check_su <nome> <sql> <match|nomatch> <regex>: roda como dono do banco (ex.: o servidor criando usuário)
+check_su() {
+  out=$($PSQL -q -t -A -X 2>&1 <<SQL | tr '\n' ' '
+begin;
+$2
+rollback;
+SQL
+)
+  if echo "$out" | grep -Eq "$4"; then found=1; else found=0; fi
+  if { [ "$3" = match ] && [ $found = 1 ]; } || { [ "$3" = nomatch ] && [ $found = 0 ]; }; then
+    echo "PASS  $1"; else echo "FAIL  $1"; echo "      saída: ${out:0:300}"; fails=$((fails + 1)); fi
 }
 # check <nome> <usuário> <sql> <match|nomatch> <regex>
 check() {
@@ -76,6 +94,26 @@ check "mesmo aluno não tem 2 sessões ao mesmo tempo" $C  "insert into sessions
 check "mesmo terapeuta não tem 2 sessões ao mesmo tempo" $C "insert into sessions(student_id,therapist_id,date,start,duration) values ('$S1','$T1','2026-11-30','10:00',50),('$S2','$T1','2026-11-30','10:20',50);" match "exclusion constraint"
 check "cobrança paga exige data e forma"             $C  "update charges set status='Pago';" match "check constraint"
 check "cobrança não é apagada"                       $C  "delete from charges;" match "permission denied"
+
+echo "== Isolamento entre clínicas"
+check "admin A não vê alunos da B"                  $A  "select 'n=' || count(*) from students where tenant_id='$TBID';" match "n=0"
+check "admin A não vê sessões da B"                 $A  "select 'n=' || count(*) from sessions;" match "n=0"
+check "admin A não vê cobranças da B"               $A  "select 'n=' || count(*) from charges;" match "n=1"
+check "admin A não vê auditoria da B"               $A  "select 'n=' || count(*) from audit_log;" match "n=0"
+check "admin A não vê perfis da B"                  $A  "select 'n=' || count(*) from profiles where tenant_id='$TBID';" match "n=0"
+check "admin A não dá papel a usuário da B"         $A  "insert into user_roles(user_id,role) values ('$TB','clinica');" match "row-level security"
+check "terapeuta A não vê nada da B"                $T1 "select 'n=' || ((select count(*) from students where tenant_id='$TBID') + (select count(*) from record_entries where tenant_id='$TBID'));" match "n=0"
+check "terapeuta B vê o próprio aluno"              $TB "select 'n=' || count(*) from students;" match "n=1"
+check "admin B não cria aluno na clínica A"         $AB "insert into students(name,birth_date,tenant_id) values ('X','2017-01-01','$TA');" match "row-level security"
+check "operador lê clientes"                        $OP "select 'n=' || count(*) from tenants;" match "n=3"
+check "operador não lê linhas clínicas"             $OP "select 'n=' || ((select count(*) from students)+(select count(*) from record_entries)+(select count(*) from sessions)+(select count(*) from charges)+(select count(*) from audit_log)+(select count(*) from consents));" match "n=0"
+check "admin de clínica lê só o próprio cliente"    $A  "select 'n=' || count(*) from tenants;" match "n=1"
+check "admin de clínica não edita cliente"          $A  "update tenants set seats=200 returning 'editou';" nomatch "editou"
+check "ninguém apaga cliente"                       $OP "delete from tenants;" match "permission denied"
+check "clínica suspensa não lê nada"                $AS "select 'n=' || ((select count(*) from students)+(select count(*) from tenants));" match "n=0"
+check "admin de clínica não atribui 'plataforma'"   $A  "insert into user_roles(user_id,role) values ('$T1','plataforma');" match "row-level security"
+check "admin não muda o próprio tenant_id"          $A  "update profiles set tenant_id='$TBID' where id='$A' returning 'mudou';" nomatch "mudou"
+check_su "usuário acima das vagas falha"                "insert into auth.users(id,email,raw_app_meta_data) values (gen_random_uuid(),'extra@t.local','{\"tenant_id\":\"$TBID\"}');" match "Limite de vagas"
 
 echo
 if [ $fails -eq 0 ]; then echo "Todos os casos passaram."; else echo "$fails caso(s) falharam."; fi

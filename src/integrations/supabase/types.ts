@@ -28,6 +28,7 @@ export type Database = {
           school: string
           specialty: string
           student_id: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -43,6 +44,7 @@ export type Database = {
           school?: string
           specialty: string
           student_id: string
+          tenant_id?: string
           updated_at?: string
         }
         Update: {
@@ -58,6 +60,7 @@ export type Database = {
           school?: string
           specialty?: string
           student_id?: string
+          tenant_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -66,6 +69,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: true
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anamneses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -79,6 +89,7 @@ export type Database = {
           resource: string
           role: string
           student_id: string | null
+          tenant_id: string
           user_email: string
           user_id: string
         }
@@ -90,6 +101,7 @@ export type Database = {
           resource: string
           role?: string
           student_id?: string | null
+          tenant_id?: string
           user_email?: string
           user_id?: string
         }
@@ -101,10 +113,19 @@ export type Database = {
           resource?: string
           role?: string
           student_id?: string | null
+          tenant_id?: string
           user_email?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       charges: {
         Row: {
@@ -117,6 +138,7 @@ export type Database = {
           paid_on: string | null
           status: string
           student_id: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -129,6 +151,7 @@ export type Database = {
           paid_on?: string | null
           status?: string
           student_id: string
+          tenant_id?: string
           updated_at?: string
         }
         Update: {
@@ -141,6 +164,7 @@ export type Database = {
           paid_on?: string | null
           status?: string
           student_id?: string
+          tenant_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -149,6 +173,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charges_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -162,6 +193,7 @@ export type Database = {
           purpose: string
           revoked_on: string | null
           student_id: string
+          tenant_id: string
           term_version: string
           updated_at: string
         }
@@ -173,6 +205,7 @@ export type Database = {
           purpose: string
           revoked_on?: string | null
           student_id: string
+          tenant_id?: string
           term_version?: string
           updated_at?: string
         }
@@ -184,6 +217,7 @@ export type Database = {
           purpose?: string
           revoked_on?: string | null
           student_id?: string
+          tenant_id?: string
           term_version?: string
           updated_at?: string
         }
@@ -193,6 +227,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consents_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -208,6 +249,7 @@ export type Database = {
           status: string
           student_id: string
           summary: string
+          tenant_id: string
           title: string
           updated_at: string
         }
@@ -221,6 +263,7 @@ export type Database = {
           status?: string
           student_id: string
           summary?: string
+          tenant_id?: string
           title: string
           updated_at?: string
         }
@@ -234,6 +277,7 @@ export type Database = {
           status?: string
           student_id?: string
           summary?: string
+          tenant_id?: string
           title?: string
           updated_at?: string
         }
@@ -243,6 +287,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intervention_plans_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -297,20 +348,31 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          tenant_id: string | null
         }
         Insert: {
           created_at?: string
           email?: string
           full_name?: string
           id: string
+          tenant_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string
           full_name?: string
           id?: string
+          tenant_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       record_entries: {
         Row: {
@@ -324,6 +386,7 @@ export type Database = {
           observations: string
           specialty: string
           student_id: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -337,6 +400,7 @@ export type Database = {
           observations: string
           specialty: string
           student_id: string
+          tenant_id?: string
           updated_at?: string
         }
         Update: {
@@ -350,6 +414,7 @@ export type Database = {
           observations?: string
           specialty?: string
           student_id?: string
+          tenant_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -358,6 +423,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "record_entries_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -371,6 +443,7 @@ export type Database = {
           start: string
           status: string
           student_id: string
+          tenant_id: string
           therapist_id: string
           type: string
           updated_at: string
@@ -383,6 +456,7 @@ export type Database = {
           start: string
           status?: string
           student_id: string
+          tenant_id?: string
           therapist_id: string
           type?: string
           updated_at?: string
@@ -395,6 +469,7 @@ export type Database = {
           start?: string
           status?: string
           student_id?: string
+          tenant_id?: string
           therapist_id?: string
           type?: string
           updated_at?: string
@@ -405,6 +480,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
           {
@@ -421,18 +503,21 @@ export type Database = {
           created_at: string
           student_id: string
           student_ref: string | null
+          tenant_id: string
           user_id: string
         }
         Insert: {
           created_at?: string
           student_id?: string
           student_ref?: string | null
+          tenant_id?: string
           user_id: string
         }
         Update: {
           created_at?: string
           student_id?: string
           student_ref?: string | null
+          tenant_id?: string
           user_id?: string
         }
         Relationships: [
@@ -441,6 +526,13 @@ export type Database = {
             columns: ["student_ref"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_assignments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
           {
@@ -467,6 +559,7 @@ export type Database = {
           school: string
           start_date: string
           status: string
+          tenant_id: string
           tone: string
           updated_at: string
         }
@@ -484,6 +577,7 @@ export type Database = {
           school?: string
           start_date?: string
           status?: string
+          tenant_id?: string
           tone?: string
           updated_at?: string
         }
@@ -501,7 +595,64 @@ export type Database = {
           school?: string
           start_date?: string
           status?: string
+          tenant_id?: string
           tone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          created_on: string
+          document: string
+          id: string
+          kind: string
+          name: string
+          owner_email: string
+          owner_name: string
+          phone: string
+          registration: string
+          seats: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_on?: string
+          document: string
+          id?: string
+          kind: string
+          name: string
+          owner_email: string
+          owner_name?: string
+          phone?: string
+          registration?: string
+          seats?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_on?: string
+          document?: string
+          id?: string
+          kind?: string
+          name?: string
+          owner_email?: string
+          owner_name?: string
+          phone?: string
+          registration?: string
+          seats?: number
+          status?: string
           updated_at?: string
         }
         Relationships: []
@@ -534,6 +685,7 @@ export type Database = {
           specialty: string
           status: string
           student_id: string
+          tenant_id: string
           updated_at: string
         }
         Insert: {
@@ -545,6 +697,7 @@ export type Database = {
           specialty: string
           status?: string
           student_id: string
+          tenant_id?: string
           updated_at?: string
         }
         Update: {
@@ -556,6 +709,7 @@ export type Database = {
           specialty?: string
           status?: string
           student_id?: string
+          tenant_id?: string
           updated_at?: string
         }
         Relationships: [
@@ -564,6 +718,13 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waitlist_entries_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -584,6 +745,7 @@ export type Database = {
           start: string
           status: string
           student_id: string
+          tenant_id: string
           therapist_id: string
           type: string
           updated_at: string
@@ -595,6 +757,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      current_tenant_id: { Args: never; Returns: string }
       has_active_consent: {
         Args: { _purpose: string; _student_id: string }
         Returns: boolean
@@ -606,7 +769,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      in_my_tenant: { Args: { _user_id: string }; Returns: boolean }
+      is_platform_operator: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      is_tenant_admin: { Args: never; Returns: boolean }
       list_therapists: {
         Args: never
         Returns: {
@@ -614,9 +780,10 @@ export type Database = {
           id: string
         }[]
       }
+      tenant_is_active: { Args: never; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "terapeuta" | "clinica"
+      app_role: "admin" | "terapeuta" | "clinica" | "plataforma"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -744,7 +911,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "terapeuta", "clinica"],
+      app_role: ["admin", "terapeuta", "clinica", "plataforma"],
     },
   },
 } as const
