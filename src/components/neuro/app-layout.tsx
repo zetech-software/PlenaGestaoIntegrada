@@ -202,7 +202,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
                         ? "Relatórios"
                         : isUsers
                           ? "Usuários"
-                          : "Visão geral"}
+                          : isSettings
+                            ? "Configurações"
+                            : "Visão geral"}
             </span>
           </div>
           <div className="topbar-right">
