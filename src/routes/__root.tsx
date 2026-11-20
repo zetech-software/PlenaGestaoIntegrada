@@ -21,6 +21,7 @@ import { AuditProvider } from "@/hooks/use-audit";
 import { ConsentsProvider } from "@/hooks/use-consents";
 import { WaitlistProvider } from "@/hooks/use-waitlist";
 import { FinanceProvider } from "@/hooks/use-finance";
+import { TenantsProvider } from "@/hooks/use-tenants";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
@@ -150,25 +151,27 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AuthProvider>
         <AuthGate>
-          <AuditProvider>
-            <StudentsProvider>
-              <ConsentsProvider>
-                <WaitlistProvider>
-                  <FinanceProvider>
-                    <SessionsProvider>
-                      <RecordsProvider>
-                        <PlansProvider>
-                          <AppLayout>
-                            <Outlet />
-                          </AppLayout>
-                        </PlansProvider>
-                      </RecordsProvider>
-                    </SessionsProvider>
-                  </FinanceProvider>
-                </WaitlistProvider>
-              </ConsentsProvider>
-            </StudentsProvider>
-          </AuditProvider>
+          <TenantsProvider>
+            <AuditProvider>
+              <StudentsProvider>
+                <ConsentsProvider>
+                  <WaitlistProvider>
+                    <FinanceProvider>
+                      <SessionsProvider>
+                        <RecordsProvider>
+                          <PlansProvider>
+                            <AppLayout>
+                              <Outlet />
+                            </AppLayout>
+                          </PlansProvider>
+                        </RecordsProvider>
+                      </SessionsProvider>
+                    </FinanceProvider>
+                  </WaitlistProvider>
+                </ConsentsProvider>
+              </StudentsProvider>
+            </AuditProvider>
+          </TenantsProvider>
         </AuthGate>
       </AuthProvider>
     </QueryClientProvider>

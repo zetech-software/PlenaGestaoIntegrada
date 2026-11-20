@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   ScrollText,
   Wallet,
+  Building2,
 } from "lucide-react";
 import { areaForPath, canAccess, roleLabels } from "@/services/permissions";
 import { useAuth } from "@/hooks/use-auth";
@@ -40,6 +41,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isReports = pathname.startsWith("/relatorios");
   const isAudit = pathname.startsWith("/auditoria");
   const isFinance = pathname.startsWith("/financeiro");
+  const isPlatform = pathname.startsWith("/plataforma");
   const isDashboard =
     !isStudents &&
     !isAgenda &&
@@ -49,10 +51,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
     !isReports &&
     !isAudit &&
     !isFinance &&
+    !isPlatform &&
     !pathname.startsWith("/configuracoes");
   const { logo } = useBrandLogo();
   const isSettings = pathname.startsWith("/configuracoes");
   const allowed = canAccess(role, areaForPath(pathname));
+  // O operador da plataforma só tem o painel dele: qualquer outra página leva para lá.
+  useEffect(() => {
+    if (role === "plataforma" && !allowed) void navigate({ to: "/plataforma", replace: true });
+  }, [role, allowed, navigate]);
   return (
     <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
@@ -74,67 +81,83 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </Button>
         <nav>
           <div className="nav-section">
-            <div className="nav-label">Seu espaço</div>
-            <Link
-              to="/"
-              className={`nav-item ${isDashboard ? "active" : ""}`}
-              aria-current={isDashboard ? "page" : undefined}
-              title="Dashboard"
-              onClick={() => setMobileOpen(false)}
-            >
-              <LayoutDashboard />
-              <span className="nav-text">Dashboard</span>
-            </Link>
-            <Link
-              to="/alunos"
-              className={`nav-item ${isStudents ? "active" : ""}`}
-              title="Alunos"
-              aria-current={isStudents ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Users />
-              <span className="nav-text">Alunos</span>
-            </Link>
-            <Link
-              to="/agenda"
-              className={`nav-item ${isAgenda ? "active" : ""}`}
-              title="Agenda"
-              aria-current={isAgenda ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <CalendarDays />
-              <span className="nav-text">Agenda</span>
-            </Link>
-            <Link
-              to="/prontuarios"
-              className={`nav-item ${isRecords ? "active" : ""}`}
-              title="Prontuários"
-              aria-current={isRecords ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <ClipboardList />
-              <span className="nav-text">Prontuários</span>
-            </Link>
-            <Link
-              to="/intervencoes"
-              className={`nav-item ${isPlans ? "active" : ""}`}
-              title="Intervenções"
-              aria-current={isPlans ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <Target />
-              <span className="nav-text">Intervenções</span>
-            </Link>
-            <Link
-              to="/relatorios"
-              className={`nav-item ${isReports ? "active" : ""}`}
-              title="Relatórios"
-              aria-current={isReports ? "page" : undefined}
-              onClick={() => setMobileOpen(false)}
-            >
-              <FileText />
-              <span className="nav-text">Relatórios</span>
-            </Link>
+            <div className="nav-label">{role === "plataforma" ? "Plataforma" : "Seu espaço"}</div>
+            {role !== "plataforma" ? (
+              <>
+                <Link
+                  to="/"
+                  className={`nav-item ${isDashboard ? "active" : ""}`}
+                  aria-current={isDashboard ? "page" : undefined}
+                  title="Dashboard"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <LayoutDashboard />
+                  <span className="nav-text">Dashboard</span>
+                </Link>
+                <Link
+                  to="/alunos"
+                  className={`nav-item ${isStudents ? "active" : ""}`}
+                  title="Alunos"
+                  aria-current={isStudents ? "page" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Users />
+                  <span className="nav-text">Alunos</span>
+                </Link>
+                <Link
+                  to="/agenda"
+                  className={`nav-item ${isAgenda ? "active" : ""}`}
+                  title="Agenda"
+                  aria-current={isAgenda ? "page" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <CalendarDays />
+                  <span className="nav-text">Agenda</span>
+                </Link>
+                <Link
+                  to="/prontuarios"
+                  className={`nav-item ${isRecords ? "active" : ""}`}
+                  title="Prontuários"
+                  aria-current={isRecords ? "page" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <ClipboardList />
+                  <span className="nav-text">Prontuários</span>
+                </Link>
+                <Link
+                  to="/intervencoes"
+                  className={`nav-item ${isPlans ? "active" : ""}`}
+                  title="Intervenções"
+                  aria-current={isPlans ? "page" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Target />
+                  <span className="nav-text">Intervenções</span>
+                </Link>
+                <Link
+                  to="/relatorios"
+                  className={`nav-item ${isReports ? "active" : ""}`}
+                  title="Relatórios"
+                  aria-current={isReports ? "page" : undefined}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <FileText />
+                  <span className="nav-text">Relatórios</span>
+                </Link>
+              </>
+            ) : null}
+            {canAccess(role, "plataforma") ? (
+              <Link
+                to="/plataforma"
+                className={`nav-item ${isPlatform ? "active" : ""}`}
+                title="Plataforma"
+                aria-current={isPlatform ? "page" : undefined}
+                onClick={() => setMobileOpen(false)}
+              >
+                <Building2 />
+                <span className="nav-text">Clientes</span>
+              </Link>
+            ) : null}
             {canAccess(role, "financeiro") ? (
               <Link
                 to="/financeiro"
@@ -172,32 +195,34 @@ export function AppLayout({ children }: { children: ReactNode }) {
               </Link>
             ) : null}
           </div>
-          <div className="nav-section">
-            <div className="nav-label">Próximas etapas</div>
-            {canAccess(role, "configuracoes") && (
-              <Link
-                to="/configuracoes"
-                className={`nav-item ${isSettings ? "active" : ""}`}
-                title="Configurações"
-                onClick={() => setMobileOpen(false)}
-              >
-                <Settings />
-                <span className="nav-text">Configurações</span>
-              </Link>
-            )}
-            {futureItems.map((item) => (
-              <div
-                className="nav-item future"
-                key={item.label}
-                aria-disabled="true"
-                title={`${item.label} — aguardando validação da primeira entrega`}
-              >
-                <item.icon />
-                <span className="nav-text">{item.label}</span>
-                <LockKeyhole className="nav-lock" />
-              </div>
-            ))}
-          </div>
+          {role !== "plataforma" ? (
+            <div className="nav-section">
+              <div className="nav-label">Próximas etapas</div>
+              {canAccess(role, "configuracoes") && (
+                <Link
+                  to="/configuracoes"
+                  className={`nav-item ${isSettings ? "active" : ""}`}
+                  title="Configurações"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <Settings />
+                  <span className="nav-text">Configurações</span>
+                </Link>
+              )}
+              {futureItems.map((item) => (
+                <div
+                  className="nav-item future"
+                  key={item.label}
+                  aria-disabled="true"
+                  title={`${item.label} — aguardando validação da primeira entrega`}
+                >
+                  <item.icon />
+                  <span className="nav-text">{item.label}</span>
+                  <LockKeyhole className="nav-lock" />
+                </div>
+              ))}
+            </div>
+          ) : null}
         </nav>
         <div className="sidebar-bottom">
           <div className="demo-indicator">Versão demonstrativa</div>
@@ -230,33 +255,37 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       ? "Intervenções"
                       : isReports
                         ? "Relatórios"
-                        : isFinance
-                          ? "Financeiro"
-                          : isAudit
-                            ? "Auditoria"
-                            : isUsers
-                              ? "Usuários"
-                              : isSettings
-                                ? "Configurações"
-                                : "Visão geral"}
+                        : isPlatform
+                          ? "Plataforma"
+                          : isFinance
+                            ? "Financeiro"
+                            : isAudit
+                              ? "Auditoria"
+                              : isUsers
+                                ? "Usuários"
+                                : isSettings
+                                  ? "Configurações"
+                                  : "Visão geral"}
             </span>
           </div>
           <div className="topbar-right">
-            <form
-              className="global-search"
-              onSubmit={(event) => {
-                event.preventDefault();
-                void navigate({ to: "/alunos", search: { q: search } });
-              }}
-            >
-              <Search size={16} />
-              <input
-                aria-label="Busca global de alunos"
-                placeholder="Buscar aluno..."
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </form>
+            {role !== "plataforma" ? (
+              <form
+                className="global-search"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void navigate({ to: "/alunos", search: { q: search } });
+                }}
+              >
+                <Search size={16} />
+                <input
+                  aria-label="Busca global de alunos"
+                  placeholder="Buscar aluno..."
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </form>
+            ) : null}
             <div className="professional">
               <span className="avatar">
                 {(session?.user.email ?? "NP").slice(0, 2).toUpperCase()}

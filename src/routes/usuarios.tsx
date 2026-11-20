@@ -15,7 +15,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { demoStudents } from "@/data/demo-students";
-import { primaryRole, roleLabels, type AppRole } from "@/services/permissions";
+import { primaryRole, roleLabels, type ClinicRole } from "@/services/permissions";
 import { createAppUser } from "@/lib/users.functions";
 import { DemoFooter } from "@/components/neuro/student-ui";
 
@@ -43,10 +43,10 @@ interface Row {
   id: string;
   email: string;
   fullName: string;
-  role: AppRole | null;
+  role: ClinicRole | null;
   students: string[];
 }
-const allRoles: AppRole[] = ["admin", "clinica", "terapeuta"];
+const allRoles: ClinicRole[] = ["admin", "clinica", "terapeuta"];
 
 function UsersPage() {
   const { session, reloadAccess } = useAuth();
@@ -59,7 +59,7 @@ function UsersPage() {
     fullName: "",
     email: "",
     password: "",
-    role: "terapeuta" as AppRole,
+    role: "terapeuta" as ClinicRole,
   });
   const [busy, setBusy] = useState(false);
 
@@ -69,21 +69,26 @@ function UsersPage() {
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("student_assignments").select("user_id,student_id"),
     ]);
-    setRows(
-      (p.data ?? []).map((x) => ({
+    const list: Row[] = [];
+    for (const x of p.data ?? []) {
+      const role = primaryRole((r.data ?? []).filter((y) => y.user_id === x.id).map((y) => y.role));
+      // Contas de operador da plataforma não fazem parte de nenhuma clínica: não aparecem aqui.
+      if (role === "plataforma") continue;
+      list.push({
         id: x.id,
         email: x.email,
         fullName: x.full_name,
-        role: primaryRole((r.data ?? []).filter((y) => y.user_id === x.id).map((y) => y.role)),
+        role,
         students: (a.data ?? []).filter((y) => y.user_id === x.id).map((y) => y.student_id),
-      })),
-    );
+      });
+    }
+    setRows(list);
   }, []);
   useEffect(() => {
     void load();
   }, [load]);
 
-  async function changeRole(row: Row, role: AppRole) {
+  async function changeRole(row: Row, role: ClinicRole) {
     if (row.id === session?.user.id && role !== "admin") {
       setMessage("Você não pode remover o seu próprio acesso de administrador.");
       return;
@@ -200,7 +205,7 @@ function UsersPage() {
               <label>Perfil</label>
               <Select
                 value={form.role}
-                onValueChange={(v) => setForm({ ...form, role: v as AppRole })}
+                onValueChange={(v) => setForm({ ...form, role: v as ClinicRole })}
               >
                 <SelectTrigger className="bg-card" aria-label="Perfil do novo usuário">
                   <SelectValue />
@@ -248,7 +253,7 @@ function UsersPage() {
               </div>
               <Select
                 value={row.role ?? ""}
-                onValueChange={(v) => void changeRole(row, v as AppRole)}
+                onValueChange={(v) => void changeRole(row, v as ClinicRole)}
               >
                 <SelectTrigger className="w-40 bg-card" aria-label={`Perfil de ${row.email}`}>
                   <SelectValue placeholder="Sem perfil" />
