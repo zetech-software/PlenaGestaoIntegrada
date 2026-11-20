@@ -29,6 +29,13 @@
       "when": 1795189904670,
       "tag": "0003_fase3_rotina_clinica",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795194113085,
+      "tag": "0004_correcoes_guarda_clinica",
+      "breakpoints": true
     }
   ]
 }
