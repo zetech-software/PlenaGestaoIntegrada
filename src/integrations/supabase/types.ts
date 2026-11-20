@@ -758,6 +758,7 @@ export type Database = {
         }
       }
       current_tenant_id: { Args: never; Returns: string }
+      current_term_version: { Args: never; Returns: string }
       has_active_consent: {
         Args: { _purpose: string; _student_id: string }
         Returns: boolean

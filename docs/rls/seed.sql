@@ -48,8 +48,10 @@ insert into public.student_assignments(user_id,student_ref) values
 insert into public.record_entries(student_id,date,specialty,objectives,observations,evolution) values
  ('51000000-0000-0000-0000-000000000001','2026-11-01','Psicologia','obj obj obj','obs obs obs','Estável'),
  ('52000000-0000-0000-0000-000000000002','2026-11-01','Psicologia','obj obj obj','obs obs obs','Estável');
-insert into public.consents(student_id,purpose,guardian,granted_on,revoked_on) values
- ('51000000-0000-0000-0000-000000000001','ia','Resp 1','2026-10-01','2026-10-20');
+-- consentimento é criado vigente (data/versão vêm do servidor) e depois revogado
+insert into public.consents(student_id,purpose,guardian) values
+ ('51000000-0000-0000-0000-000000000001','ia','Resp 1');
+update public.consents set revoked_on = current_date where student_id='51000000-0000-0000-0000-000000000001';
 insert into public.charges(student_id,description,amount_cents,due_date) values ('51000000-0000-0000-0000-000000000001','teste',1000,'2026-12-01');
 insert into public.anamneses(student_id,specialty,main_complaint) values
  ('51000000-0000-0000-0000-000000000001','Psicologia','Queixa principal de teste');
