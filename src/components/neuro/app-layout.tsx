@@ -21,9 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { PlenaMark } from "@/components/neuro/plena-logo";
 import { useBrandLogo } from "@/hooks/use-brand";
-const futureItems = [
-  { label: "Calendário de provas", icon: BookOpen },
-];
+const futureItems = [{ label: "Calendário de provas", icon: BookOpen }];
 export function AppLayout({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,7 +36,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isUsers = pathname.startsWith("/usuarios");
   const isPlans = pathname.startsWith("/intervencoes");
   const isReports = pathname.startsWith("/relatorios");
-  const isDashboard = !isStudents && !isAgenda && !isRecords && !isUsers && !isPlans && !isReports && !pathname.startsWith("/configuracoes");
+  const isDashboard =
+    !isStudents &&
+    !isAgenda &&
+    !isRecords &&
+    !isUsers &&
+    !isPlans &&
+    !isReports &&
+    !pathname.startsWith("/configuracoes");
   const { logo } = useBrandLogo();
   const isSettings = pathname.startsWith("/configuracoes");
   const allowed = canAccess(role, areaForPath(pathname));

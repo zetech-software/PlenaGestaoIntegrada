@@ -40,7 +40,11 @@ function SettingsPage() {
         <h2 className="text-lg font-semibold text-foreground">Logo da clínica</h2>
         <div className="flex items-center gap-4">
           {logo ? (
-            <img src={logo} alt="Logo atual" className="h-16 w-16 rounded-xl object-contain border" />
+            <img
+              src={logo}
+              alt="Logo atual"
+              className="h-16 w-16 rounded-xl object-contain border"
+            />
           ) : (
             <PlenaMark size={64} />
           )}
