@@ -14,11 +14,19 @@ describe("perfis de acesso", () => {
     expect(canSeeStudent("terapeuta", ["1"], "1")).toBe(true);
     expect(canSeeStudent("terapeuta", ["1"], "2")).toBe(false);
   });
+  it("todos os perfis abrem Intervenções e Relatórios", () => {
+    for (const role of ["admin", "clinica", "terapeuta"] as const) {
+      expect(canAccess(role, "intervencoes")).toBe(true);
+      expect(canAccess(role, "relatorios")).toBe(true);
+    }
+  });
   it("sem perfil não acessa nada", () => {
     expect(canAccess(null, "dashboard")).toBe(false);
   });
   it("maior privilégio vence e rotas mapeiam áreas", () => {
     expect(primaryRole(["terapeuta", "admin"])).toBe("admin");
     expect(areaForPath("/alunos/1/prontuario")).toBe("prontuarios");
+    expect(areaForPath("/intervencoes/novo")).toBe("intervencoes");
+    expect(areaForPath("/relatorios")).toBe("relatorios");
   });
 });

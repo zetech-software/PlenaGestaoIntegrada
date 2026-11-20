@@ -1,0 +1,98 @@
+import type { InterventionPlan } from "@/types/plan";
+
+export const demoPlans: InterventionPlan[] = [
+  {
+    id: "p1",
+    studentId: "1",
+    kind: "PTI",
+    title: "Atenção sustentada e leitura",
+    specialty: "Neuropsicopedagogia",
+    startDate: "2026-08-17",
+    reviewDate: "2026-12-18",
+    status: "Ativo",
+    summary: "Plano fictício para ampliar a atenção em tarefas de leitura.",
+    goals: [
+      {
+        id: "g1",
+        description: "Sustentar a atenção em leitura por 15 minutos.",
+        strategy: "Marcador visual e pausas programadas.",
+        deadline: "2026-12-04",
+        progress: 70,
+      },
+      {
+        id: "g2",
+        description: "Concluir atividades escritas no tempo combinado.",
+        strategy: "Divisão da tarefa em etapas curtas.",
+        deadline: "2026-12-18",
+        progress: 40,
+      },
+    ],
+  },
+  {
+    id: "p2",
+    studentId: "1",
+    kind: "PEI",
+    title: "Adaptações em sala de aula",
+    specialty: "Psicopedagogia",
+    startDate: "2026-09-01",
+    reviewDate: "2026-12-11",
+    status: "Ativo",
+    summary: "Combinados fictícios com a escola para apoiar a rotina de estudos.",
+    goals: [
+      {
+        id: "g3",
+        description: "Receber instruções escritas e orais em cada atividade.",
+        strategy: "Alinhar com a professora o uso de roteiros curtos.",
+        deadline: "2026-11-27",
+        progress: 55,
+      },
+    ],
+  },
+  {
+    id: "p3",
+    studentId: "2",
+    kind: "PTI",
+    title: "Consciência fonológica",
+    specialty: "Fonoaudiologia",
+    startDate: "2026-09-14",
+    reviewDate: "2026-12-14",
+    status: "Ativo",
+    summary: "Plano fictício de trabalho com rimas e sons iniciais.",
+    goals: [
+      {
+        id: "g4",
+        description: "Identificar 9 de 10 rimas com apoio visual.",
+        strategy: "Jogos de rima com figuras.",
+        deadline: "2026-12-11",
+        progress: 60,
+      },
+      {
+        id: "g5",
+        description: "Separar palavras em sílabas sem apoio.",
+        strategy: "Palmas e blocos de montar.",
+        deadline: "2026-12-14",
+        progress: 20,
+      },
+    ],
+  },
+  {
+    id: "p4",
+    studentId: "5",
+    kind: "PEI",
+    title: "Rotina de estudos",
+    specialty: "Psicopedagogia",
+    startDate: "2026-07-06",
+    reviewDate: "2026-11-13",
+    status: "Concluído",
+    summary: "Plano fictício concluído, com metas de organização do material.",
+    goals: [
+      {
+        id: "g6",
+        description: "Organizar o material antes das aulas.",
+        strategy: "Lista de conferência na mochila.",
+        deadline: "2026-11-06",
+        progress: 100,
+      },
+    ],
+  },
+];

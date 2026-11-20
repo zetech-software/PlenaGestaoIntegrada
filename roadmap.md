@@ -17,4 +17,9 @@
 # Quarta fase — Usuários e perfis
 - [x] Tela de Usuários (admin) e perfis admin, terapeuta, clínica com acesso por menu e alunos
 
+# Quinta fase — Intervenções e Relatórios
+- [x] Plano de Intervenção PEI/PTI com metas, prazos, progresso e situação
+- [x] Relatórios (frequência por terapeuta, alunos e planos) com exportação em PDF com a marca Plena
+- [x] Painel inicial com total de alunos, sessões pendentes e frequência por terapeuta
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.
