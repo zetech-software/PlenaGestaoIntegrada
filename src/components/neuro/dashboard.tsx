@@ -42,6 +42,7 @@ const monthData = {
     { week: "22–31", done: 12, planned: 2 },
   ],
 };
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 export function Dashboard() {
   const { students, isLoading } = useStudents();
   const { sessions } = useSessions();
@@ -79,7 +80,7 @@ export function Dashboard() {
       value: appointments.length,
       icon: CalendarDays,
       tone: "warm",
-      foot: `${confirmed} confirmados · ${appointments.length - confirmed} pendentes`,
+      foot: `${plural(confirmed, "confirmado", "confirmados")} · ${plural(appointments.length - confirmed, "pendente", "pendentes")}`,
       trend: false,
     },
     {
@@ -180,7 +181,9 @@ export function Dashboard() {
                   {row.rate === null ? "—" : `${row.rate}%`}
                 </strong>
                 <small>
-                  {row.done} realizadas · {row.missed} faltas · {row.pending} pendentes
+                  {plural(row.done, "realizada", "realizadas")} ·{" "}
+                  {plural(row.missed, "falta", "faltas")} ·{" "}
+                  {plural(row.pending, "pendente", "pendentes")}
                 </small>
               </li>
             ))}

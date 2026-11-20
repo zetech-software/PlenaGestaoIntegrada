@@ -1510,3 +1510,6 @@ input {
     display: none;
   }
 }
+.goal-progress input[type="range"] {
+  accent-color: var(--primary);
+}

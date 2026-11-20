@@ -1,24 +1,44 @@
-# Screenshot Match
+# Plena Gestão Integrada
 
-Implement exactly the screenshot and nothing else
+Plataforma de gestão para acompanhar o desenvolvimento, a aprendizagem e o cuidado de alunos e pacientes
+(neuropsicopedagogia e áreas afins), por Ze Tech.
 
-This project was built with [Lovable](https://lovable.dev).
+> **Versão demonstrativa.** Alunos, agenda, prontuários e planos ficam em memória e somem ao recarregar a
+> página. Use apenas dados fictícios. Só contas e perfis de acesso são guardados (Lovable Cloud).
 
-## Build with Lovable
+## Módulos
+- **Painel:** total de alunos, sessões pendentes e frequência por terapeuta.
+- **Alunos** e perfil, com ficha em PDF.
+- **Agenda e sessões:** status, frequência e bloqueio de conflito de horário.
+- **Prontuários:** anamnese multidisciplinar e evolução por sessão.
+- **Intervenções:** planos PEI/PTI com metas, prazos e progresso.
+- **Relatórios:** frequência por terapeuta, alunos e planos, com exportação em PDF com a marca Plena.
+- **Usuários, perfis** (administrador, clínica, terapeuta) e **configurações** (logo).
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/608dc163-bfe5-49ed-a19a-fea79eba1fe7).
+## Stack
+TanStack Start + Router (React 19, TypeScript), Vite, Tailwind 4, shadcn/ui, TanStack Query,
+Vitest. Gerenciador de pacotes: [Bun](https://bun.sh).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
+## Desenvolvimento
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+| Comando | O que faz |
+|---|---|
+| `bun run lint` | ESLint + Prettier (arquivos gerados do Supabase ficam de fora) |
+| `bun run typecheck` | Verificação de tipos (`tsc --noEmit`) |
+| `bun run test` | Testes (Vitest) |
+| `bun run build` | Build de produção |
+
+A integração contínua (`.github/workflows/ci.yml`) roda esses quatro comandos em cada pull request.
+
+## Arquitetura
+As regras de arquitetura do projeto estão em [`AGENTS.md`](./AGENTS.md). Planejamento por fases em
+[`roadmap.md`](./roadmap.md).
+
+## Lovable
+Este projeto está conectado ao [Lovable](https://lovable.dev/projects/608dc163-bfe5-49ed-a19a-fea79eba1fe7):
+mudanças feitas lá são commitadas neste repositório e mudanças na `main` voltam para o editor. Evite reescrever
+o histórico já publicado.

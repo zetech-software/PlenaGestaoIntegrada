@@ -1,3 +1,4 @@
+import { demoTherapistByStudent } from "@/data/demo-therapists";
 import type { Session } from "@/types/session";
 const s = (
   id: string,
@@ -6,7 +7,16 @@ const s = (
   start: string,
   type: string,
   status: Session["status"],
-): Session => ({ id, studentId, date, start, duration: 50, type, status });
+): Session => ({
+  id,
+  studentId,
+  therapistId: demoTherapistByStudent[studentId] ?? "t1",
+  date,
+  start,
+  duration: 50,
+  type,
+  status,
+});
 export const demoSessions: Session[] = [
   s("s1", "1", "2026-11-16", "08:30", "Atendimento individual", "Realizado"),
   s("s2", "5", "2026-11-16", "14:00", "Atendimento individual", "Realizado"),
