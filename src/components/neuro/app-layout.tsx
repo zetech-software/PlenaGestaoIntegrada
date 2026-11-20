@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Sprout,
   LayoutDashboard,
   Users,
   ClipboardList,
@@ -20,9 +19,10 @@ import {
 import { areaForPath, canAccess, roleLabels } from "@/services/permissions";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { PlenaMark } from "@/components/neuro/plena-logo";
+import { useBrandLogo } from "@/hooks/use-brand";
 const futureItems = [
   { label: "Calendário de provas", icon: BookOpen },
-  { label: "Configurações", icon: Settings },
 ];
 export function AppLayout({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -38,15 +38,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isUsers = pathname.startsWith("/usuarios");
   const isPlans = pathname.startsWith("/intervencoes");
   const isReports = pathname.startsWith("/relatorios");
-  const isDashboard = !isStudents && !isAgenda && !isRecords && !isUsers && !isPlans && !isReports;
+  const isDashboard = !isStudents && !isAgenda && !isRecords && !isUsers && !isPlans && !isReports && !pathname.startsWith("/configuracoes");
+  const { logo } = useBrandLogo();
+  const isSettings = pathname.startsWith("/configuracoes");
   const allowed = canAccess(role, areaForPath(pathname));
   return (
     <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
         <Link to="/" className="brand" onClick={() => setMobileOpen(false)}>
-          <span className="brand-symbol">
-            <Sprout size={24} strokeWidth={1.7} />
-          </span>
+          {logo ? (
+            <img src={logo} alt="Logo da clínica" className="h-10 w-10 rounded-xl object-contain" />
+          ) : (
+            <PlenaMark size={42} />
+          )}
           <span className="brand-copy">
             <span className="brand-name">
               Plena<span className="text-sand">.</span>
@@ -135,6 +139,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="nav-section">
             <div className="nav-label">Próximas etapas</div>
+            {canAccess(role, "configuracoes") && (
+              <Link
+                to="/configuracoes"
+                className={`nav-item ${isSettings ? "active" : ""}`}
+                title="Configurações"
+                onClick={() => setMobileOpen(false)}
+              >
+                <Settings />
+                <span className="nav-text">Configurações</span>
+              </Link>
+            )}
             {futureItems.map((item) => (
               <div
                 className="nav-item future"

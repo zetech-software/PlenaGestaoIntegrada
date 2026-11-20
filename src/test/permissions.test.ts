@@ -30,3 +30,11 @@ describe("perfis de acesso", () => {
     expect(areaForPath("/relatorios")).toBe("relatorios");
   });
 });
+
+describe("configurações", () => {
+  it("admin e clínica acessam, terapeuta não", () => {
+    expect(canAccess("admin", "configuracoes")).toBe(true);
+    expect(canAccess("clinica", "configuracoes")).toBe(true);
+    expect(canAccess("terapeuta", "configuracoes")).toBe(false);
+  });
+});

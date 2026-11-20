@@ -5,7 +5,7 @@ export const roleLabels: Record<AppRole, string> = {
   clinica: "Clínica",
 };
 export type Area =
-  "dashboard" | "alunos" | "agenda" | "prontuarios" | "intervencoes" | "relatorios" | "usuarios";
+  "dashboard" | "alunos" | "agenda" | "prontuarios" | "intervencoes" | "relatorios" | "usuarios" | "configuracoes";
 
 /** Maior privilégio vence quando a conta tem mais de um perfil. */
 export function primaryRole(roles: AppRole[]): AppRole | null {
@@ -17,6 +17,7 @@ export function primaryRole(roles: AppRole[]): AppRole | null {
 export function canAccess(role: AppRole | null, area: Area) {
   if (!role) return false;
   if (area === "usuarios") return role === "admin";
+  if (area === "configuracoes") return role === "admin" || role === "clinica";
   return true;
 }
 /** Terapeuta só vê alunos vinculados; admin e clínica veem todos. */
@@ -27,6 +28,7 @@ export function canSeeStudent(role: AppRole | null, assigned: string[], studentI
 }
 export function areaForPath(pathname: string): Area {
   if (pathname.startsWith("/usuarios")) return "usuarios";
+  if (pathname.startsWith("/configuracoes")) return "configuracoes";
   if (pathname.startsWith("/prontuarios") || /\/(anamnese|prontuario)$/.test(pathname))
     return "prontuarios";
   if (pathname.startsWith("/agenda")) return "agenda";
