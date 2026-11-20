@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { ACTIVITY_INSTRUCTIONS, validateActivityRequest } from "@/services/activity-prompt";
 
-const base = { studentFirstName: "Lucas", age: 9, grade: "3º ano", observations: "Mantém atenção por 10 minutos.", goals: "Ampliar o tempo de atenção." };
+const base = {
+  studentFirstName: "Lucas",
+  age: 9,
+  grade: "3º ano",
+  observations: "Mantém atenção por 10 minutos.",
+  goals: "Ampliar o tempo de atenção.",
+};
 
 describe("activity suggestion rules", () => {
   it("rejects observations shorter than 10 characters", () => {

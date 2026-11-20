@@ -3,7 +3,8 @@ export const demoAnamneses: Anamnesis[] = [
   {
     studentId: "1",
     specialty: "Neuropsicopedagogia",
-    mainComplaint: "Família relata dificuldade em manter a atenção nas tarefas de leitura (dado fictício).",
+    mainComplaint:
+      "Família relata dificuldade em manter a atenção nas tarefas de leitura (dado fictício).",
     referral: "Escola",
     gestation: "Sem intercorrências relatadas.",
     development: "Marcos motores e de fala dentro do esperado, segundo a família.",
@@ -16,24 +17,36 @@ export const demoAnamneses: Anamnesis[] = [
 ];
 export const demoRecords: RecordEntry[] = [
   {
-    id: "r1", studentId: "1", date: "2026-11-06", specialty: "Neuropsicopedagogia",
+    id: "r1",
+    studentId: "1",
+    date: "2026-11-06",
+    specialty: "Neuropsicopedagogia",
     objectives: "Ampliar tempo de atenção sustentada.",
     activities: "Jogo da memória com sílabas; leitura compartilhada.",
     observations: "Manteve foco por cerca de 8 minutos.",
-    evolution: "Estável", nextSteps: "Introduzir pausas programadas.",
+    evolution: "Estável",
+    nextSteps: "Introduzir pausas programadas.",
   },
   {
-    id: "r2", studentId: "1", date: "2026-11-13", specialty: "Neuropsicopedagogia",
+    id: "r2",
+    studentId: "1",
+    date: "2026-11-13",
+    specialty: "Neuropsicopedagogia",
     objectives: "Ampliar tempo de atenção sustentada.",
     activities: "Leitura com marcador visual e pausas programadas.",
     observations: "Manteve foco por cerca de 12 minutos e pediu para continuar.",
-    evolution: "Avançou", nextSteps: "Levar estratégia do marcador para a sala de aula.",
+    evolution: "Avançou",
+    nextSteps: "Levar estratégia do marcador para a sala de aula.",
   },
   {
-    id: "r3", studentId: "2", date: "2026-11-12", specialty: "Fonoaudiologia",
+    id: "r3",
+    studentId: "2",
+    date: "2026-11-12",
+    specialty: "Fonoaudiologia",
     objectives: "Consciência fonológica.",
     activities: "Rimas com figuras.",
     observations: "Identificou 6 de 10 rimas.",
-    evolution: "Estável", nextSteps: "Repetir com apoio visual.",
+    evolution: "Estável",
+    nextSteps: "Repetir com apoio visual.",
   },
 ];

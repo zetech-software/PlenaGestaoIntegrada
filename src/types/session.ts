@@ -1,5 +1,11 @@
 export type SessionStatus = "Pendente" | "Confirmado" | "Realizado" | "Faltou" | "Cancelado";
-export const sessionStatuses: SessionStatus[] = ["Pendente", "Confirmado", "Realizado", "Faltou", "Cancelado"];
+export const sessionStatuses: SessionStatus[] = [
+  "Pendente",
+  "Confirmado",
+  "Realizado",
+  "Faltou",
+  "Cancelado",
+];
 export interface Session {
   id: string;
   studentId: string;
