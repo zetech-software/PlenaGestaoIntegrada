@@ -91,12 +91,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Plena Gestão Integrada" },
       {
         name: "description",
-        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
+        content:
+          "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
       { property: "og:title", content: "Plena Gestão Integrada" },
       {
         property: "og:description",
-        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
+        content:
+          "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
