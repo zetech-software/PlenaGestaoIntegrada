@@ -84,15 +84,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ze Tech Neuro" },
+      { title: "Plena Gestão Integrada" },
       {
         name: "description",
-        content: "Gestão neuropsicopedagógica com um olhar acolhedor para cada jornada.",
+        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
-      { property: "og:title", content: "Ze Tech Neuro" },
+      { property: "og:title", content: "Plena Gestão Integrada" },
       {
         property: "og:description",
-        content: "Gestão neuropsicopedagógica com um olhar acolhedor para cada jornada.",
+        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -32,6 +32,9 @@
 @theme inline {
   --font-sans: "DM Sans", sans-serif;
   --font-display: "Manrope", sans-serif;
+  --color-brand: var(--brand);
+  --color-sand: var(--sand);
+  --color-mint: var(--mint);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warm: var(--warm);
@@ -82,44 +85,48 @@
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(0.982 0.003 165);
-  --foreground: oklch(0.29 0.025 175);
-  --success: oklch(0.49 0.09 158);
+  --brand: oklch(0.338 0.044 206.7);
+  --brand-accent: oklch(0.584 0.092 185.4);
+  --sand: oklch(0.783 0.080 82.2);
+  --mint: oklch(0.856 0.059 178.6);
+  --background: oklch(0.977 0.003 174.5);
+  --foreground: oklch(0.339 0.025 216.8);
+  --success: oklch(0.584 0.092 185.4);
   --success-soft: oklch(0.951 0.034 158);
-  --warm: oklch(0.58 0.105 55);
-  --warm-soft: oklch(0.957 0.033 65);
+  --warm: oklch(0.58 0.08 80);
+  --warm-soft: oklch(0.95 0.03 85);
   --info: oklch(0.55 0.08 235);
   --info-soft: oklch(0.95 0.023 235);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.29 0.025 175);
+  --card-foreground: oklch(0.339 0.025 216.8);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.46 0.078 174);
+  --popover-foreground: oklch(0.339 0.025 216.8);
+  --primary: oklch(0.584 0.092 185.4);
   --primary-foreground: oklch(0.995 0 0);
-  --secondary: oklch(0.947 0.025 165);
-  --secondary-foreground: oklch(0.4 0.075 172);
-  --muted: oklch(0.96 0.006 170);
+  --secondary: oklch(0.94 0.035 175);
+  --secondary-foreground: oklch(0.338 0.044 206.7);
+  --muted: oklch(0.955 0.006 175);
   --muted-foreground: oklch(0.55 0.017 175);
-  --accent: oklch(0.949 0.022 165);
-  --accent-foreground: oklch(0.4 0.075 172);
+  --accent: oklch(0.93 0.045 175);
+  --accent-foreground: oklch(0.338 0.044 206.7);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.925 0.008 165);
+  --border: oklch(0.915 0.012 175);
   --input: oklch(0.89 0.008 165);
-  --ring: oklch(0.58 0.078 174);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --ring: oklch(0.584 0.092 185.4);
+  --chart-1: oklch(0.584 0.092 185.4);
+  --chart-2: oklch(0.856 0.059 178.6);
+  --chart-3: oklch(0.338 0.044 206.7);
+  --chart-4: oklch(0.783 0.080 82.2);
+  --chart-5: oklch(0.339 0.025 216.8);
+  --sidebar: oklch(0.338 0.044 206.7);
+  --sidebar-foreground: oklch(0.93 0.02 175);
+  --sidebar-primary: oklch(0.856 0.059 178.6);
+  --sidebar-primary-foreground: oklch(0.338 0.044 206.7);
+  --sidebar-accent: oklch(0.38 0.05 195);
+  --sidebar-accent-foreground: oklch(0.98 0.005 175);
+  --sidebar-border: oklch(0.38 0.04 195);
+  --sidebar-ring: oklch(0.856 0.059 178.6);
 }
 
 .dark {
@@ -172,7 +179,7 @@
   }
 }
 
-/* Ze Tech Neuro: quiet surfaces, botanical green and warm editorial accents. */
+/* Plena Gestão Integrada: petroleum green structure, welcoming green actions, sand accents. */
 h1,
 h2,
 h3,
@@ -212,8 +219,9 @@ input {
   width: 40px;
   height: 40px;
   border-radius: 11px;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--brand);
+  color: var(--mint);
+  box-shadow: inset 0 -3px 0 var(--sand);
   display: grid;
   place-items: center;
   flex-shrink: 0;

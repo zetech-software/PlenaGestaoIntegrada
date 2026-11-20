@@ -6,12 +6,12 @@ import { Dashboard } from "@/components/neuro/dashboard";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard | Ze Tech Neuro" },
+      { title: "Dashboard | Plena Gestão Integrada" },
       {
         name: "description",
-        content: "Visão geral demonstrativa dos alunos e atendimentos da Ze Tech Neuro.",
+        content: "Visão geral demonstrativa dos alunos e atendimentos da Plena Gestão Integrada.",
       },
-      { property: "og:title", content: "Dashboard | Ze Tech Neuro" },
+      { property: "og:title", content: "Dashboard | Plena Gestão Integrada" },
       {
         property: "og:description",
         content:

@@ -82,7 +82,7 @@ export function StudentTable({ students }: { students: Student[] }) {
 export function DemoFooter() {
   return (
     <footer className="page-footer">
-      <span>Ze Tech Neuro · Cuidado em cada etapa.</span>
+      <span>Plena Gestão Integrada · por Ze Tech</span>
       <span>Ambiente demonstrativo · Todos os dados são fictícios</span>
     </footer>
   );

@@ -17,13 +17,13 @@ export const Route = createFileRoute("/alunos/$id")({
     search["created"] === true ? { created: true } : {},
   head: () => ({
     meta: [
-      { title: "Perfil do aluno | Ze Tech Neuro" },
+      { title: "Perfil do aluno | Plena Gestão Integrada" },
       {
         name: "description",
         content:
-          "Perfil cadastral demonstrativo com informações do aluno, escola e responsável na Ze Tech Neuro.",
+          "Perfil cadastral demonstrativo com informações do aluno, escola e responsável na Plena Gestão Integrada.",
       },
-      { property: "og:title", content: "Perfil do aluno | Ze Tech Neuro" },
+      { property: "og:title", content: "Perfil do aluno | Plena Gestão Integrada" },
       {
         property: "og:description",
         content: "Informações cadastrais fictícias, organizadas em um único perfil.",

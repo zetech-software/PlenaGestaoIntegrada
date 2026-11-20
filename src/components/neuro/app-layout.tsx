@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Brain,
+  Sprout,
   LayoutDashboard,
   Users,
   ClipboardList,
@@ -39,13 +39,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
         <Link to="/" className="brand" onClick={() => setMobileOpen(false)}>
           <span className="brand-symbol">
-            <Brain size={26} strokeWidth={1.6} />
+            <Sprout size={24} strokeWidth={1.7} />
           </span>
           <span className="brand-copy">
             <span className="brand-name">
-              Ze Tech Neuro<span className="text-primary">.</span>
+              Plena<span className="text-sand">.</span>
             </span>
-            <span className="brand-caption block">Gestão neuropsicopedagógica</span>
+            <span className="brand-caption block">Gestão Integrada · Ze Tech</span>
           </span>
         </Link>
         <Button className="mobile-close" variant="ghost" onClick={() => setMobileOpen(false)}>

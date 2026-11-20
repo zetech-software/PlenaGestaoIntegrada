@@ -18,13 +18,13 @@ import type { StudentStatus } from "@/types/student";
 export const Route = createFileRoute("/alunos/novo")({
   head: () => ({
     meta: [
-      { title: "Novo aluno | Ze Tech Neuro" },
+      { title: "Novo aluno | Plena Gestão Integrada" },
       {
         name: "description",
         content:
-          "Cadastro de aluno para a demonstração da Ze Tech Neuro. Dados não são armazenados permanentemente.",
+          "Cadastro de aluno para a demonstração da Plena Gestão Integrada. Dados não são armazenados permanentemente.",
       },
-      { property: "og:title", content: "Novo aluno | Ze Tech Neuro" },
+      { property: "og:title", content: "Novo aluno | Plena Gestão Integrada" },
       {
         property: "og:description",
         content: "Cadastro demonstrativo com informações fictícias do aluno, escola e responsável.",

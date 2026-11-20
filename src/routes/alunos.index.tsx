@@ -18,13 +18,13 @@ export const Route = createFileRoute("/alunos/")({
     typeof search["q"] === "string" && search["q"] ? { q: search["q"] } : {},
   head: () => ({
     meta: [
-      { title: "Alunos | Ze Tech Neuro" },
+      { title: "Alunos | Plena Gestão Integrada" },
       {
         name: "description",
         content:
-          "Listagem demonstrativa de alunos da Ze Tech Neuro, com busca e filtros por escola e status.",
+          "Listagem demonstrativa de alunos da Plena Gestão Integrada, com busca e filtros por escola e status.",
       },
-      { property: "og:title", content: "Alunos | Ze Tech Neuro" },
+      { property: "og:title", content: "Alunos | Plena Gestão Integrada" },
       {
         property: "og:description",
         content: "Conheça os cadastros fictícios da demonstração neuropsicopedagógica.",
