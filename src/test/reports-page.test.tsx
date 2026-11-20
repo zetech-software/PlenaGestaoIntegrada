@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { FinanceProvider } from "@/hooks/use-finance";
 import { PlansProvider } from "@/hooks/use-plans";
 import { RecordsProvider } from "@/hooks/use-records";
 import { SessionsProvider } from "@/hooks/use-sessions";
@@ -20,7 +21,9 @@ function renderReports() {
         <SessionsProvider>
           <RecordsProvider>
             <PlansProvider>
-              <Page />
+              <FinanceProvider>
+                <Page />
+              </FinanceProvider>
             </PlansProvider>
           </RecordsProvider>
         </SessionsProvider>

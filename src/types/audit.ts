@@ -8,7 +8,7 @@ export const auditActions: AuditAction[] = [
   "revogou",
 ];
 export type AuditResource =
-  "aluno" | "anamnese" | "prontuario" | "plano" | "consentimento" | "dados do aluno";
+  "aluno" | "anamnese" | "prontuario" | "plano" | "consentimento" | "cobranca" | "dados do aluno";
 export interface AuditEvent {
   id: string;
   at: string; // ISO 8601

@@ -34,4 +34,10 @@
 - [ ] Tabelas `consents` e `audit_log` com RLS no Lovable — ver `docs/fase-2-conformidade.md`
 - [ ] Política de retenção, texto do termo e base legal, com assessoria jurídica
 
+# Oitava fase — Rotina da clínica (em andamento)
+- [x] Agenda: repetição semanal, conflito por terapeuta e aluno, lista de espera e lembrete por WhatsApp
+- [x] PEI para a escola (com consentimento) e financeiro básico com relatório
+- [ ] Tabelas e regras de acesso no Lovable — ver `docs/fase-3-rotina.md`
+- [ ] Portal da família e salas (dependem do banco)
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, Printer, Target } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Printer, School, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -10,10 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuditView } from "@/hooks/use-audit";
+import { useAudit, useAuditView } from "@/hooks/use-audit";
 import { useStudents } from "@/hooks/use-students";
 import { usePlans } from "@/hooks/use-plans";
-import { isReviewOverdue, planProgress } from "@/services/plan-service";
+import {
+  buildSchoolCopy,
+  canShareWithSchool,
+  isReviewOverdue,
+  planProgress,
+} from "@/services/plan-service";
+import { activeConsent } from "@/services/consent-service";
+import { useConsents } from "@/hooks/use-consents";
 import { formatDate } from "@/services/student-service";
 import { planKindLabels, planStatuses, type PlanStatus } from "@/types/plan";
 import { DemoFooter } from "@/components/neuro/student-ui";
@@ -52,6 +59,8 @@ function PlanDetail() {
       setError("Não foi possível salvar a alteração. Tente novamente.");
     }
   }
+  const { consents } = useConsents();
+  const { log } = useAudit();
   const plan = plans.find((p) => p.id === id);
   useAuditView("plano", plan?.studentId ?? "", plan !== undefined);
   if (isLoading)
@@ -77,6 +86,20 @@ function PlanDetail() {
     );
   const student = students.find((s) => s.id === plan.studentId);
   const progress = planProgress(plan);
+  const schoolConsent = student ? activeConsent(consents, student.id, "escola") : undefined;
+  const school = student && canShareWithSchool(plan) ? buildSchoolCopy(plan, student) : null;
+
+  /** Imprime a versão para a escola: o CSS esconde o conteúdo clínico enquanto o atributo existir. */
+  function printForSchool() {
+    if (!student || !schoolConsent) return;
+    document.body.dataset["printMode"] = "school";
+    try {
+      log("exportou", "plano", student.id, "versão para a escola");
+      window.print();
+    } finally {
+      delete document.body.dataset["printMode"];
+    }
+  }
   return (
     <main className="page">
       <Link to="/intervencoes" className="back-link">
@@ -88,98 +111,152 @@ function PlanDetail() {
           permanentemente.
         </div>
       ) : null}
-      <PrintHeader title={`${plan.kind} · ${planKindLabels[plan.kind]}`} detail={student?.name} />
-      <div className="page-heading">
-        <div>
-          <div className="eyebrow">
-            <Target size={15} /> {plan.kind} · {planKindLabels[plan.kind].toUpperCase()}
+      <div className="clinical-print">
+        <PrintHeader title={`${plan.kind} · ${planKindLabels[plan.kind]}`} detail={student?.name} />
+        <div className="page-heading">
+          <div>
+            <div className="eyebrow">
+              <Target size={15} /> {plan.kind} · {planKindLabels[plan.kind].toUpperCase()}
+            </div>
+            <h1>{plan.title}</h1>
+            <p>
+              {student?.name ?? "—"} · {plan.specialty}
+            </p>
           </div>
-          <h1>{plan.title}</h1>
+          <div className="heading-actions no-print">
+            <Select
+              value={plan.status}
+              onValueChange={(v) => void update(() => setStatus(plan.id, v as PlanStatus))}
+            >
+              <SelectTrigger aria-label="Situação do plano" className="filter-select">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {planStatuses.map((s) => (
+                  <SelectItem key={s} value={s}>
+                    {s}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" onClick={() => window.print()}>
+              <Printer /> Exportar PDF
+            </Button>
+            {school ? (
+              <Button variant="outline" disabled={!schoolConsent} onClick={printForSchool}>
+                <School /> Compartilhar com a escola
+              </Button>
+            ) : null}
+          </div>
+        </div>
+        {school && !schoolConsent ? (
+          <p className="report-note no-print" role="status">
+            Sem consentimento vigente do responsável para compartilhar com a escola. Registre-o no
+            perfil do aluno.
+          </p>
+        ) : null}
+        {error ? (
+          <p role="alert" className="text-sm text-destructive no-print mb-3">
+            {error}
+          </p>
+        ) : null}
+        <section className="detail-section">
+          <h2>Resumo</h2>
+          <p className="profile-note">{plan.summary}</p>
+          <dl className="plan-facts">
+            <div>
+              <dt>Situação</dt>
+              <dd>{plan.status}</dd>
+            </div>
+            <div>
+              <dt>Início</dt>
+              <dd>{formatDate(plan.startDate)}</dd>
+            </div>
+            <div>
+              <dt>Revisão</dt>
+              <dd>
+                {formatDate(plan.reviewDate)}
+                {isReviewOverdue(plan) ? " (vencida)" : ""}
+              </dd>
+            </div>
+            <div>
+              <dt>Progresso geral</dt>
+              <dd>{progress}%</dd>
+            </div>
+          </dl>
+          <Progress value={progress} aria-label={`Progresso geral de ${progress}%`} />
+        </section>
+        <section className="detail-section">
+          <h2>Metas</h2>
+          <ol className="goal-list">
+            {plan.goals.map((goal) => (
+              <li key={goal.id} className="goal-item">
+                <strong>{goal.description}</strong>
+                <small>
+                  Estratégia: {goal.strategy || "Não informada"} · Prazo:{" "}
+                  {formatDate(goal.deadline)}
+                </small>
+                <div className="goal-progress">
+                  <Progress value={goal.progress} />
+                  <span>{goal.progress}%</span>
+                  <input
+                    className="no-print"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={10}
+                    value={goal.progress}
+                    aria-label={`Progresso da meta: ${goal.description}`}
+                    onChange={(e) =>
+                      void update(() => setGoalProgress(plan.id, goal.id, Number(e.target.value)))
+                    }
+                  />
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
+      {school && schoolConsent ? (
+        <div className="school-only">
+          <PrintHeader title="PEI · Versão para a escola" detail={school.studentName} />
+          <h1>{school.title}</h1>
           <p>
-            {student?.name ?? "—"} · {plan.specialty}
+            {school.studentName} · {school.school}
+            {school.grade ? ` · ${school.grade}` : ""}
+          </p>
+          <dl className="plan-facts">
+            <div>
+              <dt>Início</dt>
+              <dd>{formatDate(school.startDate)}</dd>
+            </div>
+            <div>
+              <dt>Revisão</dt>
+              <dd>{formatDate(school.reviewDate)}</dd>
+            </div>
+            <div>
+              <dt>Progresso geral</dt>
+              <dd>{school.overall}%</dd>
+            </div>
+          </dl>
+          <h2>Metas</h2>
+          <ol className="goal-list">
+            {school.goals.map((goal, index) => (
+              <li key={index} className="goal-item">
+                <strong>{goal.description}</strong>
+                <small>
+                  Estratégia: {goal.strategy || "Não informada"} · Prazo:{" "}
+                  {formatDate(goal.deadline)} · Progresso: {goal.progress}%
+                </small>
+              </li>
+            ))}
+          </ol>
+          <p className="print-footer-school">
+            Documento compartilhado com o consentimento de {schoolConsent.guardian} (termo{" "}
+            {schoolConsent.termVersion}). Não contém informações clínicas. Uso restrito à escola.
           </p>
         </div>
-        <div className="heading-actions no-print">
-          <Select
-            value={plan.status}
-            onValueChange={(v) => void update(() => setStatus(plan.id, v as PlanStatus))}
-          >
-            <SelectTrigger aria-label="Situação do plano" className="filter-select">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {planStatuses.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button variant="outline" onClick={() => window.print()}>
-            <Printer /> Exportar PDF
-          </Button>
-        </div>
-      </div>
-      {error ? (
-        <p role="alert" className="text-sm text-destructive no-print mb-3">
-          {error}
-        </p>
       ) : null}
-      <section className="detail-section">
-        <h2>Resumo</h2>
-        <p className="profile-note">{plan.summary}</p>
-        <dl className="plan-facts">
-          <div>
-            <dt>Situação</dt>
-            <dd>{plan.status}</dd>
-          </div>
-          <div>
-            <dt>Início</dt>
-            <dd>{formatDate(plan.startDate)}</dd>
-          </div>
-          <div>
-            <dt>Revisão</dt>
-            <dd>
-              {formatDate(plan.reviewDate)}
-              {isReviewOverdue(plan) ? " (vencida)" : ""}
-            </dd>
-          </div>
-          <div>
-            <dt>Progresso geral</dt>
-            <dd>{progress}%</dd>
-          </div>
-        </dl>
-        <Progress value={progress} aria-label={`Progresso geral de ${progress}%`} />
-      </section>
-      <section className="detail-section">
-        <h2>Metas</h2>
-        <ol className="goal-list">
-          {plan.goals.map((goal) => (
-            <li key={goal.id} className="goal-item">
-              <strong>{goal.description}</strong>
-              <small>
-                Estratégia: {goal.strategy || "Não informada"} · Prazo: {formatDate(goal.deadline)}
-              </small>
-              <div className="goal-progress">
-                <Progress value={goal.progress} />
-                <span>{goal.progress}%</span>
-                <input
-                  className="no-print"
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={10}
-                  value={goal.progress}
-                  aria-label={`Progresso da meta: ${goal.description}`}
-                  onChange={(e) =>
-                    void update(() => setGoalProgress(plan.id, goal.id, Number(e.target.value)))
-                  }
-                />
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
       <PrintFooter />
       <DemoFooter />
     </main>

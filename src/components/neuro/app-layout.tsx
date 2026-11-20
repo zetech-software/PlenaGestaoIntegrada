@@ -16,6 +16,7 @@ import {
   LogOut,
   ShieldCheck,
   ScrollText,
+  Wallet,
 } from "lucide-react";
 import { areaForPath, canAccess, roleLabels } from "@/services/permissions";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,6 +39,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isPlans = pathname.startsWith("/intervencoes");
   const isReports = pathname.startsWith("/relatorios");
   const isAudit = pathname.startsWith("/auditoria");
+  const isFinance = pathname.startsWith("/financeiro");
   const isDashboard =
     !isStudents &&
     !isAgenda &&
@@ -46,6 +48,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     !isPlans &&
     !isReports &&
     !isAudit &&
+    !isFinance &&
     !pathname.startsWith("/configuracoes");
   const { logo } = useBrandLogo();
   const isSettings = pathname.startsWith("/configuracoes");
@@ -132,6 +135,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <FileText />
               <span className="nav-text">Relatórios</span>
             </Link>
+            {canAccess(role, "financeiro") ? (
+              <Link
+                to="/financeiro"
+                className={`nav-item ${isFinance ? "active" : ""}`}
+                title="Financeiro"
+                aria-current={isFinance ? "page" : undefined}
+                onClick={() => setMobileOpen(false)}
+              >
+                <Wallet />
+                <span className="nav-text">Financeiro</span>
+              </Link>
+            ) : null}
             {canAccess(role, "auditoria") ? (
               <Link
                 to="/auditoria"
@@ -215,13 +230,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       ? "Intervenções"
                       : isReports
                         ? "Relatórios"
-                        : isAudit
-                          ? "Auditoria"
-                          : isUsers
-                            ? "Usuários"
-                            : isSettings
-                              ? "Configurações"
-                              : "Visão geral"}
+                        : isFinance
+                          ? "Financeiro"
+                          : isAudit
+                            ? "Auditoria"
+                            : isUsers
+                              ? "Usuários"
+                              : isSettings
+                                ? "Configurações"
+                                : "Visão geral"}
             </span>
           </div>
           <div className="topbar-right">

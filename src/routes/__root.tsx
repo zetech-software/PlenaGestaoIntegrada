@@ -19,6 +19,8 @@ import { RecordsProvider } from "@/hooks/use-records";
 import { PlansProvider } from "@/hooks/use-plans";
 import { AuditProvider } from "@/hooks/use-audit";
 import { ConsentsProvider } from "@/hooks/use-consents";
+import { WaitlistProvider } from "@/hooks/use-waitlist";
+import { FinanceProvider } from "@/hooks/use-finance";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
@@ -151,15 +153,19 @@ function RootComponent() {
           <AuditProvider>
             <StudentsProvider>
               <ConsentsProvider>
-                <SessionsProvider>
-                  <RecordsProvider>
-                    <PlansProvider>
-                      <AppLayout>
-                        <Outlet />
-                      </AppLayout>
-                    </PlansProvider>
-                  </RecordsProvider>
-                </SessionsProvider>
+                <WaitlistProvider>
+                  <FinanceProvider>
+                    <SessionsProvider>
+                      <RecordsProvider>
+                        <PlansProvider>
+                          <AppLayout>
+                            <Outlet />
+                          </AppLayout>
+                        </PlansProvider>
+                      </RecordsProvider>
+                    </SessionsProvider>
+                  </FinanceProvider>
+                </WaitlistProvider>
               </ConsentsProvider>
             </StudentsProvider>
           </AuditProvider>

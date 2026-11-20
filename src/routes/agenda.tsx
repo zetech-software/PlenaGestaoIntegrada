@@ -12,9 +12,13 @@ import {
 } from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
 import { useSessions } from "@/hooks/use-sessions";
+import { WaitlistSection } from "@/components/neuro/waitlist-section";
+import { reminderMessage, whatsappLink } from "@/services/reminder-service";
 import {
+  MAX_RECURRENCE_WEEKS,
   attendanceRate,
   endTime,
+  recurrenceDates,
   sessionsOn,
   shiftDate,
   weekDays,
@@ -63,7 +67,7 @@ const asDate = (d: string) => new Date(`${d}T12:00:00Z`);
 
 function AgendaPage() {
   const { students } = useStudents();
-  const { sessions, isLoading, addSession, setStatus } = useSessions();
+  const { sessions, isLoading, addSession, addSessions, setStatus } = useSessions();
   const [selected, setSelected] = useState(demoDate);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
@@ -73,6 +77,7 @@ function AgendaPage() {
     start: "09:00",
     duration: "50",
     type: "Atendimento individual",
+    weeks: "1",
   });
   const days = weekDays(selected);
   const daySessions = sessionsOn(sessions, selected);
@@ -93,14 +98,16 @@ function AgendaPage() {
     if (!form.studentId) return setError("Escolha um aluno.");
     if (!form.therapistId) return setError("Escolha o terapeuta.");
     try {
-      await addSession({
+      const drafts = recurrenceDates(selected, Number(form.weeks)).map((date) => ({
         studentId: form.studentId,
         therapistId: form.therapistId,
-        date: selected,
+        date,
         start: form.start,
         duration: Number(form.duration),
         type: form.type,
-      });
+      }));
+      if (drafts.length > 1) await addSessions(drafts);
+      else if (drafts[0]) await addSession(drafts[0]);
       setError("");
       setShowForm(false);
     } catch (e) {
@@ -284,6 +291,23 @@ function AgendaPage() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="form-field">
+              <label>Repetir toda semana por</label>
+              <Select value={form.weeks} onValueChange={(v) => setForm({ ...form, weeks: v })}>
+                <SelectTrigger className="bg-card" aria-label="Repetição semanal">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: MAX_RECURRENCE_WEEKS }, (_, i) => String(i + 1)).map(
+                    (n) => (
+                      <SelectItem key={n} value={n}>
+                        {n === "1" ? "Não repetir" : `${n} semanas`}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {error ? (
             <p className="ai-error" role="alert">
@@ -331,6 +355,9 @@ function AgendaPage() {
                   </small>
                 </div>
                 <span className={`status ${statusTone[session.status]}`}>{session.status}</span>
+                {session.status === "Pendente" ? (
+                  <ReminderLink student={student} session={session} />
+                ) : null}
                 <Select
                   value={session.status}
                   onValueChange={(v) => void changeStatus(session.id, v as SessionStatus)}
@@ -354,7 +381,38 @@ function AgendaPage() {
           })}
         </div>
       </section>
+      <WaitlistSection />
       <DemoFooter />
     </main>
+  );
+}
+function ReminderLink({
+  student,
+  session,
+}: {
+  student: { name: string; guardian: string; phone: string };
+  session: { date: string; start: string };
+}) {
+  const href = whatsappLink(
+    student.phone,
+    reminderMessage({
+      guardian: student.guardian,
+      studentFirstName: student.name.split(" ")[0] ?? "",
+      date: session.date,
+      start: session.start,
+    }),
+  );
+  if (!href)
+    return (
+      <span className="status muted" title="Telefone do responsável inválido ou não informado">
+        Sem telefone
+      </span>
+    );
+  return (
+    <Button variant="outline" size="sm" asChild>
+      <a href={href} target="_blank" rel="noopener noreferrer">
+        Lembrete
+      </a>
+    </Button>
   );
 }

@@ -14,8 +14,13 @@ import { useStudents } from "@/hooks/use-students";
 import { useSessions } from "@/hooks/use-sessions";
 import { useRecords } from "@/hooks/use-records";
 import { usePlans } from "@/hooks/use-plans";
+import { useAuth } from "@/hooks/use-auth";
+import { useFinance } from "@/hooks/use-finance";
+import { canAccess } from "@/services/permissions";
+import { formatBRL } from "@/services/finance-service";
 import {
   attendanceByTherapist,
+  financeReport,
   planReport,
   studentReport,
   type Period,
@@ -45,11 +50,12 @@ export const Route = createFileRoute("/relatorios")({
   component: ReportsPage,
 });
 
-type Kind = "frequencia" | "alunos" | "planos";
+type Kind = "frequencia" | "alunos" | "planos" | "financeiro";
 const kindLabels: Record<Kind, string> = {
   frequencia: "Frequência por terapeuta",
   alunos: "Acompanhamento dos alunos",
   planos: "Planos de intervenção",
+  financeiro: "Financeiro",
 };
 const pct = (value: number | null) => (value === null ? "—" : `${value}%`);
 
@@ -58,7 +64,14 @@ function ReportsPage() {
   const { sessions, isLoading: sessionsLoading } = useSessions();
   const { records, isLoading: recordsLoading } = useRecords();
   const { plans, isLoading: plansLoading } = usePlans();
-  const isLoading = studentsLoading || sessionsLoading || recordsLoading || plansLoading;
+  const { role } = useAuth();
+  const { charges, isLoading: financeLoading } = useFinance();
+  const isLoading =
+    studentsLoading || sessionsLoading || recordsLoading || plansLoading || financeLoading;
+  // O relatório financeiro só aparece para quem acessa o financeiro.
+  const kinds = (Object.keys(kindLabels) as Kind[]).filter(
+    (k) => k !== "financeiro" || canAccess(role, "financeiro"),
+  );
   const [kind, setKind] = useState<Kind>("frequencia");
   const [period, setPeriod] = useState<Period>({ from: "2026-11-01", to: "2026-11-30" });
   const invalid = Boolean(period.from && period.to && period.to < period.from);
@@ -87,7 +100,7 @@ function ReportsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {(Object.keys(kindLabels) as Kind[]).map((k) => (
+            {kinds.map((k) => (
               <SelectItem key={k} value={k}>
                 {kindLabels[k]}
               </SelectItem>
@@ -133,6 +146,9 @@ function ReportsPage() {
               <StudentsTable rows={studentReport(students, sessions, records, plans, period)} />
             ) : null}
             {kind === "planos" ? <PlansTable rows={planReport(plans, students, period)} /> : null}
+            {kind === "financeiro" ? (
+              <FinanceTable report={financeReport(charges, students, period)} />
+            ) : null}
           </>
         )}
         <p className="report-note">
@@ -247,5 +263,40 @@ function PlansTable({ rows }: { rows: ReturnType<typeof planReport> }) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+function FinanceTable({ report }: { report: ReturnType<typeof financeReport> }) {
+  if (!report.rows.length) return <p className="report-empty">Nenhuma cobrança neste período.</p>;
+  return (
+    <>
+      <table className="report-table">
+        <thead>
+          <tr>
+            <th>Aluno</th>
+            <th>Descrição</th>
+            <th>Vencimento</th>
+            <th>Valor</th>
+            <th>Situação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {report.rows.map(({ charge, studentName, status }) => (
+            <tr key={charge.id}>
+              <td>{studentName}</td>
+              <td>{charge.description}</td>
+              <td>{formatDate(charge.dueDate)}</td>
+              <td>{formatBRL(charge.amountCents)}</td>
+              <td>{status}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="report-note">
+        <strong>Totais:</strong> em aberto {formatBRL(report.totals.open)} · em atraso{" "}
+        {formatBRL(report.totals.overdue)} · pago {formatBRL(report.totals.paid)}. Cobranças
+        canceladas não entram nos totais.
+      </p>
+    </>
   );
 }

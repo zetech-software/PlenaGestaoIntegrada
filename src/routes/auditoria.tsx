@@ -31,7 +31,7 @@ export const Route = createFileRoute("/auditoria")({
   component: AuditPage,
 });
 
-const resourceLabel: Record<string, string> = { prontuario: "prontuário" };
+const resourceLabel: Record<string, string> = { prontuario: "prontuário", cobranca: "cobrança" };
 const time = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "medium" });
 
 function AuditPage() {

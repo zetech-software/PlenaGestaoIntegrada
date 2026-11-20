@@ -1704,3 +1704,29 @@ input {
   color: var(--muted-foreground);
   margin: 0 0 16px;
 }
+
+/* Versão do PEI para a escola: só aparece ao imprimir a partir de "Compartilhar com a escola". */
+.school-only {
+  display: none;
+}
+.print-footer-school {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+@media print {
+  body[data-print-mode="school"] .clinical-print {
+    display: none !important;
+  }
+  body[data-print-mode="school"] .school-only {
+    display: block;
+  }
+}
+.stats-grid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 760px) {
+  .stats-grid.three {
+    grid-template-columns: 1fr;
+  }
+}
