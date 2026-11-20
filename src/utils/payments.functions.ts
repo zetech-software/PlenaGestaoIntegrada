@@ -22,6 +22,7 @@ export const prepareSubscriptionCheckout = createServerFn({ method: "POST" })
     const { data: tier } = await supabaseAdmin
       .from("subscription_tiers").select("code, included_seats").eq("id", tenant.tier_id).single();
     if (!tier) throw new Error("Plano não encontrado.");
+    if (tier.code === "free") throw new Error("Sua clínica está no plano Free (teste). Peça à Ze Tech para escolher o plano pago antes de assinar.");
     const { gatewayFetch } = await import("@/lib/paddle.server");
     const items = [];
     for (const it of subscriptionItems(tier.code, tenant.seats, tier.included_seats, data.annual)) {
