@@ -71,24 +71,33 @@ function NewStudent() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<StudentStatus>("Ativo");
   const [relationship, setRelationship] = useState("Mãe");
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
+  const [submitting, setSubmitting] = useState(false);
+  const [failed, setFailed] = useState(false);
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const value = (name: string) => String(form.get(name) ?? "").trim();
-    if (!value("name") || !value("guardian")) return;
-    const student = addStudent({
-      name: value("name"),
-      birthDate: value("birthDate"),
-      school: value("school"),
-      grade: value("grade"),
-      guardian: value("guardian"),
-      relationship,
-      phone: value("phone"),
-      email: value("email"),
-      notes: value("notes"),
-      status,
-    });
-    void navigate({ to: "/alunos/$id", params: { id: student.id }, search: { created: true } });
+    if (!value("name") || !value("guardian") || submitting) return;
+    setSubmitting(true);
+    setFailed(false);
+    try {
+      const student = await addStudent({
+        name: value("name"),
+        birthDate: value("birthDate"),
+        school: value("school"),
+        grade: value("grade"),
+        guardian: value("guardian"),
+        relationship,
+        phone: value("phone"),
+        email: value("email"),
+        notes: value("notes"),
+        status,
+      });
+      await navigate({ to: "/alunos/$id", params: { id: student.id }, search: { created: true } });
+    } catch {
+      setFailed(true);
+      setSubmitting(false);
+    }
   }
   return (
     <main className="page">
@@ -106,7 +115,7 @@ function NewStudent() {
         Use somente informações fictícias. Este cadastro é temporário e desaparece ao recarregar a
         página.
       </div>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={(event) => void onSubmit(event)}>
         <section className="form-section">
           <h2>
             <UserRound /> Dados do aluno
@@ -200,7 +209,12 @@ function NewStudent() {
           <Button type="button" variant="outline" asChild>
             <Link to="/alunos">Cancelar</Link>
           </Button>
-          <Button type="submit">
+          {failed && (
+            <p role="alert" className="text-sm text-destructive">
+              Não foi possível cadastrar o aluno. Tente novamente.
+            </p>
+          )}
+          <Button type="submit" disabled={submitting}>
             <Check /> Cadastrar aluno
           </Button>
         </div>

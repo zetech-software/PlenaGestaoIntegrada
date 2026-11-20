@@ -49,8 +49,14 @@ function Detail({ label, value }: { label: string; value: string }) {
 function StudentProfile() {
   const { id } = Route.useParams();
   const { created } = Route.useSearch();
-  const { students } = useStudents();
+  const { students, isLoading } = useStudents();
   const student = students.find((item) => item.id === id);
+  if (isLoading)
+    return (
+      <main className="page" aria-busy="true">
+        <p role="status">Carregando aluno...</p>
+      </main>
+    );
   if (!student)
     return (
       <main className="page">

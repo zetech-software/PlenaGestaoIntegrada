@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { DemoStudentService, filterStudents } from "@/services/student-service";
 describe("Demonstration data boundaries", () => {
-  it("keeps temporary registrations out of a fresh demonstration session", () => {
+  it("keeps temporary registrations out of a fresh demonstration session", async () => {
     const session = new DemoStudentService();
-    const original = session.list().length;
-    session.create({
+    const original = (await session.list()).length;
+    await session.create({
       name: "Aluno fictício de teste",
       birthDate: "2018-03-01",
       school: "Escola fictícia",
@@ -16,21 +16,23 @@ describe("Demonstration data boundaries", () => {
       notes: "",
       status: "Ativo",
     });
-    expect(session.list()).toHaveLength(original + 1);
-    expect(new DemoStudentService().list()).toHaveLength(original);
+    expect(await session.list()).toHaveLength(original + 1);
+    expect(await new DemoStudentService().list()).toHaveLength(original);
     expect(
-      new DemoStudentService().list().some((student) => student.name === "Aluno fictício de teste"),
+      (await new DemoStudentService().list()).some(
+        (student) => student.name === "Aluno fictício de teste",
+      ),
     ).toBe(false);
   });
-  it("does not mutate source data through a returned list", () => {
+  it("does not mutate source data through a returned list", async () => {
     const session = new DemoStudentService();
-    const student = session.list()[0];
+    const student = (await session.list())[0];
     if (!student) throw new Error("Missing demonstration fixture");
     student.name = "Changed";
-    expect(session.get(student.id)?.name).toBe("Lucas Oliveira");
+    expect((await session.get(student.id))?.name).toBe("Lucas Oliveira");
   });
-  it("combines search, status and school filters", () => {
-    const students = new DemoStudentService().list();
+  it("combines search, status and school filters", async () => {
+    const students = await new DemoStudentService().list();
     expect(
       filterStudents(students, "pedro", "Em avaliação", "Colégio Horizonte").map(
         (student) => student.name,
