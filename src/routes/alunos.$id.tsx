@@ -9,11 +9,13 @@ import {
   ClipboardList,
   Printer,
   Sprout,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudents } from "@/hooks/use-students";
 import { StudentAvatar, StatusBadge, DemoFooter } from "@/components/neuro/student-ui";
 import { formatDate, studentAge } from "@/services/student-service";
+import { ActivitySuggestions } from "@/components/neuro/activity-suggestions";
 export const Route = createFileRoute("/alunos/$id")({
   validateSearch: (search: Record<string, unknown>): { created?: boolean } =>
     search["created"] === true ? { created: true } : {},
@@ -87,7 +89,9 @@ function StudentProfile() {
           <strong>Plena Gestão Integrada</strong>
           <small>Ficha cadastral do aluno · por Ze Tech</small>
         </div>
-        <span className="print-date">Emitida em {formatDate(new Date().toISOString().slice(0, 10))}</span>
+        <span className="print-date">
+          Emitida em {formatDate(new Date().toISOString().slice(0, 10))}
+        </span>
       </div>
       <div className="page-heading">
         <div className="profile-heading">
@@ -103,6 +107,16 @@ function StudentProfile() {
           </div>
         </div>
         <div className="heading-actions no-print">
+          <Button variant="outline" asChild>
+            <Link to="/alunos/$id/anamnese" params={{ id: student.id }}>
+              <ClipboardList /> Anamnese
+            </Link>
+          </Button>
+          <Button variant="outline" asChild>
+            <Link to="/alunos/$id/prontuario" params={{ id: student.id }}>
+              <FileText /> Prontuário
+            </Link>
+          </Button>
           <Button variant="outline" onClick={() => window.print()}>
             <Printer /> Baixar ficha em PDF
           </Button>
@@ -147,13 +161,13 @@ function StudentProfile() {
           <p className="profile-note">{student.notes || "Nenhuma observação cadastral."}</p>
         </section>
       </div>
+      <ActivitySuggestions student={student} />
       <p className="print-footer">
         Plena Gestão Integrada · Documento demonstrativo com dados fictícios.
       </p>
       <div className="demo-note mt-6 no-print">
         <Info />
-        Perfil cadastral demonstrativo. Anamnese, prontuários e demais módulos aguardam a validação
-        desta primeira entrega.
+        Perfil cadastral demonstrativo. Anamnese e prontuário ficam nos botões acima. Os registros são demonstrativos e não ficam guardados.
       </div>
       <DemoFooter />
     </main>

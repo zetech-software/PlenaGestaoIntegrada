@@ -14,6 +14,10 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppLayout } from "@/components/neuro/app-layout";
 import { StudentsProvider } from "@/hooks/use-students";
+import { SessionsProvider } from "@/hooks/use-sessions";
+import { RecordsProvider } from "@/hooks/use-records";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
 
 function NotFoundComponent() {
@@ -87,12 +91,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Plena Gestão Integrada" },
       {
         name: "description",
-        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
+        content:
+          "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
       { property: "og:title", content: "Plena Gestão Integrada" },
       {
         property: "og:description",
-        content: "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
+        content:
+          "Tecnologia para acompanhar o desenvolvimento, a aprendizagem e o cuidado de pacientes e alunos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -137,11 +143,26 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <StudentsProvider>
-        <AppLayout>
-          <Outlet />
-        </AppLayout>
-      </StudentsProvider>
+      <AuthProvider>
+        <AuthGate>
+          <StudentsProvider>
+            <SessionsProvider>
+              <RecordsProvider>
+                <AppLayout>
+                  <Outlet />
+                </AppLayout>
+              </RecordsProvider>
+            </SessionsProvider>
+          </StudentsProvider>
+        </AuthGate>
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthGate({ children }: { children: ReactNode }) {
+  const { session, ready } = useAuth();
+  if (!ready) return <div className="login-shell" aria-busy="true" />;
+  if (!session) return <LoginScreen />;
+  return <>{children}</>;
 }

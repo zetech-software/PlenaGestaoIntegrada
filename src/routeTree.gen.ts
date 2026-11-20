@@ -10,19 +10,39 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AlunosRouteImport } from './routes/alunos'
+import { Route as ProntuariosRouteImport } from './routes/prontuarios'
+import { Route as UsuariosRouteImport } from './routes/usuarios'
 import { Route as AlunosIndexRouteImport } from './routes/alunos.index'
 import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
+import { Route as AlunosIdAnamneseRouteImport } from './routes/alunos.$id_.anamnese'
+import { Route as AlunosIdProntuarioRouteImport } from './routes/alunos.$id_.prontuario'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AlunosRoute = AlunosRouteImport.update({
   id: '/alunos',
   path: '/alunos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProntuariosRoute = ProntuariosRouteImport.update({
+  id: '/prontuarios',
+  path: '/prontuarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsuariosRoute = UsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlunosIndexRoute = AlunosIndexRouteImport.update({
@@ -40,39 +60,97 @@ const AlunosNovoRoute = AlunosNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => AlunosRoute,
 } as any)
+const AlunosIdAnamneseRoute = AlunosIdAnamneseRouteImport.update({
+  id: '/$id_/anamnese',
+  path: '/$id/anamnese',
+  getParentRoute: () => AlunosRoute,
+} as any)
+const AlunosIdProntuarioRoute = AlunosIdProntuarioRouteImport.update({
+  id: '/$id_/prontuario',
+  path: '/$id/prontuario',
+  getParentRoute: () => AlunosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
+  '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos/': typeof AlunosIndexRoute
+  '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
+  '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos': typeof AlunosIndexRoute
+  '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
+  '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
+  '/prontuarios': typeof ProntuariosRoute
+  '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
   '/alunos/': typeof AlunosIndexRoute
+  '/alunos/$id_/anamnese': typeof AlunosIdAnamneseRoute
+  '/alunos/$id_/prontuario': typeof AlunosIdProntuarioRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/alunos' | '/alunos/$id' | '/alunos/novo' | '/alunos/'
+  fullPaths:
+    | '/'
+    | '/agenda'
+    | '/alunos'
+    | '/prontuarios'
+    | '/usuarios'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos/'
+    | '/alunos/$id/anamnese'
+    | '/alunos/$id/prontuario'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/alunos/$id' | '/alunos/novo' | '/alunos'
-  id: '__root__' | '/' | '/alunos' | '/alunos/$id' | '/alunos/novo' | '/alunos/'
+  to:
+    | '/'
+    | '/agenda'
+    | '/prontuarios'
+    | '/usuarios'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos'
+    | '/alunos/$id/anamnese'
+    | '/alunos/$id/prontuario'
+  id:
+    | '__root__'
+    | '/'
+    | '/agenda'
+    | '/alunos'
+    | '/prontuarios'
+    | '/usuarios'
+    | '/alunos/$id'
+    | '/alunos/novo'
+    | '/alunos/'
+    | '/alunos/$id_/anamnese'
+    | '/alunos/$id_/prontuario'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
   AlunosRoute: typeof AlunosRouteWithChildren
+  ProntuariosRoute: typeof ProntuariosRoute
+  UsuariosRoute: typeof UsuariosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -84,11 +162,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/alunos': {
       id: '/alunos'
       path: '/alunos'
       fullPath: '/alunos'
       preLoaderRoute: typeof AlunosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prontuarios': {
+      id: '/prontuarios'
+      path: '/prontuarios'
+      fullPath: '/prontuarios'
+      preLoaderRoute: typeof ProntuariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usuarios': {
+      id: '/usuarios'
+      path: '/usuarios'
+      fullPath: '/usuarios'
+      preLoaderRoute: typeof UsuariosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/alunos/': {
@@ -112,6 +211,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunosNovoRouteImport
       parentRoute: typeof AlunosRoute
     }
+    '/alunos/$id_/anamnese': {
+      id: '/alunos/$id_/anamnese'
+      path: '/$id/anamnese'
+      fullPath: '/alunos/$id/anamnese'
+      preLoaderRoute: typeof AlunosIdAnamneseRouteImport
+      parentRoute: typeof AlunosRoute
+    }
+    '/alunos/$id_/prontuario': {
+      id: '/alunos/$id_/prontuario'
+      path: '/$id/prontuario'
+      fullPath: '/alunos/$id/prontuario'
+      preLoaderRoute: typeof AlunosIdProntuarioRouteImport
+      parentRoute: typeof AlunosRoute
+    }
   }
 }
 
@@ -119,12 +232,16 @@ interface AlunosRouteChildren {
   AlunosIdRoute: typeof AlunosIdRoute
   AlunosNovoRoute: typeof AlunosNovoRoute
   AlunosIndexRoute: typeof AlunosIndexRoute
+  AlunosIdAnamneseRoute: typeof AlunosIdAnamneseRoute
+  AlunosIdProntuarioRoute: typeof AlunosIdProntuarioRoute
 }
 
 const AlunosRouteChildren: AlunosRouteChildren = {
   AlunosIdRoute: AlunosIdRoute,
   AlunosNovoRoute: AlunosNovoRoute,
   AlunosIndexRoute: AlunosIndexRoute,
+  AlunosIdAnamneseRoute: AlunosIdAnamneseRoute,
+  AlunosIdProntuarioRoute: AlunosIdProntuarioRoute,
 }
 
 const AlunosRouteWithChildren =
@@ -132,7 +249,10 @@ const AlunosRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
   AlunosRoute: AlunosRouteWithChildren,
+  ProntuariosRoute: ProntuariosRoute,
+  UsuariosRoute: UsuariosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

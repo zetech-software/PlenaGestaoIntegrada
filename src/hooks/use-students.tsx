@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { DemoStudentService } from "@/services/student-service";
+import { useAuth } from "@/hooks/use-auth";
+import { canSeeStudent } from "@/services/permissions";
 import type { Student, StudentDraft, StudentService } from "@/types/student";
 interface StudentContextValue {
   students: Student[];
@@ -18,10 +20,14 @@ export function StudentsProvider({ children }: { children: ReactNode }) {
     mutationFn: (draft: StudentDraft) => service.create(draft),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: studentsKey }),
   });
+  const { role, assigned } = useAuth();
+  const visible = (query.data ?? []).filter(
+    (s) => canSeeStudent(role, assigned, s.id) || s.id.startsWith("demo-"),
+  );
   return (
     <StudentContext.Provider
       value={{
-        students: query.data ?? [],
+        students: visible,
         isLoading: query.isPending,
         error: query.error,
         addStudent: (draft) => create.mutateAsync(draft),
