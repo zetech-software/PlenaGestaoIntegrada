@@ -29,8 +29,9 @@ export const Route = createFileRoute("/prontuarios")({
 });
 
 function RecordsOverview() {
-  const { students } = useStudents();
-  const { anamneses, records } = useRecords();
+  const { students, isLoading: studentsLoading } = useStudents();
+  const { anamneses, records, isLoading: recordsLoading } = useRecords();
+  const isLoading = studentsLoading || recordsLoading;
   return (
     <main className="page">
       <div className="page-heading">
@@ -42,8 +43,9 @@ function RecordsOverview() {
           <p>Histórico, queixas e evolução de cada aluno.</p>
         </div>
       </div>
-      <div className="schedule">
-        {students.map((s) => {
+      <div className="schedule" aria-busy={isLoading}>
+        {isLoading ? <p role="status">Carregando prontuários...</p> : null}
+        {(isLoading ? [] : students).map((s) => {
           const last = recordsFor(records, s.id)[0];
           const hasAnamnesis = anamneses.some((a) => a.studentId === s.id);
           return (

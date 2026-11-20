@@ -66,7 +66,7 @@ function NewPlan() {
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     try {
-      const plan = addPlan({
+      const plan = await addPlan({
         studentId,
         kind,
         status,

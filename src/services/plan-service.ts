@@ -1,6 +1,6 @@
 import { demoDate } from "@/data/demo-students";
 import { MIN_TEXT } from "@/services/record-service";
-import type { InterventionPlan, PlanDraft, PlanKind, PlanStatus } from "@/types/plan";
+import type { InterventionPlan, PlanDraft, PlanKind, PlanService, PlanStatus } from "@/types/plan";
 
 export const MAX_GOALS = 8;
 /** Retorna mensagem de erro ou null. */
@@ -45,16 +45,17 @@ export function filterPlans(
     (p) => (kind === "Todos" || p.kind === kind) && (status === "Todos" || p.status === status),
   );
 }
-export class DemoPlanService {
+// Troque por um adaptador Supabase/REST que implemente PlanService quando o banco existir.
+export class DemoPlanService implements PlanService {
   private plans: InterventionPlan[];
   private seq = 0;
   constructor(seed: InterventionPlan[]) {
     this.plans = seed.map((p) => ({ ...p, goals: p.goals.map((g) => ({ ...g })) }));
   }
-  list() {
+  async list() {
     return this.plans.map((p) => ({ ...p, goals: p.goals.map((g) => ({ ...g })) }));
   }
-  create(draft: PlanDraft): InterventionPlan {
+  async create(draft: PlanDraft): Promise<InterventionPlan> {
     const error = validatePlan(draft);
     if (error) throw new Error(error);
     const id = `plano-${++this.seq}`;
@@ -74,10 +75,10 @@ export class DemoPlanService {
     this.plans = [plan, ...this.plans];
     return { ...plan, goals: plan.goals.map((g) => ({ ...g })) };
   }
-  setStatus(id: string, status: PlanStatus) {
+  async setStatus(id: string, status: PlanStatus) {
     this.plans = this.plans.map((p) => (p.id === id ? { ...p, status } : p));
   }
-  setGoalProgress(planId: string, goalId: string, progress: number) {
+  async setGoalProgress(planId: string, goalId: string, progress: number) {
     const value = clampProgress(progress);
     this.plans = this.plans.map((p) =>
       p.id === planId

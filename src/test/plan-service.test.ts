@@ -42,21 +42,21 @@ describe("plano de intervenção", () => {
       ),
     ).toMatch(/prazo/);
   });
-  it("cria planos com metas em 0% e sem persistir entre sessões", () => {
+  it("cria planos com metas em 0% e sem persistir entre sessões", async () => {
     const service = new DemoPlanService(demoPlans);
-    const created = service.create(draft());
+    const created = await service.create(draft());
     expect(created.goals.every((g) => g.progress === 0)).toBe(true);
-    expect(service.list()).toHaveLength(demoPlans.length + 1);
-    expect(new DemoPlanService(demoPlans).list()).toHaveLength(demoPlans.length);
-    expect(() => service.create(draft({ title: "" }))).toThrow();
+    expect(await service.list()).toHaveLength(demoPlans.length + 1);
+    expect(await new DemoPlanService(demoPlans).list()).toHaveLength(demoPlans.length);
+    await expect(service.create(draft({ title: "" }))).rejects.toThrow();
   });
-  it("atualiza progresso limitado entre 0 e 100 e calcula a média", () => {
+  it("atualiza progresso limitado entre 0 e 100 e calcula a média", async () => {
     const service = new DemoPlanService(demoPlans);
-    const plan = service.list().find((p) => p.id === "p1");
+    const plan = (await service.list()).find((p) => p.id === "p1");
     if (!plan?.goals[0] || !plan.goals[1]) throw new Error("fixture");
-    service.setGoalProgress(plan.id, plan.goals[0].id, 250);
-    service.setGoalProgress(plan.id, plan.goals[1].id, -5);
-    const updated = service.list().find((p) => p.id === "p1");
+    await service.setGoalProgress(plan.id, plan.goals[0].id, 250);
+    await service.setGoalProgress(plan.id, plan.goals[1].id, -5);
+    const updated = (await service.list()).find((p) => p.id === "p1");
     expect(updated?.goals.map((g) => g.progress)).toEqual([100, 0]);
     expect(planProgress({ goals: updated?.goals ?? [] })).toBe(50);
     expect(planProgress({ goals: [] })).toBe(0);

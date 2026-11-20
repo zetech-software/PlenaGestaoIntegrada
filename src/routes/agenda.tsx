@@ -63,7 +63,7 @@ const asDate = (d: string) => new Date(`${d}T12:00:00Z`);
 
 function AgendaPage() {
   const { students } = useStudents();
-  const { sessions, addSession, setStatus } = useSessions();
+  const { sessions, isLoading, addSession, setStatus } = useSessions();
   const [selected, setSelected] = useState(demoDate);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
@@ -79,12 +79,21 @@ function AgendaPage() {
   const weekSessions = sessions.filter((x) => days.includes(x.date));
   const rate = attendanceRate(weekSessions);
 
-  function submit(event: React.FormEvent) {
+  async function changeStatus(id: string, status: SessionStatus) {
+    try {
+      await setStatus(id, status);
+      setError("");
+    } catch {
+      setError("Não foi possível atualizar o status. Tente novamente.");
+    }
+  }
+
+  async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (!form.studentId) return setError("Escolha um aluno.");
     if (!form.therapistId) return setError("Escolha o terapeuta.");
     try {
-      addSession({
+      await addSession({
         studentId: form.studentId,
         therapistId: form.therapistId,
         date: selected,
@@ -184,7 +193,7 @@ function AgendaPage() {
       </div>
 
       {showForm ? (
-        <form className="form-section agenda-form" onSubmit={submit}>
+        <form className="form-section agenda-form" onSubmit={(e) => void submit(e)}>
           <h2>Novo atendimento · {longDate.format(asDate(selected))}</h2>
           <div className="form-grid">
             <div className="form-field">
@@ -297,11 +306,12 @@ function AgendaPage() {
             <p>{daySessions.length} atendimentos</p>
           </div>
         </div>
-        <div className="schedule">
-          {daySessions.length === 0 ? (
+        <div className="schedule" aria-busy={isLoading}>
+          {isLoading ? <p role="status">Carregando agenda...</p> : null}
+          {!isLoading && daySessions.length === 0 ? (
             <p className="text-muted-foreground p-4">Nenhum atendimento neste dia.</p>
           ) : null}
-          {daySessions.map((session) => {
+          {(isLoading ? [] : daySessions).map((session) => {
             const student = students.find((x) => x.id === session.studentId);
             if (!student) return null;
             return (
@@ -323,7 +333,7 @@ function AgendaPage() {
                 <span className={`status ${statusTone[session.status]}`}>{session.status}</span>
                 <Select
                   value={session.status}
-                  onValueChange={(v) => setStatus(session.id, v as SessionStatus)}
+                  onValueChange={(v) => void changeStatus(session.id, v as SessionStatus)}
                 >
                   <SelectTrigger
                     className="w-36 bg-card"

@@ -1,5 +1,11 @@
 import { demoDate } from "@/data/demo-students";
-import type { Anamnesis, AnamnesisDraft, RecordDraft, RecordEntry } from "@/types/record";
+import type {
+  Anamnesis,
+  AnamnesisDraft,
+  RecordDraft,
+  RecordEntry,
+  RecordService,
+} from "@/types/record";
 
 export const MIN_TEXT = 10;
 /** Retorna mensagem de erro ou null. Queixa principal é obrigatória. */
@@ -31,7 +37,8 @@ export function evolutionSummary(records: RecordEntry[]) {
     attention: records.filter((r) => r.evolution === "Precisa de atenção").length,
   };
 }
-export class DemoRecordService {
+// Troque por um adaptador Supabase/REST que implemente RecordService quando o banco existir.
+export class DemoRecordService implements RecordService {
   private anamneses: Anamnesis[];
   private records: RecordEntry[];
   private seq = 0;
@@ -39,20 +46,20 @@ export class DemoRecordService {
     this.anamneses = anamneses.map((a) => ({ ...a }));
     this.records = records.map((r) => ({ ...r }));
   }
-  listAnamneses() {
+  async listAnamneses() {
     return this.anamneses.map((a) => ({ ...a }));
   }
-  listRecords() {
+  async listRecords() {
     return this.records.map((r) => ({ ...r }));
   }
-  saveAnamnesis(draft: AnamnesisDraft) {
+  async saveAnamnesis(draft: AnamnesisDraft) {
     const error = validateAnamnesis(draft);
     if (error) throw new Error(error);
     const saved: Anamnesis = { ...draft, updatedAt: demoDate };
     this.anamneses = [...this.anamneses.filter((a) => a.studentId !== draft.studentId), saved];
     return { ...saved };
   }
-  addRecord(draft: RecordDraft) {
+  async addRecord(draft: RecordDraft) {
     const error = validateRecord(draft);
     if (error) throw new Error(error);
     const entry: RecordEntry = { ...draft, id: `reg-${++this.seq}` };

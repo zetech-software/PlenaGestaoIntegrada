@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, Printer, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -40,8 +41,23 @@ function PlanDetail() {
   const { id } = Route.useParams();
   const { created } = Route.useSearch();
   const { students } = useStudents();
-  const { plans, setStatus, setGoalProgress } = usePlans();
+  const { plans, isLoading, setStatus, setGoalProgress } = usePlans();
+  const [error, setError] = useState("");
+  async function update(action: () => Promise<void>) {
+    try {
+      await action();
+      setError("");
+    } catch {
+      setError("Não foi possível salvar a alteração. Tente novamente.");
+    }
+  }
   const plan = plans.find((p) => p.id === id);
+  if (isLoading)
+    return (
+      <main className="page" aria-busy="true">
+        <p role="status">Carregando plano...</p>
+      </main>
+    );
   if (!plan)
     return (
       <main className="page">
@@ -82,7 +98,10 @@ function PlanDetail() {
           </p>
         </div>
         <div className="heading-actions no-print">
-          <Select value={plan.status} onValueChange={(v) => setStatus(plan.id, v as PlanStatus)}>
+          <Select
+            value={plan.status}
+            onValueChange={(v) => void update(() => setStatus(plan.id, v as PlanStatus))}
+          >
             <SelectTrigger aria-label="Situação do plano" className="filter-select">
               <SelectValue />
             </SelectTrigger>
@@ -99,6 +118,11 @@ function PlanDetail() {
           </Button>
         </div>
       </div>
+      {error ? (
+        <p role="alert" className="text-sm text-destructive no-print mb-3">
+          {error}
+        </p>
+      ) : null}
       <section className="detail-section">
         <h2>Resumo</h2>
         <p className="profile-note">{plan.summary}</p>
@@ -145,7 +169,9 @@ function PlanDetail() {
                   step={10}
                   value={goal.progress}
                   aria-label={`Progresso da meta: ${goal.description}`}
-                  onChange={(e) => setGoalProgress(plan.id, goal.id, Number(e.target.value))}
+                  onChange={(e) =>
+                    void update(() => setGoalProgress(plan.id, goal.id, Number(e.target.value)))
+                  }
                 />
               </div>
             </li>

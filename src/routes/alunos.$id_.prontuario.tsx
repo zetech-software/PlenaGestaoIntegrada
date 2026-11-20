@@ -47,8 +47,8 @@ export const Route = createFileRoute("/alunos/$id_/prontuario")({
 
 function RecordPage() {
   const { id } = Route.useParams();
-  const { students } = useStudents();
-  const { records, addRecord } = useRecords();
+  const { students, isLoading: studentsLoading } = useStudents();
+  const { records, isLoading: recordsLoading, addRecord } = useRecords();
   const student = students.find((s) => s.id === id);
   const list = recordsFor(records, id);
   const summary = evolutionSummary(list);
@@ -65,6 +65,12 @@ function RecordPage() {
   const [draft, setDraft] = useState<RecordDraft>(empty);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
+  if (studentsLoading || recordsLoading)
+    return (
+      <main className="page" aria-busy="true">
+        <p role="status">Carregando prontuário...</p>
+      </main>
+    );
   if (!student)
     return (
       <main className="page">
@@ -120,10 +126,10 @@ function RecordPage() {
       {open ? (
         <form
           className="form-section agenda-form"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             try {
-              addRecord(draft);
+              await addRecord(draft);
               setDraft(empty);
               setOpen(false);
               setError("");
