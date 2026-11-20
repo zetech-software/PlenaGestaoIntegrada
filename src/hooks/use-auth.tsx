@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createStableContext } from "@/lib/stable-context";
+import { useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { primaryRole, type AppRole } from "@/services/permissions";
@@ -10,7 +11,7 @@ interface Ctx {
   reloadAccess: () => Promise<void>;
   signOut: () => Promise<void>;
 }
-const AuthContext = createContext<Ctx | null>(null);
+const AuthContext = createStableContext<Ctx>("AuthContext");
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);

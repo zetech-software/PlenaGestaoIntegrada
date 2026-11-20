@@ -1,5 +1,6 @@
+import { createStableContext } from "@/lib/stable-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
 import { DemoStudentService } from "@/services/student-service";
 import { useAuth } from "@/hooks/use-auth";
 import { canSeeStudent } from "@/services/permissions";
@@ -10,7 +11,7 @@ interface StudentContextValue {
   error: Error | null;
   addStudent: (draft: StudentDraft) => Promise<Student>;
 }
-const StudentContext = createContext<StudentContextValue | null>(null);
+const StudentContext = createStableContext<StudentContextValue>("StudentContext");
 const studentsKey = ["students"] as const;
 export function StudentsProvider({ children }: { children: ReactNode }) {
   const [service] = useState<StudentService>(() => new DemoStudentService());

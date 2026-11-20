@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createStableContext } from "@/lib/stable-context";
+import { useContext, useState, type ReactNode } from "react";
 import { DemoSessionService } from "@/services/session-service";
 import { demoSessions } from "@/data/demo-sessions";
 import { useStudents } from "@/hooks/use-students";
@@ -8,7 +9,7 @@ interface Ctx {
   addSession: (draft: SessionDraft) => Session;
   setStatus: (id: string, status: SessionStatus) => void;
 }
-const SessionContext = createContext<Ctx | null>(null);
+const SessionContext = createStableContext<Ctx>("SessionContext");
 export function SessionsProvider({ children }: { children: ReactNode }) {
   const [service] = useState(() => new DemoSessionService(demoSessions));
   const [sessions, setSessions] = useState(() => service.list());

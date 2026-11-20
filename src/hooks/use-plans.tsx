@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createStableContext } from "@/lib/stable-context";
+import { useContext, useState, type ReactNode } from "react";
 import { DemoPlanService } from "@/services/plan-service";
 import { demoPlans } from "@/data/demo-plans";
 import { useStudents } from "@/hooks/use-students";
@@ -9,7 +10,7 @@ interface Ctx {
   setStatus: (id: string, status: PlanStatus) => void;
   setGoalProgress: (planId: string, goalId: string, progress: number) => void;
 }
-const PlanContext = createContext<Ctx | null>(null);
+const PlanContext = createStableContext<Ctx>("PlanContext");
 export function PlansProvider({ children }: { children: ReactNode }) {
   const [service] = useState(() => new DemoPlanService(demoPlans));
   const [plans, setPlans] = useState(() => service.list());

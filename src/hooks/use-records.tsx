@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createStableContext } from "@/lib/stable-context";
+import { useContext, useState, type ReactNode } from "react";
 import { DemoRecordService } from "@/services/record-service";
 import { demoAnamneses, demoRecords } from "@/data/demo-records";
 import type { Anamnesis, AnamnesisDraft, RecordDraft, RecordEntry } from "@/types/record";
@@ -8,7 +9,7 @@ interface Ctx {
   saveAnamnesis: (d: AnamnesisDraft) => Anamnesis;
   addRecord: (d: RecordDraft) => RecordEntry;
 }
-const RecordContext = createContext<Ctx | null>(null);
+const RecordContext = createStableContext<Ctx>("RecordContext");
 export function RecordsProvider({ children }: { children: ReactNode }) {
   const [service] = useState(() => new DemoRecordService(demoAnamneses, demoRecords));
   const [anamneses, setAnamneses] = useState(() => service.listAnamneses());
