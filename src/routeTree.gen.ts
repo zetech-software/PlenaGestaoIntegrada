@@ -14,6 +14,7 @@ import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AlunosRouteImport } from './routes/alunos'
 import { Route as AuditoriaRouteImport } from './routes/auditoria'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as FinanceiroRouteImport } from './routes/financeiro'
 import { Route as IntervencoesRouteImport } from './routes/intervencoes'
 import { Route as ProntuariosRouteImport } from './routes/prontuarios'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
@@ -52,6 +53,11 @@ const AuditoriaRoute = AuditoriaRouteImport.update({
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   id: '/configuracoes',
   path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceiroRoute = FinanceiroRouteImport.update({
+  id: '/financeiro',
+  path: '/financeiro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IntervencoesRoute = IntervencoesRouteImport.update({
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/alunos': typeof AlunosRouteWithChildren
   '/auditoria': typeof AuditoriaRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
+  '/financeiro': typeof FinanceiroRoute
   '/intervencoes': typeof IntervencoesRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
   '/relatorios': typeof RelatoriosRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
   '/auditoria': typeof AuditoriaRoute
+  '/financeiro': typeof FinanceiroRoute
   '/prontuarios': typeof ProntuariosRoute
   '/relatorios': typeof RelatoriosRoute
   '/usuarios': typeof UsuariosRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/alunos': typeof AlunosRouteWithChildren
   '/auditoria': typeof AuditoriaRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
+  '/financeiro': typeof FinanceiroRoute
   '/intervencoes': typeof IntervencoesRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
   '/relatorios': typeof RelatoriosRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/alunos'
     | '/auditoria'
     | '/configuracoes'
+    | '/financeiro'
     | '/intervencoes'
     | '/prontuarios'
     | '/relatorios'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agenda'
     | '/auditoria'
+    | '/financeiro'
     | '/prontuarios'
     | '/relatorios'
     | '/usuarios'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/alunos'
     | '/auditoria'
     | '/configuracoes'
+    | '/financeiro'
     | '/intervencoes'
     | '/prontuarios'
     | '/relatorios'
@@ -255,6 +267,7 @@ export interface RootRouteChildren {
   AlunosRoute: typeof AlunosRouteWithChildren
   AuditoriaRoute: typeof AuditoriaRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
+  FinanceiroRoute: typeof FinanceiroRoute
   IntervencoesRoute: typeof IntervencoesRouteWithChildren
   ProntuariosRoute: typeof ProntuariosRoute
   RelatoriosRoute: typeof RelatoriosRoute
@@ -296,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/financeiro': {
+      id: '/financeiro'
+      path: '/financeiro'
+      fullPath: '/financeiro'
+      preLoaderRoute: typeof FinanceiroRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/intervencoes': {
@@ -454,6 +474,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlunosRoute: AlunosRouteWithChildren,
   AuditoriaRoute: AuditoriaRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
+  FinanceiroRoute: FinanceiroRoute,
   IntervencoesRoute: IntervencoesRouteWithChildren,
   ProntuariosRoute: ProntuariosRoute,
   RelatoriosRoute: RelatoriosRoute,

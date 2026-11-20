@@ -2,6 +2,8 @@ import { demoTherapists, demoTherapistByStudent, type Therapist } from "@/data/d
 import { attendanceRate } from "@/services/session-service";
 import { planProgress } from "@/services/plan-service";
 import { recordsFor } from "@/services/record-service";
+import { displayStatus } from "@/services/finance-service";
+import type { Charge, ChargeDisplayStatus } from "@/types/finance";
 import type { InterventionPlan } from "@/types/plan";
 import type { RecordEntry } from "@/types/record";
 import type { Session } from "@/types/session";
@@ -109,4 +111,26 @@ export function planReport(
       studentName: students.find((s) => s.id === plan.studentId)?.name ?? "—",
       progress: planProgress(plan),
     }));
+}
+export interface FinanceReportRow {
+  charge: Charge;
+  studentName: string;
+  status: ChargeDisplayStatus;
+}
+/** Cobranças com vencimento no período, com os totais por situação (canceladas ficam de fora dos totais). */
+export function financeReport(charges: Charge[], students: Student[], period: Period) {
+  const rows: FinanceReportRow[] = charges
+    .filter((c) => inPeriod(c.dueDate, period))
+    .sort((a, b) => a.dueDate.localeCompare(b.dueDate) || a.id.localeCompare(b.id))
+    .map((charge) => ({
+      charge,
+      studentName: students.find((s) => s.id === charge.studentId)?.name ?? "—",
+      status: displayStatus(charge),
+    }));
+  const total = (status: ChargeDisplayStatus) =>
+    rows.filter((r) => r.status === status).reduce((sum, r) => sum + r.charge.amountCents, 0);
+  return {
+    rows,
+    totals: { open: total("Em aberto"), overdue: total("Atrasado"), paid: total("Pago") },
+  };
 }

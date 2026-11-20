@@ -1,6 +1,7 @@
 import { demoDate } from "@/data/demo-students";
 import { MIN_TEXT } from "@/services/record-service";
 import type { InterventionPlan, PlanDraft, PlanKind, PlanService, PlanStatus } from "@/types/plan";
+import type { Student } from "@/types/student";
 
 export const MAX_GOALS = 8;
 /** Retorna mensagem de erro ou null. */
@@ -86,4 +87,29 @@ export class DemoPlanService implements PlanService {
         : p,
     );
   }
+}
+/** Só o PEI (educacional) vai para a escola; o PTI (terapêutico) é clínico. */
+export function canShareWithSchool(plan: Pick<InterventionPlan, "kind">) {
+  return plan.kind === "PEI";
+}
+/**
+ * Versão para a escola: metas, estratégias, prazos e progresso. Deixa de fora o resumo clínico e a
+ * área de atuação, que podem conter informação de saúde.
+ */
+export function buildSchoolCopy(plan: InterventionPlan, student: Student) {
+  return {
+    studentName: student.name,
+    school: student.school,
+    grade: student.grade,
+    title: plan.title,
+    startDate: plan.startDate,
+    reviewDate: plan.reviewDate,
+    overall: planProgress(plan),
+    goals: plan.goals.map((g) => ({
+      description: g.description,
+      strategy: g.strategy,
+      deadline: g.deadline,
+      progress: g.progress,
+    })),
+  };
 }

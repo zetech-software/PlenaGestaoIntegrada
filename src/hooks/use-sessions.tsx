@@ -9,6 +9,7 @@ interface Ctx {
   isLoading: boolean;
   error: Error | null;
   addSession: (draft: SessionDraft) => Promise<Session>;
+  addSessions: (drafts: SessionDraft[]) => Promise<Session[]>;
   setStatus: (id: string, status: SessionStatus) => Promise<void>;
 }
 const SessionContext = createContext<Ctx | null>(null);
@@ -20,6 +21,10 @@ export function SessionsProvider({ children }: { children: ReactNode }) {
   const { students, isLoading: studentsLoading } = useStudents();
   const create = useMutation({
     mutationFn: (draft: SessionDraft) => service.create(draft),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: sessionsKey }),
+  });
+  const createMany = useMutation({
+    mutationFn: (drafts: SessionDraft[]) => service.createMany(drafts),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: sessionsKey }),
   });
   const changeStatus = useMutation({
@@ -45,6 +50,7 @@ export function SessionsProvider({ children }: { children: ReactNode }) {
     isLoading: query.isPending || studentsLoading,
     error: query.error,
     addSession: (draft) => create.mutateAsync(draft),
+    addSessions: (drafts) => createMany.mutateAsync(drafts),
     setStatus: (id, status) => changeStatus.mutateAsync({ id, status }),
   };
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

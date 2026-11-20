@@ -13,6 +13,7 @@ export type Area =
   | "relatorios"
   | "usuarios"
   | "auditoria"
+  | "financeiro"
   | "configuracoes";
 
 /** Maior privilégio vence quando a conta tem mais de um perfil. */
@@ -25,7 +26,8 @@ export function primaryRole(roles: AppRole[]): AppRole | null {
 export function canAccess(role: AppRole | null, area: Area) {
   if (!role) return false;
   if (area === "usuarios" || area === "auditoria") return role === "admin";
-  if (area === "configuracoes") return role === "admin" || role === "clinica";
+  if (area === "configuracoes" || area === "financeiro")
+    return role === "admin" || role === "clinica";
   return true;
 }
 /** Terapeuta só vê alunos vinculados; admin e clínica veem todos. */
@@ -44,6 +46,7 @@ export function canExportStudent(role: AppRole | null) {
 }
 export function areaForPath(pathname: string): Area {
   if (pathname.startsWith("/auditoria")) return "auditoria";
+  if (pathname.startsWith("/financeiro")) return "financeiro";
   if (pathname.startsWith("/usuarios")) return "usuarios";
   if (pathname.startsWith("/configuracoes")) return "configuracoes";
   if (pathname.startsWith("/prontuarios") || /\/(anamnese|prontuario)$/.test(pathname))

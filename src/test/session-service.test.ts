@@ -14,7 +14,7 @@ describe("agenda demonstrativa", () => {
     await expect(
       service.create({
         studentId: "5",
-        therapistId: "t3",
+        therapistId: "t1",
         date: "2026-11-20",
         start: "09:00",
         duration: 50,

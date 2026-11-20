@@ -20,5 +20,6 @@ export type SessionDraft = Omit<Session, "id" | "status">;
 export interface SessionService {
   list(): Promise<Session[]>;
   create(draft: SessionDraft): Promise<Session>;
+  createMany(drafts: SessionDraft[]): Promise<Session[]>;
   setStatus(id: string, status: SessionStatus): Promise<void>;
 }
