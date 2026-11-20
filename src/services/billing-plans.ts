@@ -130,7 +130,7 @@ export const paymentsTotal = (list: TenantPayment[]) => list.reduce((s, p) => s 
 /** Receita mensal, custo e margem por plano a partir dos clientes não suspensos. */
 export function revenueByTier(
   tiers: SubscriptionTier[],
-  tenants: { tierId?: string | null; seats: number; status: string; planDays?: number }[],
+  tenants: { tierId?: string | null; seats: number; status: string; planDays?: number | undefined }[],
 ) {
   return tiers.map((tier) => {
     const list = tenants.filter((t) => t.tierId === tier.id && t.status !== "Suspenso");

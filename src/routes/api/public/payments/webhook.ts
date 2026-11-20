@@ -13,13 +13,13 @@ async function handle(req: Request, env: PaddleEnv) {
     case EventName.SubscriptionCreated:
     case EventName.SubscriptionUpdated:
     case EventName.SubscriptionCanceled: {
-      const patch: Record<string, unknown> = {
+      const patch: { subscription_id: string; subscription_status: string; subscription_env: string; valid_until?: string } = {
         subscription_id: data.id,
         subscription_status: event.eventType === EventName.SubscriptionCanceled ? "canceled" : data.status,
         subscription_env: env,
       };
       const end = day(data.currentBillingPeriod?.endsAt);
-      if (end && env === "live") patch["valid_until"] = end;
+      if (end && env === "live") patch.valid_until = end;
       await supabaseAdmin.from("tenants").update(patch).eq("id", tenantId);
       break;
     }
