@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useStudents } from "@/hooks/use-students";
 import { StudentAvatar, StatusBadge, DemoFooter } from "@/components/neuro/student-ui";
 import { formatDate, studentAge } from "@/services/student-service";
+import { ActivitySuggestions } from "@/components/neuro/activity-suggestions";
 export const Route = createFileRoute("/alunos/$id")({
   validateSearch: (search: Record<string, unknown>): { created?: boolean } =>
     search["created"] === true ? { created: true } : {},
@@ -141,6 +142,7 @@ function StudentProfile() {
           <p className="profile-note">{student.notes || "Nenhuma observação cadastral."}</p>
         </section>
       </div>
+      <ActivitySuggestions student={student} />
       <p className="print-footer">
         Plena Gestão Integrada · Documento demonstrativo com dados fictícios.
       </p>
