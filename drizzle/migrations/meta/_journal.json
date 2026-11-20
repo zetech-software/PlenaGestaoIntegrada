@@ -15,6 +15,13 @@
       "when": 1795189752153,
       "tag": "0001_fase1_dados_persistentes",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795189810775,
+      "tag": "0002_fase2_consentimento_auditoria",
+      "breakpoints": true
     }
   ]
 }

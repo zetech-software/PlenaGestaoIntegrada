@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   ACTIVITY_INSTRUCTIONS,
   buildActivityPrompt,
@@ -9,15 +10,31 @@ import {
 export type ActivitySuggestionResult =
   { text: string; error?: undefined } | { text?: undefined; error: string };
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const suggestActivities = createServerFn({ method: "POST" })
-  .inputValidator((input: ActivityRequest) => ({
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: ActivityRequest & { studentId: string }) => ({
+    studentId: String(input.studentId ?? "").slice(0, 64),
     studentFirstName: String(input.studentFirstName ?? "").slice(0, 60),
     age: Number(input.age) || 0,
     grade: String(input.grade ?? "").slice(0, 60),
     observations: String(input.observations ?? ""),
     goals: String(input.goals ?? ""),
   }))
-  .handler(async ({ data }): Promise<ActivitySuggestionResult> => {
+  .handler(async ({ data, context }): Promise<ActivitySuggestionResult> => {
+    // Students stored in the database (uuid ids) need an active "ia" consent checked
+    // server-side; legacy in-memory demo ids carry only fictitious data.
+    if (UUID.test(data.studentId)) {
+      const { data: ok, error } = await context.supabase.rpc("has_active_consent", {
+        _student_id: data.studentId,
+        _purpose: "ia",
+      });
+      if (error || !ok)
+        return { error: "Sem consentimento vigente do responsável para uso de IA com este aluno." };
+    } else if (!data.studentId) {
+      return { error: "Aluno não informado." };
+    }
     const invalid = validateActivityRequest(data);
     if (invalid) return { error: invalid };
     const apiKey = process.env["LOVABLE_API_KEY"];

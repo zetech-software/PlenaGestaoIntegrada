@@ -66,7 +66,7 @@ export function ActivitySuggestions({ student }: { student: Student }) {
     setError(null);
     setLoading(true);
     try {
-      const response = await suggest({ data: request });
+      const response = await suggest({ data: { ...request, studentId: student.id } });
       if (response.error) setError(response.error);
       else setResult(response.text ?? "");
     } catch {

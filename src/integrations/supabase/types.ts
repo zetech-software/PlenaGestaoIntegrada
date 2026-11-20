@@ -70,6 +70,86 @@ export type Database = {
           },
         ]
       }
+      audit_log: {
+        Row: {
+          action: string
+          at: string
+          detail: string
+          id: string
+          resource: string
+          role: string
+          student_id: string | null
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          at?: string
+          detail?: string
+          id?: string
+          resource: string
+          role?: string
+          student_id?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Update: {
+          action?: string
+          at?: string
+          detail?: string
+          id?: string
+          resource?: string
+          role?: string
+          student_id?: string | null
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      consents: {
+        Row: {
+          created_at: string
+          granted_on: string
+          guardian: string
+          id: string
+          purpose: string
+          revoked_on: string | null
+          student_id: string
+          term_version: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          granted_on?: string
+          guardian: string
+          id?: string
+          purpose: string
+          revoked_on?: string | null
+          student_id: string
+          term_version?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          granted_on?: string
+          guardian?: string
+          id?: string
+          purpose?: string
+          revoked_on?: string | null
+          student_id?: string
+          term_version?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consents_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intervention_plans: {
         Row: {
           created_at: string
@@ -403,6 +483,10 @@ export type Database = {
     }
     Functions: {
       can_see_student: { Args: { _student_id: string }; Returns: boolean }
+      has_active_consent: {
+        Args: { _purpose: string; _student_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
