@@ -28,3 +28,9 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application architecture
+- Keep the shared application shell and in-memory student provider around the root Outlet so navigation preserves a demo session without persistent storage.
+- Keep student types, fixture data, service adapters, hooks and visual components in separate modules; future REST adapters implement StudentService without changing the presentation layer.
+- Put demo filtering and date calculations in browser-safe service utilities and test them independently; do not add server logic for a demonstration-only delivery.
+- Give each content page its own file route and metadata; deferred modules are disabled navigation entries rather than placeholder pages.
