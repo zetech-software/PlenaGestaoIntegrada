@@ -16,6 +16,7 @@ type Row = {
   created_on: string;
   plan_id: string | null;
   valid_until: string | null;
+  tier_id: string | null;
 };
 const toTenant = (r: Row): Tenant => ({
   id: r.id,
@@ -31,6 +32,7 @@ const toTenant = (r: Row): Tenant => ({
   createdOn: r.created_on,
   planId: r.plan_id,
   validUntil: r.valid_until,
+  tierId: r.tier_id,
 });
 
 /** Clientes no banco; o cadastro passa pela função de servidor que também convida o responsável. */

@@ -21,8 +21,17 @@ import {
 } from "@/types/tenant";
 import { DemoFooter } from "@/components/neuro/student-ui";
 import { useQueryClient } from "@tanstack/react-query";
-import { BillingPlansPanel, usePlans } from "@/components/neuro/billing-plans-panel";
-import { daysLeft, nextValidUntil, validityState, type BillingPlan } from "@/services/billing-plans";
+import { BillingPlansPanel, TiersPanel, usePlans, useTiers } from "@/components/neuro/billing-plans-panel";
+import {
+  daysLeft,
+  formatBRL,
+  isAnnualCycle,
+  nextValidUntil,
+  tierMonthlyCents,
+  tierSeatsError,
+  validityState,
+  type BillingPlan,
+} from "@/services/billing-plans";
 import { assignPlan } from "@/services/billing-plans-supabase";
 
 const todayIso = () => {
@@ -74,6 +83,7 @@ const empty = {
   registration: "",
   seats: "5",
   planId: "",
+  tierId: "",
 };
 
 function PlatformPage() {
@@ -91,6 +101,8 @@ function PlatformPage() {
   const plansQuery = usePlans();
   const plans = plansQuery.data ?? [];
   const activePlans = plans.filter((p) => p.active);
+  const tiers = useTiers().data ?? [];
+  const formTier = tiers.find((t) => t.id === form.tierId);
   const qc = useQueryClient();
   const today = todayIso();
   const planName = (id?: string | null) => plans.find((p) => p.id === id)?.name ?? "";
@@ -112,6 +124,16 @@ function PlatformPage() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
+    const seats = independent ? 1 : Number(form.seats);
+    if (!formTier || !form.planId) {
+      setError("Escolha o plano e o ciclo de pagamento.");
+      return;
+    }
+    const seatError = tierSeatsError(formTier, seats);
+    if (seatError) {
+      setError(seatError);
+      return;
+    }
     try {
       const created = await create({
         kind: form.kind,
@@ -124,7 +146,12 @@ function PlatformPage() {
         seats: independent ? 1 : Number(form.seats),
       });
       const plan = plans.find((p) => p.id === form.planId);
-      if (plan) await applyPlan(created.id, plan);
+      if (plan)
+        await assignPlan(created.id, plan.id, nextValidUntil(today, plan.durationDays), {
+          tierId: formTier.id,
+          seats,
+        });
+      await qc.invalidateQueries({ queryKey: ["tenants"] });
       setNotice(
         `${created.name} cadastrado como "${created.status}". O convite por e-mail ainda não é enviado nesta demonstração.`,
       );
@@ -267,22 +294,45 @@ function PlatformPage() {
               </div>
             ) : (
               <div className="form-field">
-                <label htmlFor="t-seats">Profissionais (vagas)</label>
+                <label htmlFor="t-seats">Vagas (administrador + terapeutas)</label>
                 <Input
                   id="t-seats"
                   type="number"
-                  min={1}
-                  max={200}
+                  min={formTier?.minSeats ?? 1}
+                  max={formTier?.maxSeats ?? 200}
                   value={form.seats}
                   onChange={(e) => setForm({ ...form, seats: e.target.value })}
                 />
               </div>
             )}
             <div className="form-field">
-              <label>Plano de pagamento</label>
-              <Select value={form.planId} onValueChange={(v) => setForm({ ...form, planId: v })}>
-                <SelectTrigger className="bg-card" aria-label="Plano de pagamento">
+              <label>Plano</label>
+              <Select
+                value={form.tierId}
+                onValueChange={(v) => {
+                  const t = tiers.find((x) => x.id === v);
+                  setForm({ ...form, tierId: v, seats: String(t?.maxSeats ?? t?.minSeats ?? 1) });
+                }}
+              >
+                <SelectTrigger className="bg-card" aria-label="Plano">
                   <SelectValue placeholder="Escolha o plano" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tiers
+                    .filter((t) => !independent || t.minSeats === 1)
+                    .map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name} · {t.audience}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="form-field">
+              <label>Ciclo de pagamento</label>
+              <Select value={form.planId} onValueChange={(v) => setForm({ ...form, planId: v })}>
+                <SelectTrigger className="bg-card" aria-label="Ciclo de pagamento">
+                  <SelectValue placeholder="Mensal ou anual" />
                 </SelectTrigger>
                 <SelectContent>
                   {activePlans.map((p) => (
@@ -335,6 +385,7 @@ function PlatformPage() {
           {error}
         </p>
       ) : null}
+      <TiersPanel tiers={tiers} />
       <BillingPlansPanel plans={plans} />
       <div className="filter-bar">
         <div className="search-field">
@@ -392,7 +443,13 @@ function PlatformPage() {
                 {t.registration ? ` · ${t.registration}` : ""}
               </small>
               <small>
-                {t.planId ? `${planName(t.planId)} · ` : ""}
+                {(() => {
+                  const tier = tiers.find((x) => x.id === t.tierId);
+                  const cycle = plans.find((p) => p.id === t.planId);
+                  if (!tier) return t.planId ? `${planName(t.planId)} · ` : "";
+                  const annual = cycle ? isAnnualCycle(cycle.durationDays) : false;
+                  return `${tier.name} · ${formatBRL(tierMonthlyCents(tier, t.seats, annual))}/mês${cycle ? ` (${cycle.name})` : ""} · `;
+                })()}
                 <span className={`status ${validityTone[validityState(t.validUntil, today)]}`}>
                   {validityText(t.validUntil, today)}
                 </span>

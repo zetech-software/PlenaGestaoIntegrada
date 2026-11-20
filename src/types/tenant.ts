@@ -25,6 +25,8 @@ export interface Tenant {
   /** Plano de pagamento contratado e fim da validade (YYYY-MM-DD). */
   planId?: string | null;
   validUntil?: string | null;
+  /** Faixa de plano (Consultório, Clínica, Multidisciplinar). */
+  tierId?: string | null;
 }
 export type TenantDraft = Pick<
   Tenant,

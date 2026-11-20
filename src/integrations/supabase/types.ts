@@ -636,6 +636,54 @@ export type Database = {
           },
         ]
       }
+      subscription_tiers: {
+        Row: {
+          annual_monthly_cents: number
+          audience: string
+          code: string
+          created_at: string
+          extra_seat_annual_cents: number
+          extra_seat_cents: number
+          id: string
+          included_seats: number
+          max_seats: number | null
+          min_seats: number
+          monthly_cents: number
+          name: string
+          position: number
+        }
+        Insert: {
+          annual_monthly_cents: number
+          audience: string
+          code: string
+          created_at?: string
+          extra_seat_annual_cents?: number
+          extra_seat_cents?: number
+          id?: string
+          included_seats: number
+          max_seats?: number | null
+          min_seats: number
+          monthly_cents: number
+          name: string
+          position?: number
+        }
+        Update: {
+          annual_monthly_cents?: number
+          audience?: string
+          code?: string
+          created_at?: string
+          extra_seat_annual_cents?: number
+          extra_seat_cents?: number
+          id?: string
+          included_seats?: number
+          max_seats?: number | null
+          min_seats?: number
+          monthly_cents?: number
+          name?: string
+          position?: number
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           created_at: string
@@ -651,6 +699,7 @@ export type Database = {
           registration: string
           seats: number
           status: string
+          tier_id: string | null
           updated_at: string
           valid_until: string | null
         }
@@ -668,6 +717,7 @@ export type Database = {
           registration?: string
           seats?: number
           status?: string
+          tier_id?: string | null
           updated_at?: string
           valid_until?: string | null
         }
@@ -685,6 +735,7 @@ export type Database = {
           registration?: string
           seats?: number
           status?: string
+          tier_id?: string | null
           updated_at?: string
           valid_until?: string | null
         }
@@ -694,6 +745,13 @@ export type Database = {
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "billing_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tenants_tier_id_fkey"
+            columns: ["tier_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_tiers"
             referencedColumns: ["id"]
           },
         ]

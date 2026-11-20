@@ -44,3 +44,41 @@ export function validatePlan(name: string, days: number, existing: BillingPlan[]
   if (existing.some((p) => p.name.toLowerCase() === n.toLowerCase())) return "Já existe um plano com este nome.";
   return "";
 }
+
+/** Faixa de plano (Consultório, Clínica, Multidisciplinar) com preço e trava de vagas. */
+export interface SubscriptionTier {
+  id: string;
+  code: string;
+  name: string;
+  audience: string;
+  minSeats: number;
+  maxSeats: number | null;
+  includedSeats: number;
+  monthlyCents: number;
+  annualMonthlyCents: number;
+  extraSeatCents: number;
+  extraSeatAnnualCents: number;
+}
+
+/** Mensagem de erro quando as vagas não cabem na faixa; "" quando estão dentro. */
+export function tierSeatsError(tier: SubscriptionTier, seats: number) {
+  if (!Number.isInteger(seats) || seats < tier.minSeats || (tier.maxSeats !== null && seats > tier.maxSeats)) {
+    const max = tier.maxSeats === null ? "sem limite" : `até ${tier.maxSeats}`;
+    return `O plano ${tier.name} aceita a partir de ${tier.minSeats} e ${max} vagas.`;
+  }
+  return "";
+}
+
+/** Valor mensal em centavos; no anual usa o preço mensal do plano anual. Vagas além das incluídas pagam adicional. */
+export function tierMonthlyCents(tier: SubscriptionTier, seats: number, annual: boolean) {
+  const extra = Math.max(0, seats - tier.includedSeats);
+  return annual
+    ? tier.annualMonthlyCents + extra * tier.extraSeatAnnualCents
+    : tier.monthlyCents + extra * tier.extraSeatCents;
+}
+
+export const formatBRL = (cents: number) =>
+  (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/** O ciclo é anual quando dura 1 ano ou mais. */
+export const isAnnualCycle = (days: number) => days >= 365;

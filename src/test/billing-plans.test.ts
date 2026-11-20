@@ -27,3 +27,28 @@ describe("planos de pagamento", () => {
     expect(validatePlan("Trimestral", 90, [])).toBe("");
   });
 });
+
+import { tierMonthlyCents, tierSeatsError, type SubscriptionTier } from "@/services/billing-plans";
+const base = { id: "", audience: "", extraSeatCents: 0, extraSeatAnnualCents: 0 };
+const consultorio: SubscriptionTier = { ...base, code: "consultorio", name: "Consultório", minSeats: 1, maxSeats: 1, includedSeats: 1, monthlyCents: 11900, annualMonthlyCents: 9900 };
+const clinica: SubscriptionTier = { ...base, code: "clinica", name: "Clínica", minSeats: 1, maxSeats: 6, includedSeats: 6, monthlyCents: 34900, annualMonthlyCents: 28900 };
+const multi: SubscriptionTier = { ...base, code: "multidisciplinar", name: "Multidisciplinar", minSeats: 7, maxSeats: null, includedSeats: 7, monthlyCents: 49000, annualMonthlyCents: 41650, extraSeatCents: 3500, extraSeatAnnualCents: 2975 };
+
+describe("faixas de plano", () => {
+  it("Consultório: R$ 119/mês ou R$ 99 no anual, só 1 profissional", () => {
+    expect(tierMonthlyCents(consultorio, 1, false)).toBe(11900);
+    expect(tierMonthlyCents(consultorio, 1, true)).toBe(9900);
+    expect(tierSeatsError(consultorio, 2)).not.toBe("");
+  });
+  it("Clínica: R$ 349/mês ou R$ 289 no anual, até 1 admin + 5 terapeutas", () => {
+    expect(tierMonthlyCents(clinica, 6, false)).toBe(34900);
+    expect(tierMonthlyCents(clinica, 6, true)).toBe(28900);
+    expect(tierSeatsError(clinica, 6)).toBe("");
+    expect(tierSeatsError(clinica, 7)).not.toBe("");
+  });
+  it("Multidisciplinar: R$ 490 a partir de 6 terapeutas + R$ 35 por terapeuta adicional", () => {
+    expect(tierSeatsError(multi, 6)).not.toBe("");
+    expect(tierMonthlyCents(multi, 7, false)).toBe(49000);
+    expect(tierMonthlyCents(multi, 9, false)).toBe(49000 + 2 * 3500);
+  });
+});

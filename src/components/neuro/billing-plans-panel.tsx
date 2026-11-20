@@ -3,12 +3,46 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { validatePlan, type BillingPlan } from "@/services/billing-plans";
-import { createPlan, listPlans, setPlanActive } from "@/services/billing-plans-supabase";
+import { formatBRL, validatePlan, type BillingPlan, type SubscriptionTier } from "@/services/billing-plans";
+import { createPlan, listPlans, listTiers, setPlanActive } from "@/services/billing-plans-supabase";
 
 export const plansKey = ["billing-plans"] as const;
 export function usePlans() {
   return useQuery({ queryKey: plansKey, queryFn: listPlans });
+}
+
+export function useTiers() {
+  return useQuery({ queryKey: ["subscription-tiers"], queryFn: listTiers });
+}
+
+export function TiersPanel({ tiers }: { tiers: SubscriptionTier[] }) {
+  return (
+    <section className="form-section agenda-form" aria-labelledby="tiers-title">
+      <h2 id="tiers-title">Planos e valores</h2>
+      <div className="stats-grid">
+        {tiers.map((t) => (
+          <article className="stat-card" key={t.id}>
+            <div className="stat-top">
+              <strong>{t.name}</strong>
+            </div>
+            <small className="text-muted-foreground">{t.audience}</small>
+            <div className="stat-value">
+              {formatBRL(t.monthlyCents)}
+              <small className="text-sm font-normal"> /mês</small>
+            </div>
+            <div className="stat-foot">
+              {t.extraSeatCents
+                ? `+ ${formatBRL(t.extraSeatCents)} por terapeuta adicional`
+                : `ou ${formatBRL(t.annualMonthlyCents)}/mês no plano anual`}
+            </div>
+            <div className="stat-foot">
+              Vagas: {t.maxSeats === null ? `a partir de ${t.minSeats}` : t.maxSeats === 1 ? "1" : `até ${t.maxSeats}`}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export function BillingPlansPanel({ plans }: { plans: BillingPlan[] }) {
@@ -40,7 +74,7 @@ export function BillingPlansPanel({ plans }: { plans: BillingPlan[] }) {
   return (
     <section className="form-section agenda-form" aria-labelledby="plans-title">
       <h2 id="plans-title" className="flex items-center gap-2">
-        <CreditCard size={18} /> Planos de pagamento
+        <CreditCard size={18} /> Ciclos de pagamento (validade)
       </h2>
       <div className="schedule">
         {plans.map((p) => (
