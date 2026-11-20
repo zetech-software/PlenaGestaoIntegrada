@@ -78,6 +78,13 @@
       "when": 1795195824214,
       "tag": "0010_membro_clinica_para_equipe",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795199239271,
+      "tag": "0011_planos_pagamento",
+      "breakpoints": true
     }
   ]
 }

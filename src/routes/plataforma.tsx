@@ -20,6 +20,23 @@ import {
   type TenantStatus,
 } from "@/types/tenant";
 import { DemoFooter } from "@/components/neuro/student-ui";
+import { useQueryClient } from "@tanstack/react-query";
+import { BillingPlansPanel, usePlans } from "@/components/neuro/billing-plans-panel";
+import { daysLeft, nextValidUntil, validityState, type BillingPlan } from "@/services/billing-plans";
+import { assignPlan } from "@/services/billing-plans-supabase";
+
+const todayIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+const validityTone = { "sem-plano": "muted", vigente: "", vencendo: "info", vencido: "muted" } as const;
+function validityText(validUntil: string | null | undefined, today: string) {
+  const state = validityState(validUntil, today);
+  if (!validUntil || state === "sem-plano") return "Sem plano";
+  if (state === "vencido") return `Vencido em ${formatDate(validUntil)}`;
+  const left = daysLeft(validUntil, today);
+  return `Válido até ${formatDate(validUntil)} (${left} ${left === 1 ? "dia" : "dias"})`;
+}
 
 export const Route = createFileRoute("/plataforma")({
   head: () => ({
@@ -56,6 +73,7 @@ const empty = {
   phone: "",
   registration: "",
   seats: "5",
+  planId: "",
 };
 
 function PlatformPage() {
@@ -70,6 +88,27 @@ function PlatformPage() {
   const summary = summarizeTenants(tenants);
   const rows = filterTenants(tenants, { query, kind, status });
   const independent = form.kind === "autonomo";
+  const plansQuery = usePlans();
+  const plans = plansQuery.data ?? [];
+  const activePlans = plans.filter((p) => p.active);
+  const qc = useQueryClient();
+  const today = todayIso();
+  const planName = (id?: string | null) => plans.find((p) => p.id === id)?.name ?? "";
+
+  async function applyPlan(tenantId: string, plan: BillingPlan, current?: string | null) {
+    await assignPlan(tenantId, plan.id, nextValidUntil(today, plan.durationDays, current));
+    await qc.invalidateQueries({ queryKey: ["tenants"] });
+  }
+  async function renew(tenantId: string, planId: string, current?: string | null) {
+    const plan = plans.find((p) => p.id === planId);
+    if (!plan) return;
+    try {
+      await applyPlan(tenantId, plan, current);
+      setError("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Não foi possível renovar o plano.");
+    }
+  }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -84,6 +123,8 @@ function PlatformPage() {
         registration: form.registration,
         seats: independent ? 1 : Number(form.seats),
       });
+      const plan = plans.find((p) => p.id === form.planId);
+      if (plan) await applyPlan(created.id, plan);
       setNotice(
         `${created.name} cadastrado como "${created.status}". O convite por e-mail ainda não é enviado nesta demonstração.`,
       );
@@ -238,6 +279,21 @@ function PlatformPage() {
               </div>
             )}
             <div className="form-field">
+              <label>Plano de pagamento</label>
+              <Select value={form.planId} onValueChange={(v) => setForm({ ...form, planId: v })}>
+                <SelectTrigger className="bg-card" aria-label="Plano de pagamento">
+                  <SelectValue placeholder="Escolha o plano" />
+                </SelectTrigger>
+                <SelectContent>
+                  {activePlans.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name} · {p.durationDays} dias
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="form-field">
               <label htmlFor="t-owner">Responsável</label>
               <Input
                 id="t-owner"
@@ -279,6 +335,7 @@ function PlatformPage() {
           {error}
         </p>
       ) : null}
+      <BillingPlansPanel plans={plans} />
       <div className="filter-bar">
         <div className="search-field">
           <Search />
@@ -334,8 +391,29 @@ function PlatformPage() {
                 {formatDate(t.createdOn)}
                 {t.registration ? ` · ${t.registration}` : ""}
               </small>
+              <small>
+                {t.planId ? `${planName(t.planId)} · ` : ""}
+                <span className={`status ${validityTone[validityState(t.validUntil, today)]}`}>
+                  {validityText(t.validUntil, today)}
+                </span>
+              </small>
             </div>
             <span className={`status ${statusTone[t.status]}`}>{t.status}</span>
+            <Select
+              value=""
+              onValueChange={(v) => void renew(t.id, v, t.validUntil)}
+            >
+              <SelectTrigger aria-label={`Plano de ${t.name}`} className="filter-select w-auto">
+                <SelectValue placeholder={t.planId ? "Renovar plano" : "Definir plano"} />
+              </SelectTrigger>
+              <SelectContent>
+                {activePlans.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name} · +{p.durationDays} dias
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {t.status === "Suspenso" ? (
               <Button size="sm" onClick={() => void change(t.id, "Ativo")}>
                 Reativar

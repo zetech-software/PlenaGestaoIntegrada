@@ -127,6 +127,33 @@ export type Database = {
           },
         ]
       }
+      billing_plans: {
+        Row: {
+          active: boolean
+          created_at: string
+          duration_days: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          duration_days: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          duration_days?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       charges: {
         Row: {
           amount_cents: number
@@ -620,10 +647,12 @@ export type Database = {
           owner_email: string
           owner_name: string
           phone: string
+          plan_id: string | null
           registration: string
           seats: number
           status: string
           updated_at: string
+          valid_until: string | null
         }
         Insert: {
           created_at?: string
@@ -635,10 +664,12 @@ export type Database = {
           owner_email: string
           owner_name?: string
           phone?: string
+          plan_id?: string | null
           registration?: string
           seats?: number
           status?: string
           updated_at?: string
+          valid_until?: string | null
         }
         Update: {
           created_at?: string
@@ -650,12 +681,22 @@ export type Database = {
           owner_email?: string
           owner_name?: string
           phone?: string
+          plan_id?: string | null
           registration?: string
           seats?: number
           status?: string
           updated_at?: string
+          valid_until?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tenants_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "billing_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

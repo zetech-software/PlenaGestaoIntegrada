@@ -22,6 +22,9 @@ export interface Tenant {
   seats: number;
   status: TenantStatus;
   createdOn: string; // YYYY-MM-DD
+  /** Plano de pagamento contratado e fim da validade (YYYY-MM-DD). */
+  planId?: string | null;
+  validUntil?: string | null;
 }
 export type TenantDraft = Pick<
   Tenant,
