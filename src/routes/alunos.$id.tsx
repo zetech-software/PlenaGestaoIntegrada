@@ -81,7 +81,9 @@ function StudentProfile() {
           <strong>Plena Gestão Integrada</strong>
           <small>Ficha cadastral do aluno · por Ze Tech</small>
         </div>
-        <span className="print-date">Emitida em {formatDate(new Date().toISOString().slice(0, 10))}</span>
+        <span className="print-date">
+          Emitida em {formatDate(new Date().toISOString().slice(0, 10))}
+        </span>
       </div>
       <div className="page-heading">
         <div className="profile-heading">
