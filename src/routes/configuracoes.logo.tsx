@@ -45,7 +45,12 @@ function LogoPage() {
       </div>
       <label className="block text-sm font-medium text-foreground">
         Enviar nova logo (PNG, JPG ou SVG, até 500 KB)
-        <input type="file" accept="image/*" className="mt-2 block text-sm" onChange={(e) => onFile(e.target.files?.[0])} />
+        <input
+          type="file"
+          accept="image/*"
+          className="mt-2 block text-sm"
+          onChange={(e) => onFile(e.target.files?.[0])}
+        />
       </label>
       {error && <p className="text-sm text-destructive">{error}</p>}
       {logo && (

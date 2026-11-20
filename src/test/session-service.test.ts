@@ -14,6 +14,7 @@ describe("agenda demonstrativa", () => {
     expect(() =>
       service.create({
         studentId: "5",
+        therapistId: "t3",
         date: "2026-11-20",
         start: "09:00",
         duration: 50,
@@ -25,6 +26,7 @@ describe("agenda demonstrativa", () => {
     expect(
       findConflict(demoSessions, {
         studentId: "5",
+        therapistId: "t3",
         date: "2026-11-19",
         start: "11:00",
         duration: 50,
@@ -37,6 +39,7 @@ describe("agenda demonstrativa", () => {
     expect(
       service.create({
         studentId: "5",
+        therapistId: "t3",
         date: "2026-11-20",
         start: "17:00",
         duration: 50,

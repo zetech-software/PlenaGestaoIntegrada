@@ -23,6 +23,13 @@ describe("relatórios", () => {
     // t3 = alunos 3, 5: s2 realizada -> 100%
     expect(by("t3")).toMatchObject({ done: 1, missed: 0, rate: 100 });
   });
+  it("atribui a frequência ao terapeuta da sessão, não ao vínculo do aluno", () => {
+    const outra = demoSessions.map((x) => (x.id === "s1" ? { ...x, therapistId: "t2" } : x));
+    const rows = attendanceByTherapist(outra, demoStudents, november);
+    const by = (id: string) => rows.find((r) => r.therapist.id === id);
+    expect(by("t1")).toMatchObject({ done: 1, rate: 100 });
+    expect(by("t2")).toMatchObject({ done: 2, missed: 1, rate: 67 });
+  });
   it("devolve frequência nula quando não há realizadas nem faltas", () => {
     const rows = attendanceByTherapist(demoSessions, demoStudents, {
       from: "2027-01-01",

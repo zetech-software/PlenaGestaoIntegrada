@@ -21,6 +21,7 @@ import {
 } from "@/services/session-service";
 import { sessionStatuses, type SessionStatus } from "@/types/session";
 import { demoDate } from "@/data/demo-students";
+import { demoTherapistByStudent, demoTherapists } from "@/data/demo-therapists";
 import { StudentAvatar, DemoFooter } from "@/components/neuro/student-ui";
 
 export const Route = createFileRoute("/agenda")({
@@ -68,6 +69,7 @@ function AgendaPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     studentId: "",
+    therapistId: "",
     start: "09:00",
     duration: "50",
     type: "Atendimento individual",
@@ -80,9 +82,11 @@ function AgendaPage() {
   function submit(event: React.FormEvent) {
     event.preventDefault();
     if (!form.studentId) return setError("Escolha um aluno.");
+    if (!form.therapistId) return setError("Escolha o terapeuta.");
     try {
       addSession({
         studentId: form.studentId,
+        therapistId: form.therapistId,
         date: selected,
         start: form.start,
         duration: Number(form.duration),
@@ -187,7 +191,9 @@ function AgendaPage() {
               <label>Aluno</label>
               <Select
                 value={form.studentId}
-                onValueChange={(v) => setForm({ ...form, studentId: v })}
+                onValueChange={(v) =>
+                  setForm({ ...form, studentId: v, therapistId: demoTherapistByStudent[v] ?? "" })
+                }
               >
                 <SelectTrigger className="bg-card" aria-label="Aluno">
                   <SelectValue placeholder="Selecione" />
@@ -200,6 +206,24 @@ function AgendaPage() {
                         {x.name}
                       </SelectItem>
                     ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="form-field">
+              <label>Terapeuta</label>
+              <Select
+                value={form.therapistId}
+                onValueChange={(v) => setForm({ ...form, therapistId: v })}
+              >
+                <SelectTrigger className="bg-card" aria-label="Terapeuta">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  {demoTherapists.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

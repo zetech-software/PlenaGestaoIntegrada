@@ -8,12 +8,12 @@ import {
   CheckCircle2,
   ClipboardList,
   Printer,
-  Sprout,
   FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudents } from "@/hooks/use-students";
 import { StudentAvatar, StatusBadge, DemoFooter } from "@/components/neuro/student-ui";
+import { PrintBrandMark } from "@/components/neuro/print-ui";
 import { formatDate, studentAge } from "@/services/student-service";
 import { ActivitySuggestions } from "@/components/neuro/activity-suggestions";
 export const Route = createFileRoute("/alunos/$id")({
@@ -82,9 +82,7 @@ function StudentProfile() {
         </div>
       )}
       <div className="print-header" aria-hidden="true">
-        <span className="brand-symbol">
-          <Sprout size={22} strokeWidth={1.7} />
-        </span>
+        <PrintBrandMark />
         <div>
           <strong>Plena Gestão Integrada</strong>
           <small>Ficha cadastral do aluno · por Ze Tech</small>

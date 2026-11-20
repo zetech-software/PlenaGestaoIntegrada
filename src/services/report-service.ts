@@ -27,20 +27,24 @@ export interface TherapistAttendance {
   /** null quando ainda não há sessões realizadas nem faltas. */
   rate: number | null;
 }
-/** Frequência por terapeuta: realizados / (realizados + faltas), via vínculo do aluno. */
+/** Frequência por terapeuta: realizados / (realizados + faltas) das sessões de cada profissional. */
 export function attendanceByTherapist(
   sessions: Session[],
   students: Student[],
   period?: Period,
 ): TherapistAttendance[] {
-  const scoped = period ? sessions.filter((s) => inPeriod(s.date, period)) : sessions;
+  const visible = new Set(students.map((s) => s.id));
+  const scoped = sessions.filter(
+    (s) => visible.has(s.studentId) && (!period || inPeriod(s.date, period)),
+  );
   return demoTherapists.map((therapist) => {
-    const mine = students.filter((s) => demoTherapistByStudent[s.id] === therapist.id);
-    const ids = new Set(mine.map((s) => s.id));
-    const own = scoped.filter((s) => ids.has(s.studentId));
+    const own = scoped.filter((s) => s.therapistId === therapist.id);
+    const attended = new Set(own.map((s) => s.studentId));
+    const linked = students.filter((s) => demoTherapistByStudent[s.id] === therapist.id);
     return {
       therapist,
-      students: mine.length,
+      // Alunos vinculados ao terapeuta ou atendidos por ele no período.
+      students: new Set([...linked.map((s) => s.id), ...attended]).size,
       done: own.filter((s) => s.status === "Realizado").length,
       missed: own.filter((s) => s.status === "Faltou").length,
       pending: own.filter((s) => s.status === "Pendente").length,

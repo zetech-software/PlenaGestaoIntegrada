@@ -9,6 +9,7 @@ export const sessionStatuses: SessionStatus[] = [
 export interface Session {
   id: string;
   studentId: string;
+  therapistId: string;
   date: string; // YYYY-MM-DD
   start: string; // HH:MM
   duration: number; // minutos
