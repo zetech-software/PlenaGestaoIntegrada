@@ -7,6 +7,8 @@ import {
   Info,
   CheckCircle2,
   ClipboardList,
+  Printer,
+  Sprout,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudents } from "@/hooks/use-students";
@@ -71,6 +73,16 @@ function StudentProfile() {
           Aluno cadastrado nesta demonstração. As informações não serão armazenadas permanentemente.
         </div>
       )}
+      <div className="print-header" aria-hidden="true">
+        <span className="brand-symbol">
+          <Sprout size={22} strokeWidth={1.7} />
+        </span>
+        <div>
+          <strong>Plena Gestão Integrada</strong>
+          <small>Ficha cadastral do aluno · por Ze Tech</small>
+        </div>
+        <span className="print-date">Emitida em {formatDate(new Date().toISOString().slice(0, 10))}</span>
+      </div>
       <div className="page-heading">
         <div className="profile-heading">
           <StudentAvatar student={student} />
@@ -83,6 +95,11 @@ function StudentProfile() {
               <StatusBadge status={student.status} />
             </div>
           </div>
+        </div>
+        <div className="heading-actions no-print">
+          <Button variant="outline" onClick={() => window.print()}>
+            <Printer /> Baixar ficha em PDF
+          </Button>
         </div>
       </div>
       <div className="profile-grid">
@@ -124,7 +141,10 @@ function StudentProfile() {
           <p className="profile-note">{student.notes || "Nenhuma observação cadastral."}</p>
         </section>
       </div>
-      <div className="demo-note mt-6">
+      <p className="print-footer">
+        Plena Gestão Integrada · Documento demonstrativo com dados fictícios.
+      </p>
+      <div className="demo-note mt-6 no-print">
         <Info />
         Perfil cadastral demonstrativo. Anamnese, prontuários e demais módulos aguardam a validação
         desta primeira entrega.
