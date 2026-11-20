@@ -3,8 +3,17 @@ import type { Tenant, TenantDraft, TenantService, TenantStatus } from "@/types/t
 import type { ProvisionResult } from "@/lib/tenants.functions";
 
 type Row = {
-  id: string; kind: string; name: string; document: string; owner_name: string; owner_email: string;
-  phone: string; registration: string; seats: number; status: string; created_on: string;
+  id: string;
+  kind: string;
+  name: string;
+  document: string;
+  owner_name: string;
+  owner_email: string;
+  phone: string;
+  registration: string;
+  seats: number;
+  status: string;
+  created_on: string;
 };
 const toTenant = (r: Row): Tenant => ({
   id: r.id,

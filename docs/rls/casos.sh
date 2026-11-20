@@ -115,6 +115,22 @@ check "admin de clínica não atribui 'plataforma'"   $A  "insert into user_role
 check "admin não muda o próprio tenant_id"          $A  "update profiles set tenant_id='$TBID' where id='$A' returning 'mudou';" nomatch "mudou"
 check_su "usuário acima das vagas falha"                "insert into auth.users(id,email,raw_app_meta_data) values (gen_random_uuid(),'extra@t.local','{\"tenant_id\":\"$TBID\"}');" match "Limite de vagas"
 
+echo "== Tentativas de furar o isolamento (revisão independente)"
+SB=5b000000-0000-0000-0000-00000000000b  # aluno da clínica B
+check "clínica A não agenda com terapeuta da B"       $C  "insert into sessions(student_id,therapist_id,date,start,duration) values ('$S1','$TB','2026-12-10','10:00',50);" match "row-level security"
+check "clínica A não registra consentimento de aluno da B" $C "insert into consents(student_id,purpose,guardian) values ('$SB','tratamento','Fulano');" match "row-level security"
+check "admin A não vincula terapeuta ao aluno da B"   $A  "insert into student_assignments(user_id,student_ref) values ('$T1','$SB');" match "row-level security"
+check "terapeuta A não move aluno para a clínica B"   $T1 "update students set tenant_id='$TBID' where id='$S1' returning 'moveu';" nomatch "moveu"
+check "admin A não muda o próprio tenant_id"          $A  "update profiles set tenant_id='$TBID' where id='$A';" match "permission denied"
+check "admin A não cria perfil em outra clínica"      $A  "insert into profiles(id,email,tenant_id) values (gen_random_uuid(),'x@x','$TBID');" match "permission denied"
+check "admin de clínica não altera as próprias vagas" $A  "update tenants set seats=200 where id='$TA' returning 'editou';" nomatch "editou"
+check "terapeuta não lê clientes"                     $T1 "select 'n=' || count(*) from tenants;" match "n=0"
+check "operador não lista terapeutas de clínica"      $OP "select 'n=' || count(*) from list_therapists();" match "n=0"
+check "operador vê só o próprio perfil"               $OP "select 'n=' || count(*) from profiles;" match "n=1"
+check "operador vê só os próprios papéis"             $OP "select 'n=' || count(*) from user_roles;" match "n=1"
+check "operador não escreve em tabela clínica"        $OP "insert into students(tenant_id,name,birth_date) values ('$TA','X','2017-01-01');" match "row-level security"
+check "evento de auditoria usa a clínica do servidor" $A  "insert into audit_log(tenant_id,action,resource) values ('$TBID','visualizou','aluno'); select 'tenant=' || tenant_id from audit_log where user_id='$A' order by at desc limit 1;" match "tenant=$TA"
+
 echo
 if [ $fails -eq 0 ]; then echo "Todos os casos passaram."; else echo "$fails caso(s) falharam."; fi
 exit $fails
