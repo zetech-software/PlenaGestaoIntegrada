@@ -15,6 +15,7 @@ import {
   X,
   LogOut,
   ShieldCheck,
+  ScrollText,
 } from "lucide-react";
 import { areaForPath, canAccess, roleLabels } from "@/services/permissions";
 import { useAuth } from "@/hooks/use-auth";
@@ -36,6 +37,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isUsers = pathname.startsWith("/usuarios");
   const isPlans = pathname.startsWith("/intervencoes");
   const isReports = pathname.startsWith("/relatorios");
+  const isAudit = pathname.startsWith("/auditoria");
   const isDashboard =
     !isStudents &&
     !isAgenda &&
@@ -43,6 +45,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
     !isUsers &&
     !isPlans &&
     !isReports &&
+    !isAudit &&
     !pathname.startsWith("/configuracoes");
   const { logo } = useBrandLogo();
   const isSettings = pathname.startsWith("/configuracoes");
@@ -129,6 +132,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <FileText />
               <span className="nav-text">Relatórios</span>
             </Link>
+            {canAccess(role, "auditoria") ? (
+              <Link
+                to="/auditoria"
+                className={`nav-item ${isAudit ? "active" : ""}`}
+                title="Auditoria"
+                aria-current={isAudit ? "page" : undefined}
+                onClick={() => setMobileOpen(false)}
+              >
+                <ScrollText />
+                <span className="nav-text">Auditoria</span>
+              </Link>
+            ) : null}
             {canAccess(role, "usuarios") ? (
               <Link
                 to="/usuarios"
@@ -200,11 +215,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       ? "Intervenções"
                       : isReports
                         ? "Relatórios"
-                        : isUsers
-                          ? "Usuários"
-                          : isSettings
-                            ? "Configurações"
-                            : "Visão geral"}
+                        : isAudit
+                          ? "Auditoria"
+                          : isUsers
+                            ? "Usuários"
+                            : isSettings
+                              ? "Configurações"
+                              : "Visão geral"}
             </span>
           </div>
           <div className="topbar-right">

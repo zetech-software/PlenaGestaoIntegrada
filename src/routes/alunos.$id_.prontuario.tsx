@@ -11,6 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
+import { useAudit, useAuditView } from "@/hooks/use-audit";
+import { RETENTION_YEARS, retentionUntil } from "@/services/export-service";
 import { useRecords } from "@/hooks/use-records";
 import { evolutionSummary, recordsFor } from "@/services/record-service";
 import { formatDate } from "@/services/student-service";
@@ -47,8 +49,10 @@ export const Route = createFileRoute("/alunos/$id_/prontuario")({
 
 function RecordPage() {
   const { id } = Route.useParams();
+  const { log } = useAudit();
+  useAuditView("prontuario", id);
   const { students, isLoading: studentsLoading } = useStudents();
-  const { records, isLoading: recordsLoading, addRecord } = useRecords();
+  const { anamneses, records, isLoading: recordsLoading, addRecord } = useRecords();
   const student = students.find((s) => s.id === id);
   const list = recordsFor(records, id);
   const summary = evolutionSummary(list);
@@ -78,6 +82,10 @@ function RecordPage() {
       </main>
     );
   const set = (k: keyof RecordDraft) => (v: string) => setDraft({ ...draft, [k]: v });
+  const retainUntil = retentionUntil([
+    ...list.map((r) => r.date),
+    ...anamneses.filter((a) => a.studentId === id).map((a) => a.updatedAt),
+  ]);
 
   return (
     <main className="page">
@@ -89,6 +97,13 @@ function RecordPage() {
           </div>
           <h1>{student.name}</h1>
           <p>Cada sessão registrada compõe a história desta jornada.</p>
+          {retainUntil ? (
+            <p className="retention-note">
+              Guarda mínima sugerida até {formatDate(retainUntil)} ({RETENTION_YEARS} anos após o
+              último registro). Prazo a confirmar com assessoria jurídica e com o conselho
+              profissional.
+            </p>
+          ) : null}
         </div>
         <div className="heading-actions">
           <Button onClick={() => setOpen((v) => !v)}>
@@ -130,6 +145,7 @@ function RecordPage() {
             e.preventDefault();
             try {
               await addRecord(draft);
+              log("criou", "prontuario", id, "registro de sessão");
               setDraft(empty);
               setOpen(false);
               setError("");

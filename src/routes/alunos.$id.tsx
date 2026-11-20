@@ -16,6 +16,11 @@ import { StudentAvatar, StatusBadge, DemoFooter } from "@/components/neuro/stude
 import { PrintBrandMark } from "@/components/neuro/print-ui";
 import { formatDate, studentAge } from "@/services/student-service";
 import { ActivitySuggestions } from "@/components/neuro/activity-suggestions";
+import { ConsentSection } from "@/components/neuro/consent-section";
+import { ExportDataButton } from "@/components/neuro/export-data-button";
+import { useAuditView } from "@/hooks/use-audit";
+import { useConsents } from "@/hooks/use-consents";
+import { hasConsent } from "@/services/consent-service";
 export const Route = createFileRoute("/alunos/$id")({
   validateSearch: (search: Record<string, unknown>): { created?: boolean } =>
     search["created"] === true ? { created: true } : {},
@@ -50,7 +55,9 @@ function StudentProfile() {
   const { id } = Route.useParams();
   const { created } = Route.useSearch();
   const { students, isLoading } = useStudents();
+  const { consents, isLoading: consentsLoading } = useConsents();
   const student = students.find((item) => item.id === id);
+  useAuditView("aluno", id, student !== undefined);
   if (isLoading)
     return (
       <main className="page" aria-busy="true">
@@ -118,6 +125,7 @@ function StudentProfile() {
           <Button variant="outline" onClick={() => window.print()}>
             <Printer /> Baixar ficha em PDF
           </Button>
+          <ExportDataButton student={student} />
         </div>
       </div>
       <div className="profile-grid">
@@ -159,6 +167,14 @@ function StudentProfile() {
           <p className="profile-note">{student.notes || "Nenhuma observação cadastral."}</p>
         </section>
       </div>
+      {!consentsLoading && !hasConsent(consents, student.id, "tratamento") ? (
+        <div className="demo-note no-print" role="alert">
+          <Info />
+          Sem consentimento do responsável para o tratamento de dados deste aluno. Registre-o na
+          seção "Consentimento do responsável".
+        </div>
+      ) : null}
+      <ConsentSection student={student} />
       <ActivitySuggestions student={student} />
       <p className="print-footer">
         Plena Gestão Integrada · Documento demonstrativo com dados fictícios.

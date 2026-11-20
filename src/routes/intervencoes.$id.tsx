@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuditView } from "@/hooks/use-audit";
 import { useStudents } from "@/hooks/use-students";
 import { usePlans } from "@/hooks/use-plans";
 import { isReviewOverdue, planProgress } from "@/services/plan-service";
@@ -52,6 +53,7 @@ function PlanDetail() {
     }
   }
   const plan = plans.find((p) => p.id === id);
+  useAuditView("plano", plan?.studentId ?? "", plan !== undefined);
   if (isLoading)
     return (
       <main className="page" aria-busy="true">

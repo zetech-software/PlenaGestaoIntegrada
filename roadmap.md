@@ -27,4 +27,11 @@
 - [ ] Tabelas e regras de acesso (RLS) no Lovable — ver `docs/fase-1-banco.md`
 - [ ] Adaptadores Supabase para cada serviço
 
+# Sétima fase — Confiança e conformidade (em andamento)
+- [x] Consentimento do responsável por finalidade (tratamento, escola, IA), com revogação e histórico
+- [x] Auditoria de acesso (admin) e exportação dos dados do aluno em JSON
+- [x] Guarda mínima sugerida no prontuário
+- [ ] Tabelas `consents` e `audit_log` com RLS no Lovable — ver `docs/fase-2-conformidade.md`
+- [ ] Política de retenção, texto do termo e base legal, com assessoria jurídica
+
 Demais módulos aguardam validação desta entrega. Sem banco permanente, dados reais ou funcionalidades clínicas sensíveis.

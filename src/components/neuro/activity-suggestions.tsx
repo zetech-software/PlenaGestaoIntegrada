@@ -4,6 +4,8 @@ import { Sparkles, Loader2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { suggestActivities } from "@/lib/activities.functions";
+import { useConsents } from "@/hooks/use-consents";
+import { hasConsent } from "@/services/consent-service";
 import { validateActivityRequest } from "@/services/activity-prompt";
 import { studentAge } from "@/services/student-service";
 import type { Student } from "@/types/student";
@@ -41,6 +43,8 @@ function SuggestionText({ text }: { text: string }) {
 
 export function ActivitySuggestions({ student }: { student: Student }) {
   const suggest = useServerFn(suggestActivities);
+  const { consents, isLoading: consentsLoading } = useConsents();
+  const allowed = hasConsent(consents, student.id, "ia");
   const [observations, setObservations] = useState("");
   const [goals, setGoals] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,6 +53,7 @@ export function ActivitySuggestions({ student }: { student: Student }) {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (!allowed) return setError("Registre o consentimento do responsável para usar a IA.");
     const request = {
       studentFirstName: student.name.split(" ")[0] ?? "",
       age: studentAge(student.birthDate),
@@ -80,6 +85,12 @@ export function ActivitySuggestions({ student }: { student: Student }) {
         Descreva suas observações e os objetivos de acompanhamento. A IA sugere atividades
         personalizadas; ela não faz diagnósticos e a decisão é sempre sua.
       </p>
+      {!consentsLoading && !allowed ? (
+        <p className="ai-error" role="alert">
+          Sem consentimento vigente do responsável para o uso de IA. Registre-o em "Consentimento do
+          responsável" acima para liberar as sugestões.
+        </p>
+      ) : null}
       <form onSubmit={handleSubmit} className="ai-form">
         <div className="form-field">
           <label htmlFor="ai-observations">Observações</label>
@@ -109,7 +120,7 @@ export function ActivitySuggestions({ student }: { student: Student }) {
           </p>
         )}
         <div>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading || consentsLoading || !allowed}>
             {loading ? <Loader2 className="animate-spin" /> : <Lightbulb />}
             {loading
               ? "Gerando sugestões..."
