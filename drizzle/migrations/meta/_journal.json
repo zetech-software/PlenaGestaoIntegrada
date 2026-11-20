@@ -99,6 +99,13 @@
       "when": 1795199765386,
       "tag": "0013_edicao_faixas_e_pagamentos_clientes",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795200135363,
+      "tag": "0014_tenant_seat_usage",
+      "breakpoints": true
     }
   ]
 }

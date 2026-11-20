@@ -949,6 +949,13 @@ export type Database = {
       }
       staff_sees_member: { Args: { _user_id: string }; Returns: boolean }
       tenant_is_active: { Args: never; Returns: boolean }
+      tenant_seat_usage: {
+        Args: never
+        Returns: {
+          tenant_id: string
+          used: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "terapeuta" | "clinica" | "plataforma"
