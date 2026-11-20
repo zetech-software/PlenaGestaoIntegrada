@@ -5,7 +5,14 @@ export const roleLabels: Record<AppRole, string> = {
   clinica: "Clínica",
 };
 export type Area =
-  "dashboard" | "alunos" | "agenda" | "prontuarios" | "intervencoes" | "relatorios" | "usuarios" | "configuracoes";
+  | "dashboard"
+  | "alunos"
+  | "agenda"
+  | "prontuarios"
+  | "intervencoes"
+  | "relatorios"
+  | "usuarios"
+  | "configuracoes";
 
 /** Maior privilégio vence quando a conta tem mais de um perfil. */
 export function primaryRole(roles: AppRole[]): AppRole | null {
