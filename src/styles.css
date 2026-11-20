@@ -1287,3 +1287,14 @@ input {
     transition: none !important;
   }
 }
+
+/* Agenda */
+.week-strip { display: flex; align-items: center; gap: 0.5rem; margin: 1.5rem 0; overflow-x: auto; }
+.week-day { flex: 1; min-width: 5.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.15rem; padding: 0.75rem 0.5rem; border: 1px solid var(--border); border-radius: 0.9rem; background: var(--card); color: var(--foreground); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.week-day small { text-transform: uppercase; font-size: 0.7rem; color: var(--muted-foreground); letter-spacing: 0.06em; }
+.week-day strong { font-family: Manrope, sans-serif; font-size: 1.35rem; }
+.week-day span { font-size: 0.72rem; color: var(--muted-foreground); }
+.week-day:hover { border-color: var(--primary); }
+.week-day.active { background: var(--brand); border-color: var(--brand); color: var(--brand-foreground, var(--primary-foreground)); }
+.week-day.active small, .week-day.active span { color: inherit; opacity: 0.8; }
+.agenda-form { margin-bottom: 1.5rem; }

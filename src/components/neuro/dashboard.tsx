@@ -21,6 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useStudents } from "@/hooks/use-students";
+import { useSessions } from "@/hooks/use-sessions";
+import { endTime, sessionsOn } from "@/services/session-service";
+import { demoDate } from "@/data/demo-students";
 import { StudentAvatar, StudentTable, DemoFooter } from "./student-ui";
 
 const monthData = {
@@ -37,14 +40,11 @@ const monthData = {
     { week: "22–31", done: 12, planned: 2 },
   ],
 };
-const appointments = [
-  { studentId: "1", time: "08:30", end: "09:20", type: "Atendimento individual", confirmed: true },
-  { studentId: "2", time: "10:00", end: "10:50", type: "Atendimento individual", confirmed: true },
-  { studentId: "3", time: "14:00", end: "14:50", type: "Encontro inicial", confirmed: true },
-  { studentId: "4", time: "15:30", end: "16:20", type: "Atendimento individual", confirmed: false },
-];
 export function Dashboard() {
   const { students } = useStudents();
+  const { sessions } = useSessions();
+  const appointments = sessionsOn(sessions, demoDate).filter((x) => x.status !== "Cancelado");
+  const confirmed = appointments.filter((x) => x.status === "Confirmado" || x.status === "Realizado").length;
   const [month, setMonth] = useState<"Novembro" | "Outubro">("Novembro");
   const active = students.filter((student) => student.status === "Ativo").length;
   const evaluation = students.filter((student) => student.status === "Em avaliação").length;
@@ -67,10 +67,10 @@ export function Dashboard() {
     },
     {
       title: "Atendimentos hoje",
-      value: 4,
+      value: appointments.length,
       icon: CalendarDays,
       tone: "warm",
-      foot: "3 confirmados · 1 pendente",
+      foot: `${confirmed} confirmados · ${appointments.length - confirmed} pendentes`,
       trend: false,
     },
     {
@@ -126,7 +126,7 @@ export function Dashboard() {
           <div className="section-heading">
             <div>
               <h2>
-                Seu dia de atendimentos<span className="count-pill">4 hoje</span>
+                Seu dia de atendimentos<span className="count-pill">{appointments.length} hoje</span>
               </h2>
               <p>Sexta-feira, 20 de novembro de 2026</p>
             </div>
@@ -137,10 +137,10 @@ export function Dashboard() {
               const student = students.find((item) => item.id === appointment.studentId);
               if (!student) return null;
               return (
-                <div className="appointment" key={appointment.time}>
+                <div className="appointment" key={appointment.id}>
                   <div className="appointment-time">
-                    <strong>{appointment.time}</strong>
-                    <small>{appointment.end}</small>
+                    <strong>{appointment.start}</strong>
+                    <small>{endTime(appointment)}</small>
                   </div>
                   <div className="appointment-divider" />
                   <StudentAvatar student={student} />
@@ -150,8 +150,8 @@ export function Dashboard() {
                     </Link>
                     <small>{appointment.type}</small>
                   </div>
-                  <span className={`status ${appointment.confirmed ? "" : "warm"}`}>
-                    {appointment.confirmed ? "Confirmado" : "Pendente"}
+                  <span className={`status ${appointment.status === "Pendente" ? "warm" : ""}`}>
+                    {appointment.status}
                   </span>
                 </div>
               );

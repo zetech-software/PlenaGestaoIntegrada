@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 const futureItems = [
   { label: "Anamnese", icon: ClipboardList },
-  { label: "Agenda", icon: CalendarDays },
   { label: "Prontuários", icon: FileText },
   { label: "Intervenções", icon: Target },
   { label: "Evolução", icon: ChartNoAxesCombined },
@@ -34,6 +33,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const navigate = useNavigate();
   const isStudents = pathname.startsWith("/alunos");
+  const isAgenda = pathname.startsWith("/agenda");
   return (
     <div className={`app-shell ${collapsed ? "collapsed" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`} aria-label="Menu principal">
@@ -56,8 +56,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <div className="nav-label">Seu espaço</div>
             <Link
               to="/"
-              className={`nav-item ${!isStudents ? "active" : ""}`}
-              aria-current={!isStudents ? "page" : undefined}
+              className={`nav-item ${!isStudents && !isAgenda ? "active" : ""}`}
+              aria-current={!isStudents && !isAgenda ? "page" : undefined}
               title="Dashboard"
               onClick={() => setMobileOpen(false)}
             >
@@ -73,6 +73,16 @@ export function AppLayout({ children }: { children: ReactNode }) {
             >
               <Users />
               <span className="nav-text">Alunos</span>
+            </Link>
+            <Link
+              to="/agenda"
+              className={`nav-item ${isAgenda ? "active" : ""}`}
+              title="Agenda"
+              aria-current={isAgenda ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
+            >
+              <CalendarDays />
+              <span className="nav-text">Agenda</span>
             </Link>
           </div>
           <div className="nav-section">
@@ -111,7 +121,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             >
               <PanelLeft size={18} />
             </Button>
-            <span className="topbar-label">{isStudents ? "Alunos" : "Visão geral"}</span>
+            <span className="topbar-label">{isStudents ? "Alunos" : isAgenda ? "Agenda" : "Visão geral"}</span>
           </div>
           <div className="topbar-right">
             <form

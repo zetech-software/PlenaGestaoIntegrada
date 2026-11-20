@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppLayout } from "@/components/neuro/app-layout";
 import { StudentsProvider } from "@/hooks/use-students";
+import { SessionsProvider } from "@/hooks/use-sessions";
 import { Button } from "@/components/ui/button";
 
 function NotFoundComponent() {
@@ -138,9 +139,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <StudentsProvider>
-        <AppLayout>
-          <Outlet />
-        </AppLayout>
+        <SessionsProvider>
+          <AppLayout>
+            <Outlet />
+          </AppLayout>
+        </SessionsProvider>
       </StudentsProvider>
     </QueryClientProvider>
   );
