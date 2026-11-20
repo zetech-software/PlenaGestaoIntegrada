@@ -16,7 +16,7 @@ export interface Student {
 }
 export type StudentDraft = Omit<Student, "id" | "tone" | "startDate">;
 export interface StudentService {
-  list(): Student[];
-  get(id: string): Student | undefined;
-  create(draft: StudentDraft): Student;
+  list(): Promise<Student[]>;
+  get(id: string): Promise<Student | undefined>;
+  create(draft: StudentDraft): Promise<Student>;
 }

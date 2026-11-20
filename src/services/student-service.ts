@@ -4,14 +4,14 @@ import type { Student, StudentDraft, StudentService } from "@/types/student";
 // Each instance owns its data; no storage, network writes or module-level mutable state.
 export class DemoStudentService implements StudentService {
   private students: Student[] = demoStudents.map((student) => ({ ...student }));
-  list() {
+  async list() {
     return this.students.map((student) => ({ ...student }));
   }
-  get(id: string) {
+  async get(id: string) {
     const student = this.students.find((item) => item.id === id);
     return student ? { ...student } : undefined;
   }
-  create(draft: StudentDraft) {
+  async create(draft: StudentDraft) {
     const student: Student = {
       ...draft,
       id: `demo-${this.students.length + 1}`,

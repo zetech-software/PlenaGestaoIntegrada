@@ -36,7 +36,7 @@ export const Route = createFileRoute("/alunos/")({
   component: StudentsPage,
 });
 function StudentsPage() {
-  const { students } = useStudents();
+  const { students, isLoading } = useStudents();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
   const [status, setStatus] = useState("Todos");
@@ -113,10 +113,16 @@ function StudentsPage() {
           </Button>
         )}
       </div>
-      <StudentTable students={filtered} />
+      {isLoading ? (
+        <p role="status" aria-busy="true">
+          Carregando alunos...
+        </p>
+      ) : (
+        <StudentTable students={filtered} />
+      )}
       <div className="table-bottom">
         <span>
-          {filtered.length} de {students.length} alunos
+          {isLoading ? "Carregando..." : `${filtered.length} de ${students.length} alunos`}
         </span>
         <span>Cadastros fictícios</span>
       </div>

@@ -1,21 +1,34 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { DemoStudentService } from "@/services/student-service";
 import type { Student, StudentDraft, StudentService } from "@/types/student";
 interface StudentContextValue {
   students: Student[];
-  addStudent: (draft: StudentDraft) => Student;
+  isLoading: boolean;
+  error: Error | null;
+  addStudent: (draft: StudentDraft) => Promise<Student>;
 }
 const StudentContext = createContext<StudentContextValue | null>(null);
+const studentsKey = ["students"] as const;
 export function StudentsProvider({ children }: { children: ReactNode }) {
   const [service] = useState<StudentService>(() => new DemoStudentService());
-  const [students, setStudents] = useState(() => service.list());
-  function addStudent(draft: StudentDraft) {
-    const student = service.create(draft);
-    setStudents(service.list());
-    return student;
-  }
+  const queryClient = useQueryClient();
+  const query = useQuery({ queryKey: studentsKey, queryFn: () => service.list() });
+  const create = useMutation({
+    mutationFn: (draft: StudentDraft) => service.create(draft),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: studentsKey }),
+  });
   return (
-    <StudentContext.Provider value={{ students, addStudent }}>{children}</StudentContext.Provider>
+    <StudentContext.Provider
+      value={{
+        students: query.data ?? [],
+        isLoading: query.isPending,
+        error: query.error,
+        addStudent: (draft) => create.mutateAsync(draft),
+      }}
+    >
+      {children}
+    </StudentContext.Provider>
   );
 }
 export function useStudents() {
