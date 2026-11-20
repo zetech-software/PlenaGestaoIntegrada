@@ -24,6 +24,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useStudents } from "@/hooks/use-students";
 import { useSessions } from "@/hooks/use-sessions";
 import { endTime, sessionsOn } from "@/services/session-service";
+import { attendanceByTherapist, pendingSessions } from "@/services/report-service";
 import { demoDate } from "@/data/demo-students";
 import { StudentAvatar, StudentTable, DemoFooter } from "./student-ui";
 
@@ -48,6 +49,9 @@ export function Dashboard() {
   const confirmed = appointments.filter(
     (x) => x.status === "Confirmado" || x.status === "Realizado",
   ).length;
+  const pending = pendingSessions(sessions);
+  const pendingToday = pending.filter((x) => x.date === demoDate).length;
+  const therapists = attendanceByTherapist(sessions, students);
   const [month, setMonth] = useState<"Novembro" | "Outubro">("Novembro");
   const active = students.filter((student) => student.status === "Ativo").length;
   const evaluation = students.filter((student) => student.status === "Em avaliação").length;
@@ -62,12 +66,13 @@ export function Dashboard() {
       trend: false,
     },
     {
-      title: "Atendimentos no mês",
-      value: 48,
+      title: "Sessões pendentes",
+      value: pending.length,
+      loading: isLoading,
       icon: CalendarCheck,
       tone: "info",
-      foot: "8 a mais que em outubro",
-      trend: true,
+      foot: `${pendingToday} para hoje · aguardando confirmação`,
+      trend: false,
     },
     {
       title: "Atendimentos hoje",
@@ -134,6 +139,54 @@ export function Dashboard() {
           </article>
         ))}
       </div>
+      <section className="therapist-panel" aria-labelledby="therapist-heading">
+        <div className="section-heading">
+          <div>
+            <h2 id="therapist-heading">Frequência por terapeuta</h2>
+            <p>Realizadas ÷ (realizadas + faltas), com os alunos de cada profissional.</p>
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/relatorios">
+              Ver relatório <ArrowRight />
+            </Link>
+          </Button>
+        </div>
+        {isLoading ? (
+          <p role="status" aria-busy="true">
+            Carregando frequência...
+          </p>
+        ) : (
+          <ul className="therapist-list">
+            {therapists.map((row) => (
+              <li key={row.therapist.id}>
+                <div>
+                  <strong>{row.therapist.name}</strong>
+                  <small>
+                    {row.therapist.specialty} · {row.students} alunos
+                  </small>
+                </div>
+                <div
+                  className="therapist-bar"
+                  role="img"
+                  aria-label={
+                    row.rate === null
+                      ? "Sem sessões realizadas ou faltas"
+                      : `Frequência de ${row.rate}%`
+                  }
+                >
+                  <span style={{ width: `${row.rate ?? 0}%` }} />
+                </div>
+                <strong className="therapist-rate">
+                  {row.rate === null ? "—" : `${row.rate}%`}
+                </strong>
+                <small>
+                  {row.done} realizadas · {row.missed} faltas · {row.pending} pendentes
+                </small>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <div className="dashboard-grid">
         <section>
           <div className="section-heading">

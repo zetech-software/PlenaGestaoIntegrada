@@ -16,6 +16,7 @@ import { AppLayout } from "@/components/neuro/app-layout";
 import { StudentsProvider } from "@/hooks/use-students";
 import { SessionsProvider } from "@/hooks/use-sessions";
 import { RecordsProvider } from "@/hooks/use-records";
+import { PlansProvider } from "@/hooks/use-plans";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { LoginScreen } from "@/components/neuro/login-screen";
 import { Button } from "@/components/ui/button";
@@ -148,9 +149,11 @@ function RootComponent() {
           <StudentsProvider>
             <SessionsProvider>
               <RecordsProvider>
-                <AppLayout>
-                  <Outlet />
-                </AppLayout>
+                <PlansProvider>
+                  <AppLayout>
+                    <Outlet />
+                  </AppLayout>
+                </PlansProvider>
               </RecordsProvider>
             </SessionsProvider>
           </StudentsProvider>

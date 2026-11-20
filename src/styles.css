@@ -1322,3 +1322,191 @@ input {
 .assign-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; cursor: pointer; }
 .no-access { text-align: center; padding: 4rem 1rem; }
 @media (max-width: 850px) { .role-legend { grid-template-columns: 1fr; } }
+
+/* Planos de intervenção, relatórios e painel por terapeuta */
+.plan-row .plan-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+.plan-row .plan-progress small {
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+.goal-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 14px;
+}
+.goal-fieldset legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.plan-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.plan-facts dt {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.plan-facts dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+.goal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.goal-item {
+  display: grid;
+  gap: 4px;
+  break-inside: avoid;
+}
+.goal-item small {
+  color: var(--muted-foreground);
+}
+.goal-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.goal-progress > span {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 36px;
+}
+.period-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.filter-select.wide {
+  min-width: 250px;
+}
+.report {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-x: auto;
+}
+.report-title {
+  font-family: var(--font-display);
+  color: var(--brand);
+  margin-bottom: 14px;
+}
+.report-title small {
+  font-family: var(--font-body, inherit);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted-foreground);
+}
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.report-table th,
+.report-table td {
+  padding: 9px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.report-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  border-bottom: 2px solid var(--mint);
+}
+.report-table tr {
+  break-inside: avoid;
+}
+.report-note,
+.report-empty {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.therapist-panel {
+  margin-bottom: 28px;
+}
+.therapist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.therapist-list li {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.2fr) minmax(120px, 2fr) 52px minmax(180px, 1.4fr);
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.therapist-list small {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+.therapist-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--secondary);
+  overflow: hidden;
+}
+.therapist-bar span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+.therapist-rate {
+  text-align: right;
+}
+@media (max-width: 760px) {
+  .plan-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .therapist-list li {
+    grid-template-columns: 1fr 52px;
+  }
+  .therapist-list .therapist-bar,
+  .therapist-list li > small {
+    grid-column: 1 / -1;
+  }
+}
+@media print {
+  .report {
+    border: 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .report-table {
+    font-size: 11px;
+  }
+  .goal-progress input {
+    display: none;
+  }
+}

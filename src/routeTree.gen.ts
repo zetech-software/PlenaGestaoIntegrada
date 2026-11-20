@@ -12,11 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as AlunosRouteImport } from './routes/alunos'
+import { Route as IntervencoesRouteImport } from './routes/intervencoes'
 import { Route as ProntuariosRouteImport } from './routes/prontuarios'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as UsuariosRouteImport } from './routes/usuarios'
 import { Route as AlunosIndexRouteImport } from './routes/alunos.index'
 import { Route as AlunosIdRouteImport } from './routes/alunos.$id'
 import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
+import { Route as IntervencoesIndexRouteImport } from './routes/intervencoes.index'
+import { Route as IntervencoesIdRouteImport } from './routes/intervencoes.$id'
+import { Route as IntervencoesNovoRouteImport } from './routes/intervencoes.novo'
 import { Route as AlunosIdAnamneseRouteImport } from './routes/alunos.$id_.anamnese'
 import { Route as AlunosIdProntuarioRouteImport } from './routes/alunos.$id_.prontuario'
 
@@ -35,9 +40,19 @@ const AlunosRoute = AlunosRouteImport.update({
   path: '/alunos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IntervencoesRoute = IntervencoesRouteImport.update({
+  id: '/intervencoes',
+  path: '/intervencoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProntuariosRoute = ProntuariosRouteImport.update({
   id: '/prontuarios',
   path: '/prontuarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsuariosRoute = UsuariosRouteImport.update({
@@ -60,6 +75,21 @@ const AlunosNovoRoute = AlunosNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => AlunosRoute,
 } as any)
+const IntervencoesIndexRoute = IntervencoesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => IntervencoesRoute,
+} as any)
+const IntervencoesIdRoute = IntervencoesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => IntervencoesRoute,
+} as any)
+const IntervencoesNovoRoute = IntervencoesNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => IntervencoesRoute,
+} as any)
 const AlunosIdAnamneseRoute = AlunosIdAnamneseRouteImport.update({
   id: '/$id_/anamnese',
   path: '/$id/anamnese',
@@ -75,11 +105,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
+  '/intervencoes': typeof IntervencoesRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
+  '/relatorios': typeof RelatoriosRoute
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/intervencoes/$id': typeof IntervencoesIdRoute
+  '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos/': typeof AlunosIndexRoute
+  '/intervencoes/': typeof IntervencoesIndexRoute
   '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
 }
@@ -87,10 +122,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
   '/prontuarios': typeof ProntuariosRoute
+  '/relatorios': typeof RelatoriosRoute
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/intervencoes/$id': typeof IntervencoesIdRoute
+  '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos': typeof AlunosIndexRoute
+  '/intervencoes': typeof IntervencoesIndexRoute
   '/alunos/$id/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id/prontuario': typeof AlunosIdProntuarioRoute
 }
@@ -99,11 +138,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agenda': typeof AgendaRoute
   '/alunos': typeof AlunosRouteWithChildren
+  '/intervencoes': typeof IntervencoesRouteWithChildren
   '/prontuarios': typeof ProntuariosRoute
+  '/relatorios': typeof RelatoriosRoute
   '/usuarios': typeof UsuariosRoute
   '/alunos/$id': typeof AlunosIdRoute
   '/alunos/novo': typeof AlunosNovoRoute
+  '/intervencoes/$id': typeof IntervencoesIdRoute
+  '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos/': typeof AlunosIndexRoute
+  '/intervencoes/': typeof IntervencoesIndexRoute
   '/alunos/$id_/anamnese': typeof AlunosIdAnamneseRoute
   '/alunos/$id_/prontuario': typeof AlunosIdProntuarioRoute
 }
@@ -113,11 +157,16 @@ export interface FileRouteTypes {
     | '/'
     | '/agenda'
     | '/alunos'
+    | '/intervencoes'
     | '/prontuarios'
+    | '/relatorios'
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/intervencoes/$id'
+    | '/intervencoes/novo'
     | '/alunos/'
+    | '/intervencoes/'
     | '/alunos/$id/anamnese'
     | '/alunos/$id/prontuario'
   fileRoutesByTo: FileRoutesByTo
@@ -125,10 +174,14 @@ export interface FileRouteTypes {
     | '/'
     | '/agenda'
     | '/prontuarios'
+    | '/relatorios'
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/intervencoes/$id'
+    | '/intervencoes/novo'
     | '/alunos'
+    | '/intervencoes'
     | '/alunos/$id/anamnese'
     | '/alunos/$id/prontuario'
   id:
@@ -136,11 +189,16 @@ export interface FileRouteTypes {
     | '/'
     | '/agenda'
     | '/alunos'
+    | '/intervencoes'
     | '/prontuarios'
+    | '/relatorios'
     | '/usuarios'
     | '/alunos/$id'
     | '/alunos/novo'
+    | '/intervencoes/$id'
+    | '/intervencoes/novo'
     | '/alunos/'
+    | '/intervencoes/'
     | '/alunos/$id_/anamnese'
     | '/alunos/$id_/prontuario'
   fileRoutesById: FileRoutesById
@@ -149,7 +207,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgendaRoute: typeof AgendaRoute
   AlunosRoute: typeof AlunosRouteWithChildren
+  IntervencoesRoute: typeof IntervencoesRouteWithChildren
   ProntuariosRoute: typeof ProntuariosRoute
+  RelatoriosRoute: typeof RelatoriosRoute
   UsuariosRoute: typeof UsuariosRoute
 }
 
@@ -176,11 +236,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlunosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/intervencoes': {
+      id: '/intervencoes'
+      path: '/intervencoes'
+      fullPath: '/intervencoes'
+      preLoaderRoute: typeof IntervencoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/prontuarios': {
       id: '/prontuarios'
       path: '/prontuarios'
       fullPath: '/prontuarios'
       preLoaderRoute: typeof ProntuariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/usuarios': {
@@ -210,6 +284,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/alunos/novo'
       preLoaderRoute: typeof AlunosNovoRouteImport
       parentRoute: typeof AlunosRoute
+    }
+    '/intervencoes/': {
+      id: '/intervencoes/'
+      path: '/'
+      fullPath: '/intervencoes/'
+      preLoaderRoute: typeof IntervencoesIndexRouteImport
+      parentRoute: typeof IntervencoesRoute
+    }
+    '/intervencoes/$id': {
+      id: '/intervencoes/$id'
+      path: '/$id'
+      fullPath: '/intervencoes/$id'
+      preLoaderRoute: typeof IntervencoesIdRouteImport
+      parentRoute: typeof IntervencoesRoute
+    }
+    '/intervencoes/novo': {
+      id: '/intervencoes/novo'
+      path: '/novo'
+      fullPath: '/intervencoes/novo'
+      preLoaderRoute: typeof IntervencoesNovoRouteImport
+      parentRoute: typeof IntervencoesRoute
     }
     '/alunos/$id_/anamnese': {
       id: '/alunos/$id_/anamnese'
@@ -247,11 +342,29 @@ const AlunosRouteChildren: AlunosRouteChildren = {
 const AlunosRouteWithChildren =
   AlunosRoute._addFileChildren(AlunosRouteChildren)
 
+interface IntervencoesRouteChildren {
+  IntervencoesIdRoute: typeof IntervencoesIdRoute
+  IntervencoesNovoRoute: typeof IntervencoesNovoRoute
+  IntervencoesIndexRoute: typeof IntervencoesIndexRoute
+}
+
+const IntervencoesRouteChildren: IntervencoesRouteChildren = {
+  IntervencoesIdRoute: IntervencoesIdRoute,
+  IntervencoesNovoRoute: IntervencoesNovoRoute,
+  IntervencoesIndexRoute: IntervencoesIndexRoute,
+}
+
+const IntervencoesRouteWithChildren = IntervencoesRoute._addFileChildren(
+  IntervencoesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgendaRoute: AgendaRoute,
   AlunosRoute: AlunosRouteWithChildren,
+  IntervencoesRoute: IntervencoesRouteWithChildren,
   ProntuariosRoute: ProntuariosRoute,
+  RelatoriosRoute: RelatoriosRoute,
   UsuariosRoute: UsuariosRoute,
 }
 export const routeTree = rootRouteImport
