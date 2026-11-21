@@ -35,7 +35,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isAgenda = pathname.startsWith("/agenda");
   const isRecords =
     pathname.startsWith("/prontuarios") || /\/alunos\/[^/]+\/(anamnese|prontuario)/.test(pathname);
-  const { signOut, role } = useAuth();
+  const { session, signOut, role } = useAuth();
   const [switching, setSwitching] = useState(false);
   const [accountError, setAccountError] = useState("");
   async function switchAccount() {
@@ -298,12 +298,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 />
               </form>
             ) : null}
-            <div className="professional">
+            <div className="professional" aria-label="Conta conectada">
               <span className="avatar">
                 {role ? roleLabels[role].slice(0, 2).toUpperCase() : "NP"}
               </span>
               <span className="professional-copy">
                 <strong>{role ? roleLabels[role] : "Sem perfil"}</strong>
+                <small>{session?.user.email ?? "E-mail indisponível"}</small>
               </span>
             </div>
             <Button

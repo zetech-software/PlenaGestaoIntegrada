@@ -358,6 +358,15 @@ input {
   gap: 11px;
   padding-left: 20px;
   border-left: 1px solid var(--border);
+  min-width: 0;
+}
+.professional-copy {
+  min-width: 0;
+  max-width: 260px;
+}
+.professional-copy small {
+  display: block;
+  overflow-wrap: anywhere;
 }
 .professional strong {
   display: block;
@@ -1015,6 +1024,12 @@ input {
     width: 190px;
   }
   .professional-copy {
+    display: block;
+  }
+  .topbar-right {
+    min-width: 0;
+  }
+  .topbar-right .global-search {
     display: none;
   }
   .dashboard-grid {
@@ -1068,8 +1083,9 @@ input {
     padding: 22px 18px;
   }
   .topbar {
-    height: 64px;
-    padding: 0 15px;
+    height: auto;
+    min-height: 64px;
+    padding: 10px 15px;
     gap: 8px;
   }
   .topbar-left,
