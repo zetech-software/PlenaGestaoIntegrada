@@ -1,5 +1,5 @@
 import { demoTherapists, demoTherapistByStudent, type Therapist } from "@/data/demo-therapists";
-import { attendanceRate } from "@/services/session-service";
+import { attendanceRate, sessionTherapistIds } from "@/services/session-service";
 import { planProgress } from "@/services/plan-service";
 import { recordsFor } from "@/services/record-service";
 import { displayStatus } from "@/services/finance-service";
@@ -40,7 +40,7 @@ export function attendanceByTherapist(
     (s) => visible.has(s.studentId) && (!period || inPeriod(s.date, period)),
   );
   return demoTherapists.map((therapist) => {
-    const own = scoped.filter((s) => s.therapistId === therapist.id);
+    const own = scoped.filter((s) => sessionTherapistIds(s).includes(therapist.id));
     const attended = new Set(own.map((s) => s.studentId));
     const linked = students.filter((s) => demoTherapistByStudent[s.id] === therapist.id);
     return {

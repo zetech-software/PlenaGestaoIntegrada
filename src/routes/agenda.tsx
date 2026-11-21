@@ -3,7 +3,13 @@ import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { DEFAULT_SESSION_DURATION } from "@/services/session-calendar";
 import {
   Select,
@@ -22,6 +28,7 @@ import {
   endTime,
   recurrenceDates,
   sessionsOn,
+  sessionTherapistIds,
   weekDays,
 } from "@/services/session-service";
 import { sessionStatuses, type SessionStatus } from "@/types/session";
@@ -43,7 +50,8 @@ export const Route = createFileRoute("/agenda")({
       { property: "og:title", content: "Agenda | Plena Gestão Integrada" },
       {
         property: "og:description",
-        content: "Organize sessões, confirme presenças e acompanhe a frequência.",
+        content:
+          "Organize sessões e reuniões com os pais, confirme presenças e acompanhe a frequência.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -79,22 +87,35 @@ function AgendaPage() {
   const [form, setForm] = useState({
     studentId: "",
     therapistId: "",
+    secondTherapistId: "",
     start: "09:00",
     duration: String(DEFAULT_SESSION_DURATION),
     type: "Atendimento individual",
     weeks: "1",
   });
   const days = weekDays(selected);
-  const filteredSessions = sessions.filter((session) => therapistFilter === "all" || session.therapistId === therapistFilter);
+  const filteredSessions = sessions.filter(
+    (session) =>
+      therapistFilter === "all" || sessionTherapistIds(session).includes(therapistFilter),
+  );
   const daySessions = sessionsOn(filteredSessions, selected);
   const weekSessions = filteredSessions.filter((x) => days.includes(x.date));
   const rate = attendanceRate(weekSessions);
   const selectedSession = sessions.find((session) => session.id === selectedSessionId);
   const selectedStudent = students.find((student) => student.id === selectedSession?.studentId);
+  const meetingStudent = students.find((student) => student.id === form.studentId);
 
   function openNewSession(date = selected, start = "09:00") {
     setSelected(date);
-    setForm({ studentId: "", therapistId: therapistFilter === "all" ? "" : therapistFilter, start, duration: String(DEFAULT_SESSION_DURATION), type: "Atendimento individual", weeks: "1" });
+    setForm({
+      studentId: "",
+      therapistId: therapistFilter === "all" ? "" : therapistFilter,
+      secondTherapistId: "",
+      start,
+      duration: String(DEFAULT_SESSION_DURATION),
+      type: "Atendimento individual",
+      weeks: "1",
+    });
     setError("");
     setShowForm(true);
   }
@@ -112,11 +133,19 @@ function AgendaPage() {
     event.preventDefault();
     if (!form.studentId) return setError("Escolha um aluno.");
     if (!form.therapistId) return setError("Escolha o terapeuta.");
+    if (
+      form.type === "Sessão conjunta — dois profissionais" &&
+      (!form.secondTherapistId || form.secondTherapistId === form.therapistId)
+    )
+      return setError("Escolha um segundo profissional diferente.");
     setSaving(true);
     try {
       const drafts = recurrenceDates(selected, Number(form.weeks)).map((date) => ({
         studentId: form.studentId,
         therapistId: form.therapistId,
+        ...(form.type === "Sessão conjunta — dois profissionais"
+          ? { secondTherapistId: form.secondTherapistId }
+          : {}),
         date,
         start: form.start,
         duration: Number(form.duration),
@@ -185,23 +214,51 @@ function AgendaPage() {
       <div className="calendar-filters">
         <div className="form-field">
           <label htmlFor="calendar-date">Data</label>
-          <Input id="calendar-date" type="date" value={selected} onChange={(event) => { if (event.target.value) setSelected(event.target.value); }} />
+          <Input
+            id="calendar-date"
+            type="date"
+            value={selected}
+            onChange={(event) => {
+              if (event.target.value) setSelected(event.target.value);
+            }}
+          />
         </div>
         <div className="form-field">
           <label>Profissional</label>
           <Select value={therapistFilter} onValueChange={setTherapistFilter}>
-            <SelectTrigger aria-label="Filtrar profissional" className="bg-card"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Filtrar profissional" className="bg-card">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos os profissionais</SelectItem>
-              {demoTherapists.filter((therapist) => sessions.some((session) => session.therapistId === therapist.id)).map((therapist) => <SelectItem key={therapist.id} value={therapist.id}>{therapist.name}</SelectItem>)}
+              {demoTherapists
+                .filter((therapist) =>
+                  sessions.some((session) => sessionTherapistIds(session).includes(therapist.id)),
+                )
+                .map((therapist) => (
+                  <SelectItem key={therapist.id} value={therapist.id}>
+                    {therapist.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
       </div>
-      {error && !showForm ? <p className="ai-error" role="alert">{error}</p> : null}
+      {error && !showForm ? (
+        <p className="ai-error" role="alert">
+          {error}
+        </p>
+      ) : null}
       <ClientOnly fallback={<p role="status">Carregando calendário...</p>}>
         <Suspense fallback={<p role="status">Carregando calendário...</p>}>
-          <SessionCalendar sessions={filteredSessions} students={students} selectedDate={selected} onDateChange={setSelected} onNewSession={openNewSession} onSelectSession={setSelectedSessionId} />
+          <SessionCalendar
+            sessions={filteredSessions}
+            students={students}
+            selectedDate={selected}
+            onDateChange={setSelected}
+            onNewSession={openNewSession}
+            onSelectSession={setSelectedSessionId}
+          />
         </Suspense>
       </ClientOnly>
 
@@ -211,150 +268,254 @@ function AgendaPage() {
             <DialogTitle>Novo atendimento</DialogTitle>
             <DialogDescription>{longDate.format(asDate(selected))}</DialogDescription>
           </DialogHeader>
-        <form className="agenda-form" onSubmit={(e) => void submit(e)}>
-          <div className="form-grid">
-            <div className="form-field">
-              <label>Aluno</label>
-              <Select
-                value={form.studentId}
-                onValueChange={(v) =>
-                  setForm({ ...form, studentId: v, therapistId: demoTherapistByStudent[v] ?? "" })
-                }
-              >
-                <SelectTrigger className="bg-card" aria-label="Aluno">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {students
-                    .filter((x) => x.status !== "Inativo")
-                    .map((x) => (
-                      <SelectItem key={x.id} value={x.id}>
-                        {x.name}
+          <form className="agenda-form" onSubmit={(e) => void submit(e)}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label>Tipo de agendamento</label>
+                <Select
+                  value={form.type}
+                  onValueChange={(v) =>
+                    setForm({
+                      ...form,
+                      type: v,
+                      secondTherapistId: "",
+                      duration:
+                        v === "Sessão dupla — mesmo aluno"
+                          ? "90"
+                          : String(DEFAULT_SESSION_DURATION),
+                    })
+                  }
+                >
+                  <SelectTrigger className="bg-card" aria-label="Tipo de agendamento">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[
+                      "Atendimento individual",
+                      "Reunião com os pais",
+                      "Sessão dupla — mesmo aluno",
+                      "Sessão conjunta — dois profissionais",
+                      "Encontro inicial",
+                      "Devolutiva à família",
+                      "Reunião escolar",
+                    ].map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
                       </SelectItem>
                     ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="form-field">
-              <label>Terapeuta</label>
-              <Select
-                value={form.therapistId}
-                onValueChange={(v) => setForm({ ...form, therapistId: v })}
-              >
-                <SelectTrigger className="bg-card" aria-label="Terapeuta">
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {demoTherapists.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>
-                      {t.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="form-field">
-              <label htmlFor="ag-start">Horário</label>
-              <Input
-                id="ag-start"
-                type="time"
-                value={form.start}
-                onChange={(e) => setForm({ ...form, start: e.target.value })}
-                required
-              />
-            </div>
-            <div className="form-field">
-              <label>Duração</label>
-              <Select
-                value={form.duration}
-                onValueChange={(v) => setForm({ ...form, duration: v })}
-              >
-                <SelectTrigger className="bg-card" aria-label="Duração">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["30", "45", "50", "60", "90"].map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d} min
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="form-field">
-              <label>Tipo</label>
-              <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
-                <SelectTrigger className="bg-card" aria-label="Tipo">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[
-                    "Atendimento individual",
-                    "Encontro inicial",
-                    "Devolutiva à família",
-                    "Reunião escolar",
-                  ].map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="form-field">
-              <label>Repetir toda semana por</label>
-              <Select value={form.weeks} onValueChange={(v) => setForm({ ...form, weeks: v })}>
-                <SelectTrigger className="bg-card" aria-label="Repetição semanal">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from({ length: MAX_RECURRENCE_WEEKS }, (_, i) => String(i + 1)).map(
-                    (n) => (
-                      <SelectItem key={n} value={n}>
-                        {n === "1" ? "Não repetir" : `${n} semanas`}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="form-field">
+                <label htmlFor="ag-date">Data do agendamento</label>
+                <Input
+                  id="ag-date"
+                  type="date"
+                  required
+                  value={selected}
+                  onChange={(event) => {
+                    if (event.target.value) setSelected(event.target.value);
+                  }}
+                />
+              </div>
+              <div className="form-field">
+                <label>Aluno</label>
+                <Select
+                  value={form.studentId}
+                  onValueChange={(v) =>
+                    setForm({ ...form, studentId: v, therapistId: demoTherapistByStudent[v] ?? "" })
+                  }
+                >
+                  <SelectTrigger className="bg-card" aria-label="Aluno">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {students
+                      .filter((x) => x.status !== "Inativo")
+                      .map((x) => (
+                        <SelectItem key={x.id} value={x.id}>
+                          {x.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {form.type === "Reunião com os pais" && meetingStudent ? (
+                <div className="form-field sm:col-span-2">
+                  <span className="text-sm font-medium">Responsável</span>
+                  <p className="text-sm text-muted-foreground">
+                    {meetingStudent.guardian || "Não informado"} ·{" "}
+                    {meetingStudent.relationship || "Família"}
+                  </p>
+                </div>
+              ) : null}
+              <div className="form-field">
+                <label>Terapeuta</label>
+                <Select
+                  value={form.therapistId}
+                  onValueChange={(v) => setForm({ ...form, therapistId: v })}
+                >
+                  <SelectTrigger className="bg-card" aria-label="Terapeuta">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {demoTherapists.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>
+                        {t.name}
                       </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="form-field">
+                <label htmlFor="ag-start">Horário</label>
+                <Input
+                  id="ag-start"
+                  type="time"
+                  value={form.start}
+                  onChange={(e) => setForm({ ...form, start: e.target.value })}
+                  required
+                />
+              </div>
+              {form.type === "Sessão conjunta — dois profissionais" ? (
+                <div className="form-field">
+                  <label>Segundo profissional</label>
+                  <Select
+                    value={form.secondTherapistId}
+                    onValueChange={(value) => setForm({ ...form, secondTherapistId: value })}
+                  >
+                    <SelectTrigger className="bg-card" aria-label="Segundo profissional">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {demoTherapists
+                        .filter((therapist) => therapist.id !== form.therapistId)
+                        .map((therapist) => (
+                          <SelectItem key={therapist.id} value={therapist.id}>
+                            {therapist.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : null}
+              <div className="form-field">
+                <label>Duração</label>
+                <Select
+                  disabled={form.type === "Sessão dupla — mesmo aluno"}
+                  value={form.duration}
+                  onValueChange={(v) => setForm({ ...form, duration: v })}
+                >
+                  <SelectTrigger className="bg-card" aria-label="Duração">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["30", "45", "50", "60", "90"].map((d) => (
+                      <SelectItem key={d} value={d}>
+                        {d} min
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="form-field">
+                <label>Repetir toda semana por</label>
+                <Select value={form.weeks} onValueChange={(v) => setForm({ ...form, weeks: v })}>
+                  <SelectTrigger className="bg-card" aria-label="Repetição semanal">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: MAX_RECURRENCE_WEEKS }, (_, i) => String(i + 1)).map(
+                      (n) => (
+                        <SelectItem key={n} value={n}>
+                          {n === "1" ? "Não repetir" : `${n} semanas`}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
-          {error ? (
-            <p className="ai-error" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <div className="form-actions">
-            <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={saving}>{saving ? "Agendando..." : "Agendar"}</Button>
-          </div>
-        </form>
+            {error ? (
+              <p className="ai-error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <div className="form-actions">
+              <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? "Agendando..." : "Agendar"}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={Boolean(selectedSession && selectedStudent)} onOpenChange={(open) => { if (!open) setSelectedSessionId(null); }}>
+      <Dialog
+        open={Boolean(selectedSession && selectedStudent)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedSessionId(null);
+        }}
+      >
         <DialogContent className="agenda-dialog">
           <DialogHeader>
             <DialogTitle>{selectedStudent?.name}</DialogTitle>
-            <DialogDescription>{selectedSession ? `${longDate.format(asDate(selectedSession.date))} · ${selectedSession.start}–${endTime(selectedSession)} · ${selectedSession.duration} min` : ""}</DialogDescription>
+            <DialogDescription>
+              {selectedSession
+                ? `${longDate.format(asDate(selectedSession.date))} · ${selectedSession.start}–${endTime(selectedSession)} · ${selectedSession.duration} min`
+                : ""}
+            </DialogDescription>
           </DialogHeader>
-          {selectedSession && selectedStudent ? <>
-            <p className="text-sm">{selectedSession.type}</p>
-            <p className="text-sm text-muted-foreground">{demoTherapists.find((therapist) => therapist.id === selectedSession.therapistId)?.name}</p>
-            <div className="form-field">
-              <label>Status</label>
-              <Select value={selectedSession.status} onValueChange={(value) => void changeStatus(selectedSession.id, value as SessionStatus)}>
-                <SelectTrigger aria-label="Status do atendimento"><SelectValue /></SelectTrigger>
-                <SelectContent>{sessionStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline"><Link to="/alunos/$id" params={{ id: selectedStudent.id }}>Ver aluno</Link></Button>
-              {selectedSession.status === "Pendente" ? <ReminderLink student={selectedStudent} session={selectedSession} /> : null}
-            </div>
-          </> : null}
+          {selectedSession && selectedStudent ? (
+            <>
+              <p className="text-sm">{selectedSession.type}</p>
+              {selectedSession.type === "Reunião com os pais" ? (
+                <p className="text-sm">
+                  Responsável: {selectedStudent.guardian || "Não informado"}
+                </p>
+              ) : null}
+              <p className="text-sm text-muted-foreground">
+                {demoTherapists
+                  .filter((therapist) =>
+                    sessionTherapistIds(selectedSession).includes(therapist.id),
+                  )
+                  .map((therapist) => therapist.name)
+                  .join(" + ")}
+              </p>
+              <div className="form-field">
+                <label>Status</label>
+                <Select
+                  value={selectedSession.status}
+                  onValueChange={(value) =>
+                    void changeStatus(selectedSession.id, value as SessionStatus)
+                  }
+                >
+                  <SelectTrigger aria-label="Status do atendimento">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sessionStatuses.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild variant="outline">
+                  <Link to="/alunos/$id" params={{ id: selectedStudent.id }}>
+                    Ver aluno
+                  </Link>
+                </Button>
+                {selectedSession.status === "Pendente" ? (
+                  <ReminderLink student={selectedStudent} session={selectedSession} />
+                ) : null}
+              </div>
+            </>
+          ) : null}
         </DialogContent>
       </Dialog>
 
@@ -426,7 +587,7 @@ function ReminderLink({
   session,
 }: {
   student: { name: string; guardian: string; phone: string };
-  session: { date: string; start: string };
+  session: { date: string; start: string; type: string };
 }) {
   const href = whatsappLink(
     student.phone,
@@ -435,6 +596,7 @@ function ReminderLink({
       studentFirstName: student.name.split(" ")[0] ?? "",
       date: session.date,
       start: session.start,
+      type: session.type,
     }),
   );
   if (!href)

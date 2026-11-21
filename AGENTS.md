@@ -37,6 +37,7 @@ use the editor.
 - User administration lists tenant-scoped persisted students for assignments and writes both student_id and student_ref; database tenant policies cannot verify in-memory fixture IDs.
 
 - Render the FullCalendar agenda in a lazy client-only module; map session wall-clock times with pure calendar utilities to preserve SSR boundaries and testable scheduling.
+- Store joint appointments as one demo session with an optional secondTherapistId; use sessionTherapistIds for conflicts, calendar filters and attendance so both professionals reserve the same time without duplicating the student's appointment.
 - Keep the shared application shell and in-memory student provider around the root Outlet so navigation preserves a demo session without persistent storage.
 - Keep student types, fixture data, service adapters, hooks and visual components in separate modules; future REST adapters implement StudentService without changing the presentation layer.
 - Put demo filtering and date calculations in browser-safe service utilities and test them independently; do not add server logic for a demonstration-only delivery.

@@ -4,6 +4,19 @@ export function toMinutes(time: string) {
   const [h = "0", m = "0"] = time.split(":");
   return Number(h) * 60 + Number(m);
 }
+export function sessionTherapistIds(session: Pick<Session, "therapistId" | "secondTherapistId">) {
+  return session.secondTherapistId
+    ? [session.therapistId, session.secondTherapistId]
+    : [session.therapistId];
+}
+function validateDraft(draft: SessionDraft) {
+  if (draft.secondTherapistId === draft.therapistId)
+    throw new Error("Escolha dois profissionais diferentes.");
+  if (draft.type === "Sessão conjunta — dois profissionais" && !draft.secondTherapistId)
+    throw new Error("Escolha o segundo profissional.");
+  if (draft.type === "Sessão dupla — mesmo aluno" && draft.duration !== 90)
+    throw new Error("A sessão dupla do mesmo aluno deve ter 90 minutos.");
+}
 export function endTime(session: Pick<Session, "start" | "duration">) {
   const total = toMinutes(session.start) + session.duration;
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
@@ -38,7 +51,11 @@ export function findConflict(sessions: Session[], draft: SessionDraft) {
   const end = start + draft.duration;
   return sessions.find((x) => {
     if (x.date !== draft.date || x.status === "Cancelado") return false;
-    if (x.therapistId !== draft.therapistId && x.studentId !== draft.studentId) return false;
+    if (
+      !sessionTherapistIds(x).some((id) => sessionTherapistIds(draft).includes(id)) &&
+      x.studentId !== draft.studentId
+    )
+      return false;
     const s = toMinutes(x.start);
     return start < s + x.duration && s < end;
   });
@@ -76,6 +93,7 @@ export class DemoSessionService implements SessionService {
     return this.items.map((x) => ({ ...x }));
   }
   async create(draft: SessionDraft): Promise<Session> {
+    validateDraft(draft);
     const conflict = findConflict(this.items, draft);
     if (conflict) throw new Error(`Já existe um atendimento às ${conflict.start} neste dia.`);
     const session: Session = { ...draft, id: `novo-${++this.seq}`, status: "Pendente" };
@@ -84,6 +102,7 @@ export class DemoSessionService implements SessionService {
   }
   /** Tudo ou nada: se qualquer data conflitar, nenhuma sessão é criada. */
   async createMany(drafts: SessionDraft[]): Promise<Session[]> {
+    drafts.forEach(validateDraft);
     const conflicts = recurrenceConflicts(this.items, drafts);
     if (conflicts.length) throw new Error(conflictMessage(conflicts));
     const created = drafts.map((d): Session => ({

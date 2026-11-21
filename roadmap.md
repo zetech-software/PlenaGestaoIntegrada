@@ -1,5 +1,10 @@
 # Primeira entrega
 
+## Rotina de agendamento
+- [x] Reunião com os pais: tipo próprio, data, horário, duração e responsável do aluno
+- [x] Sessão dupla de 90 minutos para o mesmo aluno e sessão conjunta com dois profissionais
+- [x] Validar agendamento, leitura na agenda e bloqueio de conflito (conta clínica no navegador; 27 testes; demonstração em memória)
+
 ## Administração da equipe da clínica
 - [x] Consulta com busca e filtros; quadro de permissões por perfil
 - [x] Alteração segura de perfil e vínculos, com confirmação e retorno de erros

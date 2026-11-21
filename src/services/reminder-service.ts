@@ -4,10 +4,14 @@ export interface ReminderInput {
   studentFirstName: string;
   date: string;
   start: string;
+  type?: string;
 }
 /** Mensagem curta, sem dados clínicos: só nome, data e horário. */
 export function reminderMessage(input: ReminderInput) {
   const first = input.guardian.trim().split(/\s+/)[0] ?? "";
+  if (input.type === "Reunião com os pais") {
+    return `Olá${first ? `, ${first}` : ""}! Confirmamos sua reunião com o profissional em ${dayMonth(input.date)} às ${input.start}? Responda SIM para confirmar. Plena Gestão Integrada.`;
+  }
   return `Olá${first ? `, ${first}` : ""}! Confirmamos o atendimento de ${input.studentFirstName} em ${dayMonth(input.date)} às ${input.start}? Responda SIM para confirmar. Plena Gestão Integrada.`;
 }
 /** Link de WhatsApp (Brasil) ou null quando o telefone não parece válido. */
