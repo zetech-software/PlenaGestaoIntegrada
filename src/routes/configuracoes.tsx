@@ -1,6 +1,14 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/configuracoes")({
+  head: () => ({ meta: [
+    { title: "Configurações da clínica | Plena Gestão Integrada" },
+    { name: "description", content: "Dados, identidade, assinatura e atendimento da clínica na Plena Gestão Integrada." },
+    { property: "og:title", content: "Configurações da clínica | Plena Gestão Integrada" },
+    { property: "og:description", content: "Administração das configurações da clínica na Plena." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: SettingsLayout,
 });
 
@@ -8,6 +16,7 @@ const tabs = [
   { to: "/configuracoes", label: "Cadastro da clínica", exact: true },
   { to: "/configuracoes/logo", label: "Logo", exact: false },
   { to: "/configuracoes/assinatura", label: "Assinatura", exact: false },
+  { to: "/configuracoes/whatsapp", label: "WhatsApp", exact: false },
 ] as const;
 
 function SettingsLayout() {
@@ -17,7 +26,7 @@ function SettingsLayout() {
         <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
         <p className="text-muted-foreground">Gerencie os dados e a identidade da sua clínica.</p>
       </div>
-      <nav className="flex gap-2 border-b" aria-label="Seções de configurações">
+      <nav className="flex flex-wrap gap-2 border-b" aria-label="Seções de configurações">
         {tabs.map((tab) => (
           <Link
             key={tab.to}

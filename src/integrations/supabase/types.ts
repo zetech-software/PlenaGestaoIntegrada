@@ -910,6 +910,32 @@ export type Database = {
           },
         ]
       }
+      whatsapp_assistant_settings: {
+        Row: {
+          config: Json
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          config: Json
+          tenant_id?: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_assistant_settings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

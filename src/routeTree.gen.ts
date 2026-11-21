@@ -26,6 +26,7 @@ import { Route as AlunosNovoRouteImport } from './routes/alunos.novo'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as ConfiguracoesAssinaturaRouteImport } from './routes/configuracoes.assinatura'
 import { Route as ConfiguracoesLogoRouteImport } from './routes/configuracoes.logo'
+import { Route as ConfiguracoesWhatsappRouteImport } from './routes/configuracoes.whatsapp'
 import { Route as IntervencoesIndexRouteImport } from './routes/intervencoes.index'
 import { Route as IntervencoesIdRouteImport } from './routes/intervencoes.$id'
 import { Route as IntervencoesNovoRouteImport } from './routes/intervencoes.novo'
@@ -118,6 +119,11 @@ const ConfiguracoesLogoRoute = ConfiguracoesLogoRouteImport.update({
   path: '/logo',
   getParentRoute: () => ConfiguracoesRoute,
 } as any)
+const ConfiguracoesWhatsappRoute = ConfiguracoesWhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
 const IntervencoesIndexRoute = IntervencoesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/alunos/novo': typeof AlunosNovoRoute
   '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
+  '/configuracoes/whatsapp': typeof ConfiguracoesWhatsappRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos/': typeof AlunosIndexRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/alunos/novo': typeof AlunosNovoRoute
   '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
+  '/configuracoes/whatsapp': typeof ConfiguracoesWhatsappRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos': typeof AlunosIndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/alunos/novo': typeof AlunosNovoRoute
   '/configuracoes/assinatura': typeof ConfiguracoesAssinaturaRoute
   '/configuracoes/logo': typeof ConfiguracoesLogoRoute
+  '/configuracoes/whatsapp': typeof ConfiguracoesWhatsappRoute
   '/intervencoes/$id': typeof IntervencoesIdRoute
   '/intervencoes/novo': typeof IntervencoesNovoRoute
   '/alunos/': typeof AlunosIndexRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/alunos/novo'
     | '/configuracoes/assinatura'
     | '/configuracoes/logo'
+    | '/configuracoes/whatsapp'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
     | '/alunos/'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/alunos/novo'
     | '/configuracoes/assinatura'
     | '/configuracoes/logo'
+    | '/configuracoes/whatsapp'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
     | '/alunos'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/alunos/novo'
     | '/configuracoes/assinatura'
     | '/configuracoes/logo'
+    | '/configuracoes/whatsapp'
     | '/intervencoes/$id'
     | '/intervencoes/novo'
     | '/alunos/'
@@ -434,6 +446,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesLogoRouteImport
       parentRoute: typeof ConfiguracoesRoute
     }
+    '/configuracoes/whatsapp': {
+      id: '/configuracoes/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/configuracoes/whatsapp'
+      preLoaderRoute: typeof ConfiguracoesWhatsappRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
     '/intervencoes/': {
       id: '/intervencoes/'
       path: '/'
@@ -501,12 +520,14 @@ const AlunosRouteWithChildren =
 interface ConfiguracoesRouteChildren {
   ConfiguracoesAssinaturaRoute: typeof ConfiguracoesAssinaturaRoute
   ConfiguracoesLogoRoute: typeof ConfiguracoesLogoRoute
+  ConfiguracoesWhatsappRoute: typeof ConfiguracoesWhatsappRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
 }
 
 const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
   ConfiguracoesAssinaturaRoute: ConfiguracoesAssinaturaRoute,
   ConfiguracoesLogoRoute: ConfiguracoesLogoRoute,
+  ConfiguracoesWhatsappRoute: ConfiguracoesWhatsappRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
 }
 

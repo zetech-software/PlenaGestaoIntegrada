@@ -33,6 +33,8 @@ use the editor.
 
 ## Application architecture
 
+- Keep WhatsApp assistant settings tenant-scoped in Cloud with staff-only access; never simulate a connected number or enable automation before per-tenant Meta authorization and durable message processing exist.
+
 - The home page selects the therapist dashboard by role and consumes only access-filtered student/session providers; account switching clears query data and remounts demo providers per user to avoid cross-account state reuse.
 - User administration lists tenant-scoped persisted students for assignments and writes both student_id and student_ref; database tenant policies cannot verify in-memory fixture IDs.
 

@@ -120,6 +120,13 @@
       "when": 1795201105271,
       "tag": "0016_tenant_subscription",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795271613457,
+      "tag": "0017_whatsapp_assistant_settings",
+      "breakpoints": true
     }
   ]
 }
