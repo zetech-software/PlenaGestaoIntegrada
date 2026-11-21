@@ -34,6 +34,7 @@ use the editor.
 ## Application architecture
 
 - The home page selects the therapist dashboard by role and consumes only access-filtered student/session providers; account switching clears query data and remounts demo providers per user to avoid cross-account state reuse.
+- User administration lists tenant-scoped persisted students for assignments and writes both student_id and student_ref; database tenant policies cannot verify in-memory fixture IDs.
 
 - Render the FullCalendar agenda in a lazy client-only module; map session wall-clock times with pure calendar utilities to preserve SSR boundaries and testable scheduling.
 - Keep the shared application shell and in-memory student provider around the root Outlet so navigation preserves a demo session without persistent storage.

@@ -1,5 +1,10 @@
 # Primeira entrega
 
+## Administração da equipe da clínica
+- [x] Consulta com busca e filtros; quadro de permissões por perfil
+- [x] Alteração segura de perfil e vínculos, com confirmação e retorno de erros
+- [x] Verificação com administrador temporário da clínica: perfil e vínculo gravados e relidos; computador/celular; 9 testes de acesso
+
 ## Painel do terapeuta e troca de conta
 - [x] Painel próprio com agenda e alunos vinculados, sem e-mails
 - [x] Sair e entrar com outra conta na tela de acesso negado
