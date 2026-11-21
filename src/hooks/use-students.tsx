@@ -23,7 +23,7 @@ export function StudentsProvider({ children }: { children: ReactNode }) {
   });
   const { role, assigned } = useAuth();
   const visible = (query.data ?? []).filter(
-    (s) => canSeeStudent(role, assigned, s.id) || s.id.startsWith("demo-"),
+    (s) => canSeeStudent(role, assigned, s.id),
   );
   return (
     <StudentContext.Provider

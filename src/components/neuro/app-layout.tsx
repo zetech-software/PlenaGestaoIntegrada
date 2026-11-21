@@ -35,7 +35,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const isAgenda = pathname.startsWith("/agenda");
   const isRecords =
     pathname.startsWith("/prontuarios") || /\/alunos\/[^/]+\/(anamnese|prontuario)/.test(pathname);
-  const { session, signOut, role } = useAuth();
+  const { signOut, role } = useAuth();
+  const [switching, setSwitching] = useState(false);
+  const [accountError, setAccountError] = useState("");
+  async function switchAccount() {
+    setSwitching(true);
+    setAccountError("");
+    try {
+      await signOut();
+    } catch {
+      setAccountError("Não foi possível sair. Tente novamente.");
+      setSwitching(false);
+    }
+  }
   const isUsers = pathname.startsWith("/usuarios");
   const isPlans = pathname.startsWith("/intervencoes");
   const isReports = pathname.startsWith("/relatorios");
@@ -88,11 +100,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   to="/"
                   className={`nav-item ${isDashboard ? "active" : ""}`}
                   aria-current={isDashboard ? "page" : undefined}
-                  title="Dashboard"
+                  title={role === "terapeuta" ? "Meu painel" : "Dashboard"}
                   onClick={() => setMobileOpen(false)}
                 >
                   <LayoutDashboard />
-                  <span className="nav-text">Dashboard</span>
+                  <span className="nav-text">{role === "terapeuta" ? "Meu painel" : "Dashboard"}</span>
                 </Link>
                 <Link
                   to="/alunos"
@@ -265,7 +277,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                                 ? "Usuários"
                                 : isSettings
                                   ? "Configurações"
-                                  : "Visão geral"}
+                                  : role === "terapeuta" ? "Meu painel" : "Visão geral"}
             </span>
           </div>
           <div className="topbar-right">
@@ -288,11 +300,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
             ) : null}
             <div className="professional">
               <span className="avatar">
-                {(session?.user.email ?? "NP").slice(0, 2).toUpperCase()}
+                {role ? roleLabels[role].slice(0, 2).toUpperCase() : "NP"}
               </span>
               <span className="professional-copy">
                 <strong>{role ? roleLabels[role] : "Sem perfil"}</strong>
-                <small>{session?.user.email ?? "Perfil demonstrativo"}</small>
               </span>
             </div>
             <Button
@@ -300,7 +311,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
               size="icon"
               aria-label="Sair"
               title="Sair"
-              onClick={() => void signOut()}
+              disabled={switching}
+              onClick={() => void switchAccount()}
             >
               <LogOut size={17} />
             </Button>
@@ -316,8 +328,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 ? "Seu perfil não permite abrir esta página."
                 : "Sua conta ainda não tem um perfil. Peça a um administrador."}
             </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Button asChild variant="outline">
+                <Link to="/">Ir para meu painel</Link>
+              </Button>
+              <Button disabled={switching} onClick={() => void switchAccount()}>
+                <LogOut size={16} /> {switching ? "Saindo..." : "Sair e entrar com outra conta"}
+              </Button>
+            </div>
           </main>
         )}
+        {accountError ? <p role="alert" className="px-6 py-3 text-destructive">{accountError}</p> : null}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import { createStableContext } from "@/lib/stable-context";
 import { useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { primaryRole, type AppRole } from "@/services/permissions";
 interface Ctx {
   session: Session | null;
@@ -13,6 +15,8 @@ interface Ctx {
 }
 const AuthContext = createStableContext<Ctx>("AuthContext");
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [role, setRole] = useState<AppRole | null>(null);
@@ -57,7 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         assigned,
         reloadAccess,
         signOut: async () => {
-          await supabase.auth.signOut();
+          await queryClient.cancelQueries();
+          const { error } = await supabase.auth.signOut({ scope: "local" });
+          if (error) throw error;
+          queryClient.clear();
+          setSession(null);
+          setRole(null);
+          setAssigned([]);
+          await navigate({ to: "/", replace: true });
         },
       }}
     >

@@ -1,5 +1,10 @@
 # Primeira entrega
 
+## Painel do terapeuta e troca de conta
+- [x] Painel próprio com agenda e alunos vinculados, sem e-mails
+- [x] Sair e entrar com outra conta na tela de acesso negado
+- [x] Validar acesso do terapeuta e troca de conta (12 testes; navegador com terapeuta vinculado, calendário, celular e saída sem restauração de dados)
+
 - [x] Design System e layout principal
 - [x] Dashboard demonstrativo
 - [x] Listagem e filtros de alunos

@@ -182,5 +182,5 @@ function AuthGate({ children }: { children: ReactNode }) {
   const { session, ready } = useAuth();
   if (!ready) return <div className="login-shell" aria-busy="true" />;
   if (!session) return <LoginScreen />;
-  return <>{children}</>;
+  return <div key={session.user.id} className="contents">{children}</div>;
 }

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Dashboard } from "@/components/neuro/dashboard";
+import { TherapistDashboard } from "@/components/neuro/therapist-dashboard";
+import { useAuth } from "@/hooks/use-auth";
 
 // The home route ships no og:image, so serve-time hosting can inject the
 // project's social preview (explicit og:image or latest screenshot).
@@ -9,17 +11,22 @@ export const Route = createFileRoute("/")({
       { title: "Dashboard | Plena Gestão Integrada" },
       {
         name: "description",
-        content: "Visão geral demonstrativa dos alunos e atendimentos da Plena Gestão Integrada.",
+        content: "Painel da Plena Gestão Integrada com agenda e alunos vinculados para acompanhamento profissional.",
       },
       { property: "og:title", content: "Dashboard | Plena Gestão Integrada" },
       {
         property: "og:description",
         content:
-          "Um olhar organizado para a gestão neuropsicopedagógica. Dados exclusivamente fictícios.",
+          "Agenda e alunos vinculados para acompanhar desenvolvimento, aprendizagem e cuidado. Dados demonstrativos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Dashboard,
+  component: HomePage,
 });
+
+function HomePage() {
+  const { role } = useAuth();
+  return role === "terapeuta" ? <TherapistDashboard /> : <Dashboard />;
+}
