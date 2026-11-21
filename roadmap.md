@@ -1,5 +1,12 @@
 # Primeira entrega
 
+## Assistente de WhatsApp para leads
+- [ ] Conectar número WhatsApp Business e verificar recebimento de mensagens
+- [ ] Definir serviços/planos e preços autorizados para orçamento (aguarda resposta)
+- [ ] Definir horários disponíveis e responsável pela transferência das conversas
+- [ ] Atendimento automático com histórico, orçamento, reserva persistente de horário e transferência humana
+- [ ] Validar mensagem real, orçamento, agendamento e transferência de ponta a ponta
+
 ## Rotina de agendamento
 - [x] Reunião com os pais: tipo próprio, data, horário, duração e responsável do aluno
 - [x] Sessão dupla de 90 minutos para o mesmo aluno e sessão conjunta com dois profissionais
