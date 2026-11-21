@@ -1,5 +1,6 @@
 import { demoTherapistByStudent } from "@/data/demo-therapists";
 import type { Session } from "@/types/session";
+import { DEFAULT_SESSION_DURATION } from "@/services/session-calendar";
 const s = (
   id: string,
   studentId: string,
@@ -13,7 +14,7 @@ const s = (
   therapistId: demoTherapistByStudent[studentId] ?? "t1",
   date,
   start,
-  duration: 50,
+  duration: DEFAULT_SESSION_DURATION,
   type,
   status,
 });

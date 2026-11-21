@@ -33,6 +33,7 @@ use the editor.
 
 ## Application architecture
 
+- Render the FullCalendar agenda in a lazy client-only module; map session wall-clock times with pure calendar utilities to preserve SSR boundaries and testable scheduling.
 - Keep the shared application shell and in-memory student provider around the root Outlet so navigation preserves a demo session without persistent storage.
 - Keep student types, fixture data, service adapters, hooks and visual components in separate modules; future REST adapters implement StudentService without changing the presentation layer.
 - Put demo filtering and date calculations in browser-safe service utilities and test them independently; do not add server logic for a demonstration-only delivery.

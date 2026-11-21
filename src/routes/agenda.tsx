@@ -1,8 +1,10 @@
-import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
+import { ClientOnly, createFileRoute, Link } from "@tanstack/react-router";
+import { CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DEFAULT_SESSION_DURATION } from "@/services/session-calendar";
 import {
   Select,
   SelectContent,
@@ -20,13 +22,14 @@ import {
   endTime,
   recurrenceDates,
   sessionsOn,
-  shiftDate,
   weekDays,
 } from "@/services/session-service";
 import { sessionStatuses, type SessionStatus } from "@/types/session";
 import { demoDate } from "@/data/demo-students";
 import { demoTherapistByStudent, demoTherapists } from "@/data/demo-therapists";
 import { StudentAvatar, DemoFooter } from "@/components/neuro/student-ui";
+
+const SessionCalendar = lazy(() => import("@/components/neuro/session-calendar"));
 
 export const Route = createFileRoute("/agenda")({
   head: () => ({
@@ -56,7 +59,6 @@ const statusTone: Record<SessionStatus, string> = {
   Faltou: "warm",
   Cancelado: "muted",
 };
-const weekday = new Intl.DateTimeFormat("pt-BR", { weekday: "short", timeZone: "UTC" });
 const longDate = new Intl.DateTimeFormat("pt-BR", {
   weekday: "long",
   day: "numeric",
@@ -70,19 +72,32 @@ function AgendaPage() {
   const { sessions, isLoading, addSession, addSessions, setStatus } = useSessions();
   const [selected, setSelected] = useState(demoDate);
   const [showForm, setShowForm] = useState(false);
+  const [therapistFilter, setTherapistFilter] = useState("all");
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     studentId: "",
     therapistId: "",
     start: "09:00",
-    duration: "50",
+    duration: String(DEFAULT_SESSION_DURATION),
     type: "Atendimento individual",
     weeks: "1",
   });
   const days = weekDays(selected);
-  const daySessions = sessionsOn(sessions, selected);
-  const weekSessions = sessions.filter((x) => days.includes(x.date));
+  const filteredSessions = sessions.filter((session) => therapistFilter === "all" || session.therapistId === therapistFilter);
+  const daySessions = sessionsOn(filteredSessions, selected);
+  const weekSessions = filteredSessions.filter((x) => days.includes(x.date));
   const rate = attendanceRate(weekSessions);
+  const selectedSession = sessions.find((session) => session.id === selectedSessionId);
+  const selectedStudent = students.find((student) => student.id === selectedSession?.studentId);
+
+  function openNewSession(date = selected, start = "09:00") {
+    setSelected(date);
+    setForm({ studentId: "", therapistId: therapistFilter === "all" ? "" : therapistFilter, start, duration: String(DEFAULT_SESSION_DURATION), type: "Atendimento individual", weeks: "1" });
+    setError("");
+    setShowForm(true);
+  }
 
   async function changeStatus(id: string, status: SessionStatus) {
     try {
@@ -97,6 +112,7 @@ function AgendaPage() {
     event.preventDefault();
     if (!form.studentId) return setError("Escolha um aluno.");
     if (!form.therapistId) return setError("Escolha o terapeuta.");
+    setSaving(true);
     try {
       const drafts = recurrenceDates(selected, Number(form.weeks)).map((date) => ({
         studentId: form.studentId,
@@ -112,6 +128,8 @@ function AgendaPage() {
       setShowForm(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Não foi possível agendar.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -123,10 +141,10 @@ function AgendaPage() {
             <CalendarDays size={15} /> AGENDA E SESSÕES
           </div>
           <h1>Agenda</h1>
-          <p>Organize seus atendimentos e acompanhe a frequência de cada jornada.</p>
+          <p>{longDate.format(asDate(selected))}</p>
         </div>
         <div className="heading-actions">
-          <Button onClick={() => setShowForm((v) => !v)}>
+          <Button onClick={() => openNewSession()}>
             <Plus /> Novo atendimento
           </Button>
         </div>
@@ -164,44 +182,36 @@ function AgendaPage() {
         </article>
       </div>
 
-      <div className="week-strip">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Semana anterior"
-          onClick={() => setSelected(shiftDate(selected, -7))}
-        >
-          <ChevronLeft />
-        </Button>
-        {days.map((day) => (
-          <button
-            key={day}
-            type="button"
-            className={`week-day ${day === selected ? "active" : ""}`}
-            onClick={() => setSelected(day)}
-            aria-pressed={day === selected}
-          >
-            <small>{weekday.format(asDate(day)).replace(".", "")}</small>
-            <strong>{day.slice(8)}</strong>
-            <span>
-              {sessionsOn(sessions, day).length}{" "}
-              {sessionsOn(sessions, day).length === 1 ? "sessão" : "sessões"}
-            </span>
-          </button>
-        ))}
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Próxima semana"
-          onClick={() => setSelected(shiftDate(selected, 7))}
-        >
-          <ChevronRight />
-        </Button>
+      <div className="calendar-filters">
+        <div className="form-field">
+          <label htmlFor="calendar-date">Data</label>
+          <Input id="calendar-date" type="date" value={selected} onChange={(event) => { if (event.target.value) setSelected(event.target.value); }} />
+        </div>
+        <div className="form-field">
+          <label>Profissional</label>
+          <Select value={therapistFilter} onValueChange={setTherapistFilter}>
+            <SelectTrigger aria-label="Filtrar profissional" className="bg-card"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os profissionais</SelectItem>
+              {demoTherapists.filter((therapist) => sessions.some((session) => session.therapistId === therapist.id)).map((therapist) => <SelectItem key={therapist.id} value={therapist.id}>{therapist.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+      {error && !showForm ? <p className="ai-error" role="alert">{error}</p> : null}
+      <ClientOnly fallback={<p role="status">Carregando calendário...</p>}>
+        <Suspense fallback={<p role="status">Carregando calendário...</p>}>
+          <SessionCalendar sessions={filteredSessions} students={students} selectedDate={selected} onDateChange={setSelected} onNewSession={openNewSession} onSelectSession={setSelectedSessionId} />
+        </Suspense>
+      </ClientOnly>
 
-      {showForm ? (
-        <form className="form-section agenda-form" onSubmit={(e) => void submit(e)}>
-          <h2>Novo atendimento · {longDate.format(asDate(selected))}</h2>
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="agenda-dialog">
+          <DialogHeader>
+            <DialogTitle>Novo atendimento</DialogTitle>
+            <DialogDescription>{longDate.format(asDate(selected))}</DialogDescription>
+          </DialogHeader>
+        <form className="agenda-form" onSubmit={(e) => void submit(e)}>
           <div className="form-grid">
             <div className="form-field">
               <label>Aluno</label>
@@ -318,10 +328,35 @@ function AgendaPage() {
             <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>
               Cancelar
             </Button>
-            <Button type="submit">Agendar</Button>
+            <Button type="submit" disabled={saving}>{saving ? "Agendando..." : "Agendar"}</Button>
           </div>
         </form>
-      ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(selectedSession && selectedStudent)} onOpenChange={(open) => { if (!open) setSelectedSessionId(null); }}>
+        <DialogContent className="agenda-dialog">
+          <DialogHeader>
+            <DialogTitle>{selectedStudent?.name}</DialogTitle>
+            <DialogDescription>{selectedSession ? `${longDate.format(asDate(selectedSession.date))} · ${selectedSession.start}–${endTime(selectedSession)} · ${selectedSession.duration} min` : ""}</DialogDescription>
+          </DialogHeader>
+          {selectedSession && selectedStudent ? <>
+            <p className="text-sm">{selectedSession.type}</p>
+            <p className="text-sm text-muted-foreground">{demoTherapists.find((therapist) => therapist.id === selectedSession.therapistId)?.name}</p>
+            <div className="form-field">
+              <label>Status</label>
+              <Select value={selectedSession.status} onValueChange={(value) => void changeStatus(selectedSession.id, value as SessionStatus)}>
+                <SelectTrigger aria-label="Status do atendimento"><SelectValue /></SelectTrigger>
+                <SelectContent>{sessionStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline"><Link to="/alunos/$id" params={{ id: selectedStudent.id }}>Ver aluno</Link></Button>
+              {selectedSession.status === "Pendente" ? <ReminderLink student={selectedStudent} session={selectedSession} /> : null}
+            </div>
+          </> : null}
+        </DialogContent>
+      </Dialog>
 
       <section>
         <div className="section-heading">
