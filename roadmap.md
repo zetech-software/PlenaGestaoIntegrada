@@ -1,8 +1,9 @@
 # Primeira entrega
 
 ## Assistente de WhatsApp para leads
-- [ ] Conectar número WhatsApp Business e verificar recebimento de mensagens
-- [ ] Definir serviços/planos e preços autorizados para orçamento (aguarda resposta)
+- [x] Definir escopo dos orçamentos: atendimentos da clínica, não planos da Plena
+- [ ] Conectar número WhatsApp Business e verificar recebimento de mensagens (conexão recusada; aguarda autorização)
+- [ ] Receber serviços, preços e pacotes autorizados da clínica (aguarda resposta)
 - [ ] Definir horários disponíveis e responsável pela transferência das conversas
 - [ ] Atendimento automático com histórico, orçamento, reserva persistente de horário e transferência humana
 - [ ] Validar mensagem real, orçamento, agendamento e transferência de ponta a ponta
