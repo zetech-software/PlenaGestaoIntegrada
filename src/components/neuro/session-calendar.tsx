@@ -94,7 +94,7 @@ export default function SessionCalendar({ sessions, students, selectedDate, onDa
           slotLabelInterval="01:00:00"
           slotLabelFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
           eventTimeFormat={{ hour: "2-digit", minute: "2-digit", hour12: false }}
-          dayHeaderFormat={{ weekday: "short", day: "2-digit" }}
+          dayHeaderFormat={view === "dayGridMonth" ? { weekday: "short" } : { weekday: "short", day: "2-digit" }}
           nowIndicator
           eventMinHeight={42}
           expandRows
@@ -106,29 +106,14 @@ export default function SessionCalendar({ sessions, students, selectedDate, onDa
             onDateChange(dateKey(info.view.calendar.getDate()));
           }}
           dateClick={(info) => onNewSession(info.dateStr.slice(0, 10), info.allDay ? "09:00" : info.dateStr.slice(11, 16))}
-          eventClick={(info) => onSelectSession(info.event.id)}
-          eventDidMount={(info) => {
-            const session = info.event.extendedProps['session'] as Session;
-            info.el.setAttribute("role", "button");
-            info.el.setAttribute("tabindex", "0");
-            const label = `${info.event.title}, ${session.start}–${endTime(session)}, ${session.status}`;
-            info.el.setAttribute("aria-label", label);
-            info.el.setAttribute("title", `${label} · ${session.type}`);
-            info.el.onkeydown = (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                onSelectSession(info.event.id);
-              }
-            };
-          }}
           eventContent={(info) => {
             const session = info.event.extendedProps['session'] as Session;
             return (
-              <div className="calendar-event-content">
+              <Button variant="ghost" className="calendar-event-content h-full w-full min-h-0 items-start justify-start rounded-none text-inherit hover:bg-transparent hover:text-inherit" aria-label={`${info.event.title}, ${session.start}–${endTime(session)}, ${session.status}`} title={`${session.type} · ${session.duration} min · ${session.status}`} onClick={() => onSelectSession(info.event.id)}>
                 <span className="calendar-event-time">{session.start}–{endTime(session)}</span>
                 <strong>{info.event.title}</strong>
                 {view === "timeGridDay" ? <small>{String(info.event.extendedProps['therapist'])} · {session.status}</small> : null}
-              </div>
+              </Button>
             );
           }}
         />

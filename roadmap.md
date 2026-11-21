@@ -8,7 +8,7 @@
 
 # Segunda fase — Agenda e Sessões
 
-- [ ] Calendário por horário (dia, semana e mês), alunos e padrão de 45 minutos
+- [x] Calendário por horário (dia, semana e mês), alunos e padrão de 45 minutos; testado com profissional em computador, tablet e celular
 - [x] Agenda semanal, novo atendimento com bloqueio de conflito, status e frequência
 - [x] Painel lê os atendimentos do dia da agenda
 
