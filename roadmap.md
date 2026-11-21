@@ -3,7 +3,9 @@
 ## Assistente de WhatsApp para leads
 - [x] Definir escopo dos orçamentos: atendimentos da clínica, não planos da Plena
 - [x] Autorizar integração própria por clínica, sem número compartilhado
-- [ ] Disponibilizar conexão independente de WhatsApp Business por clínica (aguarda aplicação empresarial e aprovação Meta; WhatsApp ausente do catálogo App User Connectors)
+- [x] Confirmar existência da aplicação empresarial da Plena na Meta (informado pelo usuário)
+- [ ] Identificar aplicação existente pelo App ID e verificar configuração de WhatsApp/Embedded Signup e aprovações (aguarda App ID)
+- [ ] Disponibilizar conexão independente de WhatsApp Business por clínica (aguarda configuração e aprovações da aplicação existente; WhatsApp ausente do catálogo App User Connectors)
 - [x] Configurações > WhatsApp: atendimentos com preços e duração próprios, mensagens, horários e destino de transferência; dados salvos por clínica
 - [x] Verificar preço e horário após recarregar a página; segunda clínica não recebe as configurações da primeira; 5 testes de regras e navegador desktop/celular
 - [ ] Pacotes de múltiplos atendimentos com regras próprias (não há regras ou valores definidos)
